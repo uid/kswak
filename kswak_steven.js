@@ -13,38 +13,30 @@ if (Meteor.isClient) {
             choice2 = template.find("input[name=choice_2]");
             choice3 = template.find("input[name=choice_3]");
             choice4 = template.find("input[name=choice_4]");
-            correct1 = template.find("input[name=correct_1]");
-            correct2 = template.find("input[name=correct_2]");
-            correct3 = template.find("input[name=correct_3]");
-            correct4 = template.find("input[name=correct_4]");
+            correct = $('input[name="correct"]:checked').val(); //integer, representing the choice that is correct
 
-            console.log('test title: ' + title.value)
-            console.log('test choice1: ' + choice1.value)
-            console.log('test correct1: ' + correct1.value)
-
+            //store data
             var data = {
                 title: title.value,
                 choice1: choice1.value,
                 choice2: choice2.value,
                 choice3: choice3.value,
                 choice4: choice4.value,
-                correct1: correct1.value,
-                correct2: correct2.value,
-                correct3: correct3.value,
-                correct4: correct4.value,
+                correct: correct
             }
 
+            //reset fields
             title.value = "";
             choice1.value = "";
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
-            correct1.value = "";
-            correct2.value = "";
-            correct3.value = "";
-            correct4.value = "";
+            $('input[name="correct"]').each(function() {
+                this.checked = false;
+            });
 
             Questions.insert(data, function(err) { /* handle error */ });
+            console.log(data);
         }
   });
 
@@ -56,7 +48,7 @@ if (Meteor.isClient) {
         return "test";
     }
 
-    Template.question.events({
+    Template.question_view.events({
         'click submit': function () {
             //template data, if any, is available in 'this'
             if (typeof console !== 'undefined')
