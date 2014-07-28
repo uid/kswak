@@ -3,11 +3,89 @@
 </head>
 
 <body>
-  {{> hello}}
+  {{> new}}
 </body>
 
-<template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
-  <input type="button" value="Click" />
+<template name="new">
+  <h1>Create a question</h1>
+    <div class='form_container'>
+        <form id='new_question_form'>
+            Question: <input type="text" name="title"> <br>
+            Choices: <br>
+            <table id='input_choices'>
+                <tr>
+                    <td align='right'>A </td>
+                    <td align='left'><input type="text" name="choice_1"></td>
+                    <td align='left'><input type="radio" name="correct_1"></td>
+                </tr>
+                <tr>
+                    <td align='right'>B </td>
+                    <td align='left'><input type="text" name="choice_2"></td>
+                    <td align='left'><input type="radio" name="correct_2"></td>
+                </tr>
+                <tr>
+                    <td align='right'>C </td>
+                    <td align='left'><input type="text" name="choice_3"></td>
+                    <td align='left'><input type="radio" name="correct_3"></td>
+                </tr>
+                <tr>
+                    <td align='right'>D </td>
+                    <td align='left'><input type="text" name="choice_4"></td>
+                    <td align='left'><input type="radio" name="correct_4"></td>
+                </tr>
+            </table>
+            <input type="submit" value="Publish" id='publish_button'/>
+        </form>
+    </div>
+</template>
+
+<template name='question_view'>
+    <h1>{{title}}</h1>
+    <form>
+        <input type="radio" name="answers" value="ans">test1<br>
+        <input type="radio" name="answers" value="ans">test2<br>
+        <input type="radio" name="answers" value="ans">test3<br>
+        <input type="radio" name="answers" value="ans">test4<br>
+        <input type="button" name="submit" value="Submit">
+    </form>
+</template>
+
+<template name='teacher_question_view'>
+    <h1>{{title}}</h1>
+    <div class='form_container'>
+        Question: <br>
+        Choices: <br>
+        <table id='input_choices'>
+            <tr>
+                <td align='right'>A | </td>
+                <td align='left'>test</td>
+                <td class='blank'></td>
+                <td class='statistics' align='right'>number (% of class)</td>
+            </tr>
+            <tr>
+                <td align='right'>B | </td>
+                <td align='left'>test</td>
+                <td class='blank'></td>
+                <td class='statistics' align='right'>number (% of class)</td>
+            </tr>
+            <tr>
+                <td align='right'>C | </td>
+                <td align='left'>test</td>
+                <td class='blank'></td>
+                <td class='statistics' align='right'>number (% of class)</td>
+            </tr>
+            <tr>
+                <td align='right'>D | </td>
+                <td align='left'>test</td>
+                <td class='blank'></td>
+                <td class='statistics' align='right'>number (% of class)</td>
+            </tr>
+        </table>
+        <input type="button" value="Publish" id='publish_button'/>
+    </div>
+</template>
+
+<template name='home'>
+    <h1>Homepage (pretend functionality for now)</h1>
+    <a href="{{ pathFor 'new' }}">New question</a>
 </template>

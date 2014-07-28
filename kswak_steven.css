@@ -1,1 +1,11 @@
-/* CSS declarations go here */
+#input_choices {
+    padding-left: 30px;
+}
+
+#new_question_form {
+    line-height: 30px;
+}
+
+.blank {
+    width: 100px;
+}
