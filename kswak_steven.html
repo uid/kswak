@@ -3,7 +3,6 @@
 </head>
 
 <body>
-  {{> new}}
 </body>
 
 <template name="new">
@@ -16,22 +15,22 @@
                 <tr>
                     <td align='right'>A </td>
                     <td align='left'><input type="text" name="choice_1"></td>
-                    <td align='left'><input type="radio" value=1 name="correct"></td>
+                    <td align='left'><input type="radio" value=A name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>B </td>
                     <td align='left'><input type="text" name="choice_2"></td>
-                    <td align='left'><input type="radio" value=2 name="correct"></td>
+                    <td align='left'><input type="radio" value=B name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>C </td>
                     <td align='left'><input type="text" name="choice_3"></td>
-                    <td align='left'><input type="radio" value=3 name="correct"></td>
+                    <td align='left'><input type="radio" value=C name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>D </td>
                     <td align='left'><input type="text" name="choice_4"></td>
-                    <td align='left'><input type="radio" value=4 name="correct"></td>
+                    <td align='left'><input type="radio" value=D name="correct"></td>
                 </tr>
             </table>
             <input type="submit" value="Publish" id='publish_button'/>
@@ -41,51 +40,54 @@
 
 <template name='question_view'>
     <h1>{{title}}</h1>
-    <form>
-        <input type="radio" name="answers" value="ans">test1<br>
-        <input type="radio" name="answers" value="ans">test2<br>
-        <input type="radio" name="answers" value="ans">test3<br>
-        <input type="radio" name="answers" value="ans">test4<br>
-        <input type="button" name="submit" value="Submit">
+    <form id="student_question">
+        <input type="radio" name="choice" value="A">{{choice1}}<br>
+        <input type="radio" name="choice" value="B">{{choice2}}<br>
+        <input type="radio" name="choice" value="C">{{choice3}}<br>
+        <input type="radio" name="choice" value="D">{{choice4}}<br>
+        <input type="submit" name="submit" value="Submit">
     </form>
 </template>
 
 <template name='teacher_question_view'>
     <h1>{{title}}</h1>
     <div class='form_container'>
-        Question: <br>
+        Question: {{title}}<br>
         Choices: <br>
         <table id='input_choices'>
             <tr>
                 <td align='right'>A | </td>
-                <td align='left'>test</td>
+                <td align='left'>{{choice1}}</td>
                 <td class='blank'></td>
-                <td class='statistics' align='right'>number (% of class)</td>
+                <td class='statistics' align='right'>{{submission_map['A']}} (% of class)</td>
             </tr>
             <tr>
                 <td align='right'>B | </td>
-                <td align='left'>test</td>
+                <td align='left'>{{choice2}}</td>
                 <td class='blank'></td>
                 <td class='statistics' align='right'>number (% of class)</td>
             </tr>
             <tr>
                 <td align='right'>C | </td>
-                <td align='left'>test</td>
+                <td align='left'>{{choice3}}</td>
                 <td class='blank'></td>
                 <td class='statistics' align='right'>number (% of class)</td>
             </tr>
             <tr>
                 <td align='right'>D | </td>
-                <td align='left'>test</td>
+                <td align='left'>{{choice4}}</td>
                 <td class='blank'></td>
                 <td class='statistics' align='right'>number (% of class)</td>
             </tr>
         </table>
-        <input type="button" value="Publish" id='publish_button'/>
+        Correct: {{correct}}
     </div>
 </template>
 
 <template name='home'>
-    <h1>Homepage (pretend functionality for now)</h1>
-    <a href="{{ pathFor 'new' }}">New question</a>
+    <h1>Homepage (debugging purposes)</h1>
+    <a href="{{ pathFor 'teacher_new' }}">New question</a><br><br>
+    {{#each questions}}
+        <a href="{{ pathFor 'teacher_question_view'}}">{{title}}</a><br>
+    {{/each}}
 </template>
