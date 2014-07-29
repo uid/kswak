@@ -36,7 +36,7 @@ if (Meteor.isClient) {
             });
 
             Questions.insert(data, function(err) { /* handle error */ });
-            console.log(data);
+//            console.log(data);
         }
   });
 
