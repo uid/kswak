@@ -50,34 +50,34 @@
 </template>
 
 <template name='teacher_question_view'>
-    <h1>{{title}}</h1>
+    <h1>{{this.questions.title}}</h1>
     <div class='form_container'>
-        Question: {{title}}<br>
+        Question: {{this.questions.title}}<br>
         Choices: <br>
         <table id='input_choices'>
             <tr>
                 <td align='right'>A | </td>
                 <td align='left'>{{choice1}}</td>
                 <td class='blank'></td>
-                <td class='statistics' align='right'>{{submission_map['A']}} (% of class)</td>
+                <td class='statistics' align='right'>{{this.questions.A}}  ({{this.percentA}}% of responders)</td>
             </tr>
             <tr>
                 <td align='right'>B | </td>
                 <td align='left'>{{choice2}}</td>
                 <td class='blank'></td>
-                <td class='statistics' align='right'>number (% of class)</td>
+                <td class='statistics' align='right'>{{this.questions.B}} ({{this.percentB}}% of responders)</td>
             </tr>
             <tr>
                 <td align='right'>C | </td>
                 <td align='left'>{{choice3}}</td>
                 <td class='blank'></td>
-                <td class='statistics' align='right'>number (% of class)</td>
+                <td class='statistics' align='right'>{{this.questions.C}} ({{this.percentC}}% of responders)</td>
             </tr>
             <tr>
                 <td align='right'>D | </td>
                 <td align='left'>{{choice4}}</td>
                 <td class='blank'></td>
-                <td class='statistics' align='right'>number (% of class)</td>
+                <td class='statistics' align='right'>{{this.questions.D}} ({{this.percentD}}% of responders)</td>
             </tr>
         </table>
         Correct: {{correct}}

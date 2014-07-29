@@ -1,10 +1,17 @@
 Questions = new Meteor.Collection("questions");
+questionsHandle = Meteor.subscribe("questions");
 //Submissions = new Meteor.Collection("submissions");
 
 if (Meteor.isClient) {
     Template.home.helpers({
         questions: function() {
             return Questions.find();
+        }
+    });
+
+    Template.teacher_question_view.helpers({
+        percentage: function(letter) {
+            return doMath(this.data, letter);
         }
     });
 
@@ -26,7 +33,10 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 correct: correct,
-                submission_map: {'A': 0, 'B': 0, 'C': 0, 'D': 0},
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
             }
 
             //reset fields
@@ -57,9 +67,20 @@ if (Meteor.isClient) {
                 console.log(user_answer);
                 var id = Router.current().path.substr(1);
                 var question = Questions.findOne({_id: id});
-                var submission_map = question.submission_map;
-                submission_map[user_answer] += 1;
-                Questions.update(id, {$set: {submission_map: submission_map}});
+                switch (user_answer) {
+                    case 'A':
+                        Questions.update(id, {$inc: {A: 1}});
+                        break;
+                    case 'B':
+                        Questions.update(id, {$inc: {B: 1}});
+                        break;
+                    case 'C':
+                        Questions.update(id, {$inc: {C: 1}});
+                        break;
+                    case 'D':
+                        Questions.update(id, {$inc: {D: 1}});
+                        break;
+                }
                 console.log("submitted!");
             }
         }
@@ -89,6 +110,18 @@ Router.map(function () {
     });
     this.route('teacher_question_view', {
         path: '/teacher/:_id',
-        data: function() { return Questions.findOne(this.params._id); },
+        waitOn: function(){
+            return Meteor.subscribe("questions")
+        }
+        ,
+        data: function() {
+            var questions = Questions.findOne(this.params._id);
+            console.log(questions)
+            var percentA = 100.0*(questions.A / (questions.A + questions.B + questions.C + questions.D))
+            var percentB = 100.0*(questions.B / (questions.A + questions.B + questions.C + questions.D))
+            var percentC = 100.0*(questions.C / (questions.A + questions.B + questions.C + questions.D))
+            var percentD = 100.0*(questions.D / (questions.A + questions.B + questions.C + questions.D))
+            return {questions: questions, percentA: percentA, percentB: percentB, percentC: percentC, percentD: percentD}
+        },
     });
 });
