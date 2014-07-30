@@ -143,7 +143,7 @@ Router.map(function () {
                     voters: questions.D,
                     percent: percentD.toFixed(2)
                 }
-            )
+            );
 
             return {
                 options: options,
