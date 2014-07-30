@@ -1,6 +1,6 @@
 Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
-//Submissions = new Meteor.Collection("submissions");
+Answers = new Meteor.Collection("answers");
 
 if (Meteor.isClient) {
     Template.home.helpers({
@@ -31,7 +31,7 @@ if (Meteor.isClient) {
                 B: 0,
                 C: 0,
                 D: 0,
-            }
+            };
 
             //reset fields
             title.value = "";
@@ -58,9 +58,14 @@ if (Meteor.isClient) {
             }
             else {
                 var user_answer = choice.value;
-                console.log(user_answer);
                 var id = Router.current().path.substr(1);
                 var question = Questions.findOne({_id: id});
+                var answer_data = {
+                    question_id: id,
+                    answer: user_answer,
+                    user: null, //TODO: need to change this once user accounts are set up.
+                };
+
                 switch (user_answer) {
                     case 'A':
                         Questions.update(id, {$inc: {A: 1}});
@@ -75,6 +80,7 @@ if (Meteor.isClient) {
                         Questions.update(id, {$inc: {D: 1}});
                         break;
                 }
+                var answer_id = Answers.insert(answer_data, function(err) { /* handle error */});
                 console.log("submitted!");
             }
         }
