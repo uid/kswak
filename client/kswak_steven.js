@@ -9,12 +9,6 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.teacher_question_view.helpers({
-        percentage: function(letter) {
-            return doMath(this.data, letter);
-        }
-    });
-
     Template.new.events({
         'submit form': function (event, template) {
             event.preventDefault();
@@ -24,7 +18,7 @@ if (Meteor.isClient) {
             choice2 = template.find("input[name=choice_2]");
             choice3 = template.find("input[name=choice_3]");
             choice4 = template.find("input[name=choice_4]");
-            correct = $('input[name="correct"]:checked').val(); //integer, representing the choice that is correct
+            correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
 
             var question_data = {
                 title: title.value,
@@ -114,6 +108,7 @@ Router.map(function () {
             return Meteor.subscribe("questions")
         }
         ,
+        template: 'teacher_question_view',
         data: function() {
             var questions = Questions.findOne(this.params._id);
             console.log(questions)
@@ -121,7 +116,41 @@ Router.map(function () {
             var percentB = 100.0*(questions.B / (questions.A + questions.B + questions.C + questions.D))
             var percentC = 100.0*(questions.C / (questions.A + questions.B + questions.C + questions.D))
             var percentD = 100.0*(questions.D / (questions.A + questions.B + questions.C + questions.D))
-            return {questions: questions, percentA: percentA, percentB: percentB, percentC: percentC, percentD: percentD}
+
+            var options = []
+            options.push(
+                {
+                    option: "A",
+                    choice: questions.choice1,
+                    voters: questions.A,
+                    percent: percentA.toFixed(2)
+                },
+                {
+                    option: "B",
+                    choice: questions.choice2,
+                    voters: questions.B,
+                    percent: percentB.toFixed(2)
+                },
+                {
+                    option: "C",
+                    choice: questions.choice3,
+                    voters: questions.C,
+                    percent: percentC.toFixed(2)
+                },
+                {
+                    option: "D",
+                    choice: questions.choice4,
+                    voters: questions.D,
+                    percent: percentD.toFixed(2)
+                }
+            )
+
+            return {
+                options: options,
+                title: questions.title,
+                correct: questions.correct,
+                total: questions.A + questions.B + questions.C + questions.D
+            }
         },
     });
 });
