@@ -118,10 +118,18 @@ Router.map(function () {
         data: function() {
             var questions = Questions.findOne(this.params._id);
             console.log(questions)
-            var percentA = 100.0*(questions.A / (questions.A + questions.B + questions.C + questions.D))
-            var percentB = 100.0*(questions.B / (questions.A + questions.B + questions.C + questions.D))
-            var percentC = 100.0*(questions.C / (questions.A + questions.B + questions.C + questions.D))
-            var percentD = 100.0*(questions.D / (questions.A + questions.B + questions.C + questions.D))
+			var total = questions.A + questions.B + questions.C + questions.D;
+			var percentA = 0;
+            var percentB = 0;
+            var percentC = 0;
+            var percentD = 0;
+			
+            if (total != 0) {
+				percentA = 100.0*(questions.A / total);
+            	percentB = 100.0*(questions.B / total);
+            	percentC = 100.0*(questions.C / total);
+            	percentD = 100.0*(questions.D / total);
+			}
 
             var options = []
             options.push(
