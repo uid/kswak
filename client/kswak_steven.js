@@ -8,6 +8,13 @@ if (Meteor.isClient) {
             return Questions.find();
         }
     });
+	
+	Template.teacher_home.helpers({
+        questions: function() {
+            return Questions.find();
+        }
+    });
+	
 
     Template.new.events({
         'submit form': function (event, template) {
@@ -24,37 +31,50 @@ if (Meteor.isClient) {
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
 
+            var question_data = {
+                title: title.value,
+                choice1: choice1.value,
+                choice2: choice2.value,
+                choice3: choice3.value,
+                choice4: choice4.value,
+                correct: correct,
+				status: false,
+				live:false,
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+            };
+
+            //reset fields
+            title.value = "";
+            choice1.value = "";
+            choice2.value = "";
+            choice3.value = "";
+            choice4.value = "";
+            $('input[name="correct"]').each(function() {
+                this.checked = false;
+            });
+
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
             if (correct != null){
-                var question_data = {
-                    title: title.value,
-                    choice1: choice1.value,
-                    choice2: choice2.value,
-                    choice3: choice3.value,
-                    choice4: choice4.value,
-                    correct: correct,
-                    A: 0,
-                    B: 0,
-                    C: 0,
-                    D: 0,
-                };
-
-                //reset fields
-                title.value = "";
-                choice1.value = "";
-                choice2.value = "";
-                choice3.value = "";
-                choice4.value = "";
-                $('input[name="correct"]').each(function() {
-                    this.checked = false;
-                });
-
-                var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-        
                 Router.go('/teacher/' + question_id);
             }
 
         }
   });
+	
+	Template.teacher_home.events({
+		'change [name="launch"]': function (event, template){
+			console.log("launch", Questions.findOne({live:false})._id, this._id);
+			Questions.update(Questions.findOne({live:true})._id, {live:false});
+			Questions.update(this._id, {live:true});
+		},
+		'click .delete': function (event, template){
+			Questions.remove(this._id)
+		}
+	
+	})
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
@@ -117,10 +137,18 @@ Router.map(function () {
     this.route('home', {
         path: '/',
     });
+	
+	this.route('teacher_home', {
+        path: 'teacher/home',
+		template: 'teacher_home',
+    });
+	
     this.route('question_view', {
-        path: '/:_id',  //overrides the default '/home'
+        path: '/_id',  //overrides the default '/home'
+		template: 'question_view',
         data: function() { return Questions.findOne(this.params._id); },
     });
+	
     this.route('teacher_new', {
         path: '/teacher/new',
         template: 'new',
@@ -155,25 +183,25 @@ Router.map(function () {
                     option: "A",
                     choice: questions.choice1,
                     voters: questions.A,
-                    percent: percentA.toFixed(0)
+                    percent: percentA.toFixed(2)
                 },
                 {
                     option: "B",
                     choice: questions.choice2,
                     voters: questions.B,
-                    percent: percentB.toFixed(0)
+                    percent: percentB.toFixed(2)
                 },
                 {
                     option: "C",
                     choice: questions.choice3,
                     voters: questions.C,
-                    percent: percentC.toFixed(0)
+                    percent: percentC.toFixed(2)
                 },
                 {
                     option: "D",
                     choice: questions.choice4,
                     voters: questions.D,
-                    percent: percentD.toFixed(0)
+                    percent: percentD.toFixed(2)
                 }
             );
 
