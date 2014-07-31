@@ -1,5 +1,5 @@
 <head>
-    <title>KSWAK</title>
+    <!-- <title>KSWAK</title> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
 
@@ -16,6 +16,7 @@
 </body>
 
 <template name="new">
+    <title>KSWAK | Create New Question</title>
     <div id="container_new">
     <h1>Create a question</h1>
     <div class='form_container'>
@@ -52,6 +53,7 @@
 </template>
 
 <template name='question_view'>
+    <title>KSWAK | {{title}}</title>
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
@@ -66,6 +68,7 @@
 </template>
 
 <template name='teacher_question_view'>
+    <title>KSWAK Teachew | {{title}}</title>
     <div id="container_teacher_question_view">
     <h1>{{title}}</h1>
     <div class='form_container'>
@@ -88,6 +91,7 @@
 </template>
 
 <template name='home'>
+    <title>KSWAK | HOME</title>
     <div id="container_home">
     <h1>Homepage (debugging purposes)</h1>
 	{{> loginButtons }}
