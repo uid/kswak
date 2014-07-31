@@ -163,7 +163,7 @@ Router.map(function () {
                 options: options,
                 title: questions.title,
                 correct: questions.correct,
-                total: questions.A + questions.B + questions.C + questions.D
+                total: total
             }
         },
     });

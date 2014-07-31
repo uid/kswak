@@ -71,6 +71,7 @@
 
 <template name='home'>
     <h1>Homepage (debugging purposes)</h1>
+	{{> loginButtons }}
     <a href="{{ pathFor 'teacher_new' }}">New question</a><br><br>
     {{#each questions}}
         <a href="{{ pathFor 'teacher_question_view'}}">{{title}}</a><br>
