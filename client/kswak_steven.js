@@ -55,11 +55,12 @@ if (Meteor.isClient) {
             var choice = template.find("input[name='choice']:checked");
             if (choice == null) {
                 console.log('ERROR: nothing chosen. Please choose an answer.')
+                $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
             }
             else {
                 var user_answer = choice.value;
                 var id = Router.current().path.substr(1);
-                var question = Questions.findOne({_id: id});
+                var question = Questions.findOne(id);
                 var answer_data = {
                     question_id: id,
                     answer: user_answer,
@@ -82,6 +83,7 @@ if (Meteor.isClient) {
                 }
                 var answer_id = Answers.insert(answer_data, function(err) { /* handle error */});
                 console.log("submitted!");
+                $('#submitFeedback').html('');
             }
         }
     });
@@ -118,18 +120,18 @@ Router.map(function () {
         data: function() {
             var questions = Questions.findOne(this.params._id);
             console.log(questions)
-			var total = questions.A + questions.B + questions.C + questions.D;
-			var percentA = 0;
+            var total = questions.A + questions.B + questions.C + questions.D;
+            var percentA = 0;
             var percentB = 0;
             var percentC = 0;
             var percentD = 0;
-			
+
             if (total != 0) {
-				percentA = 100.0*(questions.A / total);
-            	percentB = 100.0*(questions.B / total);
-            	percentC = 100.0*(questions.C / total);
-            	percentD = 100.0*(questions.D / total);
-			}
+                percentA = 100.0*(questions.A / total);
+                percentB = 100.0*(questions.B / total);
+                percentC = 100.0*(questions.C / total);
+                percentD = 100.0*(questions.D / total);
+            }
 
             var options = []
             options.push(
