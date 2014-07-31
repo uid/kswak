@@ -24,31 +24,32 @@ if (Meteor.isClient) {
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
 
-            var question_data = {
-                title: title.value,
-                choice1: choice1.value,
-                choice2: choice2.value,
-                choice3: choice3.value,
-                choice4: choice4.value,
-                correct: correct,
-                A: 0,
-                B: 0,
-                C: 0,
-                D: 0,
-            };
-
-            //reset fields
-            title.value = "";
-            choice1.value = "";
-            choice2.value = "";
-            choice3.value = "";
-            choice4.value = "";
-            $('input[name="correct"]').each(function() {
-                this.checked = false;
-            });
-
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
             if (correct != null){
+                var question_data = {
+                    title: title.value,
+                    choice1: choice1.value,
+                    choice2: choice2.value,
+                    choice3: choice3.value,
+                    choice4: choice4.value,
+                    correct: correct,
+                    A: 0,
+                    B: 0,
+                    C: 0,
+                    D: 0,
+                };
+
+                //reset fields
+                title.value = "";
+                choice1.value = "";
+                choice2.value = "";
+                choice3.value = "";
+                choice4.value = "";
+                $('input[name="correct"]').each(function() {
+                    this.checked = false;
+                });
+
+                var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+        
                 Router.go('/teacher/' + question_id);
             }
 
