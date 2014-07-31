@@ -55,6 +55,7 @@ if (Meteor.isClient) {
             var choice = template.find("input[name='choice']:checked");
             if (choice == null) {
                 console.log('ERROR: nothing chosen. Please choose an answer.')
+                $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
             }
             else {
                 var user_answer = choice.value;
@@ -82,6 +83,7 @@ if (Meteor.isClient) {
                 }
                 var answer_id = Answers.insert(answer_data, function(err) { /* handle error */});
                 console.log("submitted!");
+                $('#submitFeedback').html('');
             }
         }
     });
