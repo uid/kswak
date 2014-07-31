@@ -9,3 +9,7 @@
 .blank {
     width: 100px;
 }
+
+div[id^='container']{
+	padding:1%;
+}

@@ -8,13 +8,16 @@
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="d3.v2.min.js"></script>
 </head>
 
 <body>
 </body>
 
 <template name="new">
-  <h1>Create a question</h1>
+    <div id="container_new">
+    <h1>Create a question</h1>
     <div class='form_container'>
         <form id='new_question_form'>
             Question: <input type="text" name="title"> <br>
@@ -42,11 +45,14 @@
                 </tr>
             </table>
             <input type="submit" value="Publish" id='publish_button'/>
+            <div id="publishFeedback"></div>
         </form>
+    </div>
     </div>
 </template>
 
 <template name='question_view'>
+    <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
         <input type="radio" name="choice" value="A">{{choice1}}<br>
@@ -56,9 +62,11 @@
         <input type="submit" name="submit" value="Submit">
         <div id="submitFeedback"></div>
     </form>
+    </div>
 </template>
 
 <template name='teacher_question_view'>
+    <div id="container_teacher_question_view">
     <h1>{{title}}</h1>
     <div class='form_container'>
         Question: {{title}}<br>
@@ -76,12 +84,15 @@
         Correct: {{correct}}<br>
         Total number of responders: {{total}}
     </div>
+    </div> 
 </template>
 
 <template name='home'>
+    <div id="container_home">
     <h1>Homepage (debugging purposes)</h1>
     <a href="{{ pathFor 'teacher_new' }}">New question</a><br><br>
     {{#each questions}}
         <a href="{{ pathFor 'teacher_question_view'}}">{{title}}</a><br>
     {{/each}}
+    </div>
 </template>
