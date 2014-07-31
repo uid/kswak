@@ -71,8 +71,17 @@ if (Meteor.isClient) {
                 var answer_data = {
                     question_id: id,
                     answer: user_answer,
-                    user: null, //TODO: need to change this once user accounts are set up.
+                    user: Meteor.userId()
                 };
+				var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
+				/*var answers = Answers.find().fetch();
+				
+				for (i in answers) {
+					var answer = answers[i];
+					if (answer.question_id == id) {
+						var user_answer = 
+					}
+				}*/
 
                 switch (user_answer) {
                     case 'A':
@@ -88,7 +97,6 @@ if (Meteor.isClient) {
                         Questions.update(id, {$inc: {D: 1}});
                         break;
                 }
-                var answer_id = Answers.insert(answer_data, function(err) { /* handle error */});
                 console.log("submitted!");
                 $('#submitFeedback').html('');
             }
@@ -127,6 +135,7 @@ Router.map(function () {
         data: function() {
             var questions = Questions.findOne(this.params._id);
             console.log(questions)
+			console.log('userID: ' + Meteor.userId());
             var total = questions.A + questions.B + questions.C + questions.D;
             var percentA = 0;
             var percentB = 0;
