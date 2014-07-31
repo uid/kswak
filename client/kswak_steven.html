@@ -13,7 +13,8 @@
 </head>
 
 <body>
-
+	<h1>Hello</h1>
+	{{>home}}
 </body>
 
 <template name="new">
@@ -92,13 +93,13 @@
 
 
 <template name='home'>
+	<title>KSWAK | HOME</title>
     <div id="container_home">
-    <h1>Homepage (debugging purposes)</h1>
 	{{> loginButtons }}<br/>
 	<a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
 	<a href="{{ pathFor 'teacher_new' }}">create a question</a><br/>
-		
 	</div>
+
 </template>
 
 
