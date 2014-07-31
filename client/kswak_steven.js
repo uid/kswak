@@ -154,25 +154,25 @@ Router.map(function () {
                     option: "A",
                     choice: questions.choice1,
                     voters: questions.A,
-                    percent: percentA.toFixed(2)
+                    percent: percentA.toFixed(0)
                 },
                 {
                     option: "B",
                     choice: questions.choice2,
                     voters: questions.B,
-                    percent: percentB.toFixed(2)
+                    percent: percentB.toFixed(0)
                 },
                 {
                     option: "C",
                     choice: questions.choice3,
                     voters: questions.C,
-                    percent: percentC.toFixed(2)
+                    percent: percentC.toFixed(0)
                 },
                 {
                     option: "D",
                     choice: questions.choice4,
                     voters: questions.D,
-                    percent: percentD.toFixed(2)
+                    percent: percentD.toFixed(0)
                 }
             );
 
