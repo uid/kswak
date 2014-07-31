@@ -19,6 +19,10 @@ if (Meteor.isClient) {
             choice3 = template.find("input[name=choice_3]");
             choice4 = template.find("input[name=choice_4]");
             correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
+            if (correct == null){
+                console.log('ERROR: nothing chosen. Please choose a correct answer.')
+                $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
+            }
 
             var question_data = {
                 title: title.value,
@@ -44,7 +48,9 @@ if (Meteor.isClient) {
             });
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-            Router.go('/teacher/' + question_id);
+            if (correct != null){
+                Router.go('/teacher/' + question_id);
+            }
 
         }
   });
