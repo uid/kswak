@@ -171,15 +171,9 @@ Router.map(function () {
     });
 
     this.route('question_view', {
-<<<<<<< HEAD
-        path: '/_id',  //overrides the default '/home'
-        template: 'question_view',
-        data: function() { return Questions.findOne(this.params._id); },
-=======
         path: '/student',  //overrides the default '/home'
         template: 'question_view',
         data: function() {return Questions.findOne({live:true}); }
->>>>>>> f46ea63a44d8d3d54a30d41f83ceedd82482ed96
     });
 
     this.route('teacher_new', {
@@ -194,18 +188,11 @@ Router.map(function () {
         ,
         template: 'teacher_question_view',
         data: function() {
-<<<<<<< HEAD
-            var questions = Questions.findOne(this.params._id);
-            console.log(questions)
-            console.log('userID: ' + Meteor.userId());
-            var total = questions.A + questions.B + questions.C + questions.D;
-=======
             var question = Questions.findOne(this.params._id);
             var answers = Answers.find().fetch();
             console.log(question)
             console.log('userID: ' + Meteor.userId());
             var total = question.A + question.B + question.C + question.D;
->>>>>>> f46ea63a44d8d3d54a30d41f83ceedd82482ed96
             var percentA = 0;
             var percentB = 0;
             var percentC = 0;
