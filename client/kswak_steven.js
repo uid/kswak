@@ -17,6 +17,33 @@ if (Meteor.isClient) {
 
 
     Template.new.events({
+
+        /* Add click events for new buttons */
+
+        /* Consider moving custom question form to a new template */
+
+        /* check for question type (t/f, mc2, mc3, etc. and create question_data based on that */
+
+        'click #t/f': function() {
+
+        },
+
+        'click #mc2': function() {
+
+        },
+
+        'click #mc3': function() {
+
+        },
+
+        'click #mc4': function() {
+
+        },
+
+        'click #mc5': function() {
+
+        },
+
         'submit form': function (event, template) {
             event.preventDefault();
 
@@ -31,20 +58,25 @@ if (Meteor.isClient) {
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
 
-            var question_data = {
-                title: title.value,
-                choice1: choice1.value,
-                choice2: choice2.value,
-                choice3: choice3.value,
-                choice4: choice4.value,
-                correct: correct,
-                status: false,
-                live:false,
-                A: 0,
-                B: 0,
-                C: 0,
-                D: 0,
-            };
+            if (correct != null){
+                var question_data = {
+                    title: title.value,
+                    choice1: choice1.value,
+                    choice2: choice2.value,
+                    choice3: choice3.value,
+                    choice4: choice4.value,
+                    correct: correct,
+                    status: false,
+                    live: false,
+                    A: 0,
+                    B: 0,
+                    C: 0,
+                    D: 0,
+                    E: 0,
+                    T: 0,
+                    F: 0
+                };
+            }
 
             //reset fields
             title.value = "";
@@ -65,16 +97,15 @@ if (Meteor.isClient) {
   });
 
     Template.teacher_home.events({
-//        'change [name="launch"]': function (event, template){
-//            console.log("launch", Questions.findOne({live:false})._id, this._id);
-//            if (Questions.findOne({live:true}) != undefined ){
-//                Questions.update(Questions.findOne({live:true})._id, {live:false})
-//            }
-//            Questions.update(this._id, {live:true});
-//        },
-//        'click .delete': function (event, template){
-//            Questions.remove(this._id)
-//        }
+        'change [name="launch"]': function (event, template){
+            if (Questions.findOne({live:true}) != undefined ){
+                Questions.update(Questions.findOne({live:true})._id, {$set:{live:false}})
+            }
+            Questions.update(this._id, {$set:{live:true}});
+        },
+        'click .delete': function (event, template){
+            Questions.remove(this._id)
+        }
 
     })
 
@@ -89,23 +120,17 @@ if (Meteor.isClient) {
             else {
                 var user_answer = choice.value;
                 var id = Router.current().path.substr(1);
+                console.log('id ' + id)
                 var question = Questions.findOne(id);
                 var answer_data = {
                     question_id: id,
                     answer: user_answer,
                     user: Meteor.userId()
                 };
+
                 var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
-                /*var answers = Answers.find().fetch();
 
-                for (i in answers) {
-                    var answer = answers[i];
-                    if (answer.question_id == id) {
-                        var user_answer =
-                    }
-                }*/
-
-                switch (user_answer) {
+                switch (user_answer) { /* add E, T, F */
                     case 'A':
                         Questions.update(id, { $inc: {A: 1} });
                         break;
@@ -146,9 +171,15 @@ Router.map(function () {
     });
 
     this.route('question_view', {
+<<<<<<< HEAD
         path: '/_id',  //overrides the default '/home'
         template: 'question_view',
         data: function() { return Questions.findOne(this.params._id); },
+=======
+        path: '/student',  //overrides the default '/home'
+        template: 'question_view',
+        data: function() {return Questions.findOne({live:true}); }
+>>>>>>> f46ea63a44d8d3d54a30d41f83ceedd82482ed96
     });
 
     this.route('teacher_new', {
@@ -163,54 +194,62 @@ Router.map(function () {
         ,
         template: 'teacher_question_view',
         data: function() {
+<<<<<<< HEAD
             var questions = Questions.findOne(this.params._id);
             console.log(questions)
             console.log('userID: ' + Meteor.userId());
             var total = questions.A + questions.B + questions.C + questions.D;
+=======
+            var question = Questions.findOne(this.params._id);
+            var answers = Answers.find().fetch();
+            console.log(question)
+            console.log('userID: ' + Meteor.userId());
+            var total = question.A + question.B + question.C + question.D;
+>>>>>>> f46ea63a44d8d3d54a30d41f83ceedd82482ed96
             var percentA = 0;
             var percentB = 0;
             var percentC = 0;
             var percentD = 0;
 
             if (total != 0) {
-                percentA = 100.0*(questions.A / total);
-                percentB = 100.0*(questions.B / total);
-                percentC = 100.0*(questions.C / total);
-                percentD = 100.0*(questions.D / total);
+                percentA = 100.0*(question.A / total);
+                percentB = 100.0*(question.B / total);
+                percentC = 100.0*(question.C / total);
+                percentD = 100.0*(question.D / total);
             }
 
             var options = []
             options.push(
                 {
                     option: "A",
-                    choice: questions.choice1,
-                    voters: questions.A,
+                    choice: question.choice1,
+                    voters: question.A,
                     percent: percentA.toFixed(0)
                 },
                 {
                     option: "B",
-                    choice: questions.choice2,
-                    voters: questions.B,
+                    choice: question.choice2,
+                    voters: question.B,
                     percent: percentB.toFixed(0)
                 },
                 {
                     option: "C",
-                    choice: questions.choice3,
-                    voters: questions.C,
+                    choice: question.choice3,
+                    voters: question.C,
                     percent: percentC.toFixed(0)
                 },
                 {
                     option: "D",
-                    choice: questions.choice4,
-                    voters: questions.D,
+                    choice: question.choice4,
+                    voters: question.D,
                     percent: percentD.toFixed(0)
                 }
             );
 
             return {
                 options: options,
-                title: questions.title,
-                correct: questions.correct,
+                title: question.title,
+                correct: question.correct,
                 total: total
             }
         },
