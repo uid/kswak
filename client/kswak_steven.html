@@ -82,7 +82,7 @@
 
 
 <template name='teacher_question_view'>
-    <title>KSWAK Teacher | {{title}}</title>
+	<h2>Launched question</h2>
     <div id="container_teacher_question_view">
     <h1>{{title}}</h1>
 
@@ -102,7 +102,7 @@
         Correct: {{correct}}<br>
         Total number of responders: {{total}}
     </div>
-    
+        <a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
     </div>
 </template>
 
@@ -112,6 +112,7 @@
         {{#constant}}
 
         {{/constant}}
+
     </div>
 </template>
 
@@ -122,15 +123,16 @@
     <div id="container_home">
 <!--    {{> loginButtons }}<br/>-->
     <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
+	<a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
     <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
     </div>
 </template>
 
 
-<template name='teacher_home'>
-    <div id="container_teacher_home">
-    <title>KSWAK Teacher</title>
-    <h1>Teacher Homepage</h1><br/>
+
+<template name='teacher_summary'>
+    <div id="container_home">
+    <h1>Teacher Summary</h1><br/>
     <a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
 
     <a href="{{ pathFor 'teacher_new' }}">New question</a><br/>
@@ -145,7 +147,10 @@
     <tr class="gridRow">
     <td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
     <td class="selectionIndicator">see analysis /not presented</td>
-    <td class="selectionIndicator" style="width:100px"><input type="text" value="5:00" style="width:40px">&nbsp;min&nbsp;<input type="radio" name="launch"></td>
+    <td class="selectionIndicator" style="width:100px">&nbsp;<input type="radio" name="launch">&nbsp;<select>
+  <option>active</option>
+  <option>inactive</option>
+</select></td>
     <td><button class="delete">Delete</button></td>
     </tr>
     {{/each}}

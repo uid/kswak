@@ -9,7 +9,7 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.teacher_home.helpers({
+    Template.teacher_summary.helpers({
         questions: function() {
             return Questions.find();
         }
@@ -45,8 +45,13 @@ if (Meteor.isClient) {
         },
 
         'submit form': function (event, template) {
+			
             event.preventDefault();
-
+			//disable current launched question
+			if (Questions.findOne({live:true}) != undefined ){
+			Questions.update(Questions.findOne({live:true})._id, {$set:{live:false}})
+            }
+			//create new question and launch it
             title = template.find("input[name=title]");
             choice1 = template.find("input[name=choice_1]");
             choice2 = template.find("input[name=choice_2]");
@@ -57,6 +62,7 @@ if (Meteor.isClient) {
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
+
             var question_data = {
                 title: title.value,
                 choice1: choice1.value,
@@ -92,11 +98,14 @@ if (Meteor.isClient) {
         }
   });
 
-    Template.teacher_home.events({
+    Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
             if (Questions.findOne({live:true}) != undefined ){
                 Questions.update(Questions.findOne({live:true})._id, {$set:{live:false}})
             }
+			var selectionBox = event.target.parentElement.id;
+			//selectionBox.append('<input type="radio">');
+			//console.log("target", event.target.parentElement.lastChild)
             Questions.update(this._id, {$set:{live:true}});
         },
         'click .delete': function (event, template){
@@ -188,7 +197,18 @@ Router.map(function () {
 
     this.route('teacher_home', {
         path: 'teacher/home',
-        template: 'teacher_home',
+        template: function() {
+			if (Questions.findOne({live:true}) == undefined){
+				return 'new'
+			}else{
+				return 'teacher_question_view'}
+			},
+		data: function() {return Questions.findOne({live:true})
+		}
+    });
+	
+	this.route('teacher_summary', {
+        path: 'teacher/summary',
     });
 
     this.route('question_view', {
