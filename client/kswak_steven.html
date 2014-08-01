@@ -16,6 +16,7 @@
 </body>
 
 <template name="new">
+    <title>KSWAK Teacher | Add New Question</title> 
     <div id="container_new">
     <h1>Create a question</h1>
 
@@ -64,6 +65,7 @@
 </template>
 
 <template name='question_view'>
+    <title>KSWAK | {{title}}</title>
     <h1>Question view</h1>
     <div id="container_question_view">
     <h1>{{title}}</h1>
@@ -80,6 +82,7 @@
 
 
 <template name='teacher_question_view'>
+    <title>KSWAK Teacher | {{title}}</title>
     <div id="container_teacher_question_view">
     <h1>{{title}}</h1>
     <div class='form_container'>
@@ -114,7 +117,8 @@
 
 
 <template name='teacher_home'>
-    <div id="container_home">
+    <div id="container_teacher_home">
+    <title>KSWAK Teacher</title>
     <h1>Teacher Homepage</h1><br/>
     <a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
 
