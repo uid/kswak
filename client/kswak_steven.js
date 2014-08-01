@@ -45,7 +45,7 @@ if (Meteor.isClient) {
         },
 
         'submit form': function (event, template) {
-			
+
             event.preventDefault();
 			//disable current launched question
 			if (Questions.findOne({live:true}) != undefined ){
@@ -63,25 +63,23 @@ if (Meteor.isClient) {
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
 
-            if (correct != null){
-                var question_data = {
-                    title: title.value,
-                    choice1: choice1.value,
-                    choice2: choice2.value,
-                    choice3: choice3.value,
-                    choice4: choice4.value,
-                    correct: correct,
-                    status: false,
-                    live: true,
-                    A: 0,
-                    B: 0,
-                    C: 0,
-                    D: 0,
-                    E: 0,
-                    T: 0,
-                    F: 0
-                };
-            }
+            var question_data = {
+                title: title.value,
+                choice1: choice1.value,
+                choice2: choice2.value,
+                choice3: choice3.value,
+                choice4: choice4.value,
+                correct: correct,
+                status: false,
+                live: false,
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                T: 0,
+                F: 0
+            };
 
             //reset fields
             title.value = "";
@@ -94,9 +92,8 @@ if (Meteor.isClient) {
             });
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-            if (correct != null){
-                Router.go('/teacher/' + question_id);
-            }
+            Router.go('/teacher/' + question_id);
+            
 
         }
   });
@@ -127,7 +124,7 @@ if (Meteor.isClient) {
             }
             else {
                 var user_answer = choice.value;
-                var id = Router.current().path.substr(1);
+                var id = this._id;
                 console.log('id ' + id)
                 var question = Questions.findOne(id);
                 var answer_data = {
@@ -157,6 +154,31 @@ if (Meteor.isClient) {
             }
         }
     });
+
+//    Template.projector_view.rendered = function(){
+        //KEEP CODE BELOW JUST BECAUSE IT MIGHT MAKE LIFE EASIER
+        //this will only work if we keep the question_view that uses id
+        // var id = Router.current().path.substr(1);
+        // var question = Questions.findOne(id);
+        // var answers = Answers.find().fetch();
+        // console.log(question)
+        // console.log('userID: ' + Meteor.userId());
+        // var total = question.A + question.B + question.C + question.D;
+        // var percentA = 0;
+        // var percentB = 0;
+        // var percentC = 0;
+        // var percentD = 0;
+
+        // if (total != 0) {
+        //     percentA = 100.0*(question.A / total);
+        //     percentB = 100.0*(question.B / total);
+        //     percentC = 100.0*(question.C / total);
+        //     percentD = 100.0*(question.D / total);
+        // }
+        var a = $('.statistics');
+        console.log(a);
+//
+//    }
 }
 
 if (Meteor.isServer) {
@@ -175,16 +197,67 @@ Router.map(function () {
 
     this.route('teacher_home', {
         path: 'teacher/home',
-        template: function() {
+		template: function() {
 			if (Questions.findOne({live:true}) == undefined){
 				return 'new'
 			}else{
 				return 'teacher_question_view'}
 			},
-		data: function() {return Questions.findOne({live:true})
-		}
+		data: function() {
+            var question = Questions.findOne({live:true});
+            var answers = Answers.find().fetch();
+            console.log(question)
+            console.log('userID: ' + Meteor.userId());
+            var total = question.A + question.B + question.C + question.D;
+            var percentA = 0;
+            var percentB = 0;
+            var percentC = 0;
+            var percentD = 0;
+
+            if (total != 0) {
+                percentA = 100.0*(question.A / total);
+                percentB = 100.0*(question.B / total);
+                percentC = 100.0*(question.C / total);
+                percentD = 100.0*(question.D / total);
+            }
+
+            var options = []
+            options.push(
+                {
+                    option: "A",
+                    choice: question.choice1,
+                    voters: question.A,
+                    percent: percentA.toFixed(0)
+                },
+                {
+                    option: "B",
+                    choice: question.choice2,
+                    voters: question.B,
+                    percent: percentB.toFixed(0)
+                },
+                {
+                    option: "C",
+                    choice: question.choice3,
+                    voters: question.C,
+                    percent: percentC.toFixed(0)
+                },
+                {
+                    option: "D",
+                    choice: question.choice4,
+                    voters: question.D,
+                    percent: percentD.toFixed(0)
+                }
+            );
+
+            return {
+                options: options,
+                title: question.title,
+                correct: question.correct,
+                total: total
+            }
+        }
     });
-	
+
 	this.route('teacher_summary', {
         path: 'teacher/summary',
     });
