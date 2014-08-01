@@ -76,6 +76,7 @@ if (Meteor.isClient) {
 					T: 0,
 					F: 0
                 };
+			}
 
             //reset fields
             title.value = "";
