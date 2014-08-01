@@ -8,13 +8,13 @@ if (Meteor.isClient) {
             return Questions.find();
         }
     });
-	
-	Template.teacher_home.helpers({
+
+    Template.teacher_home.helpers({
         questions: function() {
             return Questions.find();
         }
     });
-	
+
 
     Template.new.events({
         'submit form': function (event, template) {
@@ -38,8 +38,8 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 correct: correct,
-				status: false,
-				live:false,
+                status: false,
+                live:false,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -63,20 +63,20 @@ if (Meteor.isClient) {
 
         }
   });
-	
-	Template.teacher_home.events({
-//		'change [name="launch"]': function (event, template){
-//			console.log("launch", Questions.findOne({live:false})._id, this._id);
-//			if (Questions.findOne({live:true}) != undefined ){
-//				Questions.update(Questions.findOne({live:true})._id, {live:false})
-//			}
-//			Questions.update(this._id, {live:true});
-//		},
-//		'click .delete': function (event, template){
-//			Questions.remove(this._id)
-//		}
-	
-	})
+
+    Template.teacher_home.events({
+//        'change [name="launch"]': function (event, template){
+//            console.log("launch", Questions.findOne({live:false})._id, this._id);
+//            if (Questions.findOne({live:true}) != undefined ){
+//                Questions.update(Questions.findOne({live:true})._id, {live:false})
+//            }
+//            Questions.update(this._id, {live:true});
+//        },
+//        'click .delete': function (event, template){
+//            Questions.remove(this._id)
+//        }
+
+    })
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
@@ -95,19 +95,19 @@ if (Meteor.isClient) {
                     answer: user_answer,
                     user: Meteor.userId()
                 };
-				var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
-				/*var answers = Answers.find().fetch();
-				
-				for (i in answers) {
-					var answer = answers[i];
-					if (answer.question_id == id) {
-						var user_answer = 
-					}
-				}*/
+                var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
+                /*var answers = Answers.find().fetch();
+
+                for (i in answers) {
+                    var answer = answers[i];
+                    if (answer.question_id == id) {
+                        var user_answer =
+                    }
+                }*/
 
                 switch (user_answer) {
                     case 'A':
-                        Questions.update(id, {$inc: {A: 1}});
+                        Questions.update(id, { $inc: {A: 1} });
                         break;
                     case 'B':
                         Questions.update(id, {$inc: {B: 1}});
@@ -139,18 +139,18 @@ Router.map(function () {
     this.route('home', {
         path: '/',
     });
-	
-	this.route('teacher_home', {
+
+    this.route('teacher_home', {
         path: 'teacher/home',
-		template: 'teacher_home',
+        template: 'teacher_home',
     });
-	
+
     this.route('question_view', {
         path: '/_id',  //overrides the default '/home'
-		template: 'question_view',
+        template: 'question_view',
         data: function() { return Questions.findOne(this.params._id); },
     });
-	
+
     this.route('teacher_new', {
         path: '/teacher/new',
         template: 'new',
@@ -165,7 +165,7 @@ Router.map(function () {
         data: function() {
             var questions = Questions.findOne(this.params._id);
             console.log(questions)
-			console.log('userID: ' + Meteor.userId());
+            console.log('userID: ' + Meteor.userId());
             var total = questions.A + questions.B + questions.C + questions.D;
             var percentA = 0;
             var percentB = 0;
