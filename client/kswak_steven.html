@@ -130,7 +130,10 @@
     <tr class="gridRow">
     <td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
     <td class="selectionIndicator">see analysis /not presented</td>
-    <td class="selectionIndicator" style="width:100px"><input type="text" value="5:00" style="width:40px">&nbsp;min&nbsp;<input type="radio" name="launch"></td>
+    <td class="selectionIndicator" style="width:100px">&nbsp;<input type="radio" name="launch">&nbsp;<select>
+  <option>active</option>
+  <option>inactive</option>
+</select></td>
     <td><button class="delete">Delete</button></td>
     </tr>
     {{/each}}

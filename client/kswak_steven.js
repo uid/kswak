@@ -101,6 +101,9 @@ if (Meteor.isClient) {
             if (Questions.findOne({live:true}) != undefined ){
                 Questions.update(Questions.findOne({live:true})._id, {$set:{live:false}})
             }
+			var selectionBox = event.target.parentElement.id;
+			//selectionBox.append('<input type="radio">');
+			console.log("target", event.target.parentElement.lastChild)
             Questions.update(this._id, {$set:{live:true}});
         },
         'click .delete': function (event, template){
