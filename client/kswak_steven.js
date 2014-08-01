@@ -151,11 +151,6 @@ Router.map(function () {
         data: function() { return Questions.findOne(this.params._id); },
     });
 	
-	this.route('student_view', {
-        path: '/student',  
-        data: function() { return Questions.findOne(this.params._id); },
-    });
-	
     this.route('teacher_new', {
         path: '/teacher/new',
         template: 'new',

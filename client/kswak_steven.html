@@ -66,20 +66,6 @@
     </div>
 </template>
 
-<template name='student_view'>
-	<h1>STUDENT VIEW | current question</h1>
-    <div id="container_question_view">
-    <h1>{{title}}</h1>
-    <form id="student_question">
-        <input type="radio" name="choice" value="A">{{choice1}}<br>
-        <input type="radio" name="choice" value="B">{{choice2}}<br>
-        <input type="radio" name="choice" value="C">{{choice3}}<br>
-        <input type="radio" name="choice" value="D">{{choice4}}<br>
-        <input type="submit" name="submit" value="Submit">
-        <div id="submitFeedback"></div>
-    </form>
-    </div>
-</template>
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
@@ -108,9 +94,9 @@
 <template name='home'>
 	<title>KSWAK | HOME</title>
     <div id="container_home">
-	{{> loginButtons }}<br/>
+<!--	{{> loginButtons }}<br/>-->
 	<a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
-	<a href="{{ pathFor 'student_view' }}">student home | launched question</a><br/>
+	<a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
 	</div>
 
 </template>
@@ -119,7 +105,7 @@
 <template name='teacher_home'>
     <div id="container_home">
     <h1>Teacher Homepage</h1><br/>
-	<a href="{{ pathFor 'student_view'}}">Student current view</a><br/>
+	<a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
 		
     <a href="{{ pathFor 'teacher_new' }}">New question</a><br/>
    	<table class="gridTable" border="1">
@@ -131,7 +117,7 @@
 	</tr>
     {{#each questions}}
 	<tr class="gridRow">
-	<td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view'}}">{{title}}</a></td>
+	<td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
 	<td class="selectionIndicator">see analysis /not presented</td>
 	<td class="selectionIndicator" style="width:100px"><input type="text" value="5:00" style="width:40px">&nbsp;min&nbsp;<input type="radio" name="launch"></td>
 	<td><button class="delete">Delete</button></td>
