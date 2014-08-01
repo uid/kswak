@@ -65,14 +65,16 @@ if (Meteor.isClient) {
   });
 	
 	Template.teacher_home.events({
-		'change [name="launch"]': function (event, template){
-			console.log("launch", Questions.findOne({live:false})._id, this._id);
-			Questions.update(Questions.findOne({live:true})._id, {live:false});
-			Questions.update(this._id, {live:true});
-		},
-		'click .delete': function (event, template){
-			Questions.remove(this._id)
-		}
+//		'change [name="launch"]': function (event, template){
+//			console.log("launch", Questions.findOne({live:false})._id, this._id);
+//			if (Questions.findOne({live:true}) != undefined ){
+//				Questions.update(Questions.findOne({live:true})._id, {live:false})
+//			}
+//			Questions.update(this._id, {live:true});
+//		},
+//		'click .delete': function (event, template){
+//			Questions.remove(this._id)
+//		}
 	
 	})
 
@@ -146,6 +148,11 @@ Router.map(function () {
     this.route('question_view', {
         path: '/_id',  //overrides the default '/home'
 		template: 'question_view',
+        data: function() { return Questions.findOne(this.params._id); },
+    });
+	
+	this.route('student_view', {
+        path: '/student',  
         data: function() { return Questions.findOne(this.params._id); },
     });
 	

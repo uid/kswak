@@ -12,7 +12,6 @@
 </head>
 
 <body>
-	<h1>Hello</h1>
 	{{>home}}
 </body>
 
@@ -53,7 +52,22 @@
 </template>
 
 <template name='question_view'>
-	<h1>STUDENT VIEW</h1>
+	<h1>Question view</h1>
+    <div id="container_question_view">
+    <h1>{{title}}</h1>
+    <form id="student_question">
+        <input type="radio" name="choice" value="A">{{choice1}}<br>
+        <input type="radio" name="choice" value="B">{{choice2}}<br>
+        <input type="radio" name="choice" value="C">{{choice3}}<br>
+        <input type="radio" name="choice" value="D">{{choice4}}<br>
+        <input type="submit" name="submit" value="Submit">
+        <div id="submitFeedback"></div>
+    </form>
+    </div>
+</template>
+
+<template name='student_view'>
+	<h1>STUDENT VIEW | current question</h1>
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
@@ -96,7 +110,7 @@
     <div id="container_home">
 	{{> loginButtons }}<br/>
 	<a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
-	<a href="{{ pathFor 'teacher_new' }}">create a question</a><br/>
+	<a href="{{ pathFor 'student_view' }}">student home | launched question</a><br/>
 	</div>
 
 </template>
@@ -105,7 +119,7 @@
 <template name='teacher_home'>
     <div id="container_home">
     <h1>Teacher Homepage</h1><br/>
-	<a href="{{ pathFor _id=this._id}}">Student current view</a><br/>
+	<a href="{{ pathFor 'student_view'}}">Student current view</a><br/>
 		
     <a href="{{ pathFor 'teacher_new' }}">New question</a><br/>
    	<table class="gridTable" border="1">
