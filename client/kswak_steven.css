@@ -22,3 +22,7 @@ div[id^='container']{
 .gridRow {
     height: 20px;   
 }
+
+input[name="choice"]{
+	margin: 5px !important;
+}

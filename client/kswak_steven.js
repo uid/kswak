@@ -57,26 +57,23 @@ if (Meteor.isClient) {
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
-
-            if (correct != null){
-                var question_data = {
-                    title: title.value,
-                    choice1: choice1.value,
-                    choice2: choice2.value,
-                    choice3: choice3.value,
-                    choice4: choice4.value,
-                    correct: correct,
-                    status: false,
-                    live: false,
-                    A: 0,
-                    B: 0,
-                    C: 0,
-                    D: 0,
-                    E: 0,
-                    T: 0,
-                    F: 0
-                };
-            }
+            var question_data = {
+                title: title.value,
+                choice1: choice1.value,
+                choice2: choice2.value,
+                choice3: choice3.value,
+                choice4: choice4.value,
+                correct: correct,
+                status: false,
+                live: false,
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                T: 0,
+                F: 0
+            };
 
             //reset fields
             title.value = "";
@@ -89,9 +86,8 @@ if (Meteor.isClient) {
             });
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-            if (correct != null){
-                Router.go('/teacher/' + question_id);
-            }
+            Router.go('/teacher/' + question_id);
+            
 
         }
   });
@@ -149,6 +145,31 @@ if (Meteor.isClient) {
             }
         }
     });
+
+    Template.projector_view.rendered = function(){
+        //KEEP CODE BELOW JUST BECAUSE IT MIGHT MAKE LIFE EASIER
+        //this will only work if we keep the question_view that uses id
+        // var id = Router.current().path.substr(1);
+        // var question = Questions.findOne(id);
+        // var answers = Answers.find().fetch();
+        // console.log(question)
+        // console.log('userID: ' + Meteor.userId());
+        // var total = question.A + question.B + question.C + question.D;
+        // var percentA = 0;
+        // var percentB = 0;
+        // var percentC = 0;
+        // var percentD = 0;
+
+        // if (total != 0) {
+        //     percentA = 100.0*(question.A / total);
+        //     percentB = 100.0*(question.B / total);
+        //     percentC = 100.0*(question.C / total);
+        //     percentD = 100.0*(question.D / total);
+        // }
+        var a = $('.statistics');
+        console.log(a);
+
+    }
 }
 
 if (Meteor.isServer) {
