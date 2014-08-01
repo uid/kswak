@@ -84,6 +84,8 @@
 <template name='teacher_question_view'>
 	<h2>Launched question</h2>
     <div id="container_teacher_question_view">
+    <h1>{{title}}</h1>
+
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -100,7 +102,17 @@
         Correct: {{correct}}<br>
         Total number of responders: {{total}}
     </div>
-	<a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
+        <a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
+    </div>
+</template>
+
+
+<template name='projector_view'>
+    <div class="svg-wrapper">
+        {{#constant}}
+
+        {{/constant}}
+
     </div>
 </template>
 
