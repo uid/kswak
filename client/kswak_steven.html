@@ -18,8 +18,16 @@
 <template name="new">
     <div id="container_new">
     <h1>Create a question</h1>
+		
+	<button id='t/f'>True/False</button>
+	<button id='mc2'>MC (2 choices)</button>
+	<button id='mc3'>MC (3 choices)</button>
+	<button id='mc4'>MC (4 choices)</button>
+	<button id='mc5'>MC (5 choices)</button>
+		<br><br>	 <!-- for testing; Remove -->
+		
     <div class='form_container'>
-        <form id='new_question_form'>
+        <form id='question_form'>
             Question: <input type="text" name="title"> <br>
             Choices: <br>
             <table id='input_choices'>
@@ -49,6 +57,10 @@
         </form>
     </div>
     </div>
+</template>
+
+<template name='teacher_t/f_question_view'>
+	
 </template>
 
 <template name='question_view'>
