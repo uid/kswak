@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
-    <script type="text/javascript" src="d3.v2.min.js"></script>
 </head>
 
 <body>
+	{{>home}}
 </body>
 
 <template name="new">
@@ -64,6 +64,7 @@
 </template>
 
 <template name='question_view'>
+	<h1>Question view</h1>
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
@@ -76,6 +77,7 @@
     </form>
     </div>
 </template>
+
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
@@ -99,13 +101,46 @@
     </div> 
 </template>
 
+
+
 <template name='home'>
+	<title>KSWAK | HOME</title>
     <div id="container_home">
-    <h1>Homepage (debugging purposes)</h1>
-	{{> loginButtons }}
-    <a href="{{ pathFor 'teacher_new' }}">New question</a><br><br>
+<!--	{{> loginButtons }}<br/>-->
+	<a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
+	<a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
+	</div>
+
+</template>
+
+
+<template name='teacher_home'>
+    <div id="container_home">
+    <h1>Teacher Homepage</h1><br/>
+	<a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
+		
+    <a href="{{ pathFor 'teacher_new' }}">New question</a><br/>
+   	<table class="gridTable" border="1">
+	<tr>
+		<th style="width: 500px;">Questions</th>
+		<th>Status</th>
+		<th>to launch</th>
+		<th>to delete</th>
+	</tr>
     {{#each questions}}
-        <a href="{{ pathFor 'teacher_question_view'}}">{{title}}</a><br>
+	<tr class="gridRow">
+	<td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
+	<td class="selectionIndicator">see analysis /not presented</td>
+	<td class="selectionIndicator" style="width:100px"><input type="text" value="5:00" style="width:40px">&nbsp;min&nbsp;<input type="radio" name="launch"></td>
+	<td><button class="delete">Delete</button></td>
+	</tr>
     {{/each}}
+
+	</table>
     </div>
 </template>
+		
+		
+
+
+
