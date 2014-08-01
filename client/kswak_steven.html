@@ -80,8 +80,8 @@
 
 
 <template name='teacher_question_view'>
+	<h2>Launched question</h2>
     <div id="container_teacher_question_view">
-    <h1>{{title}}</h1>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -98,6 +98,7 @@
         Correct: {{correct}}<br>
         Total number of responders: {{total}}
     </div>
+	<a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
     </div>
 </template>
 
@@ -108,14 +109,15 @@
     <div id="container_home">
 <!--    {{> loginButtons }}<br/>-->
     <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
+	<a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
     <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
     </div>
 </template>
 
 
-<template name='teacher_home'>
+<template name='teacher_summary'>
     <div id="container_home">
-    <h1>Teacher Homepage</h1><br/>
+    <h1>Teacher Summary</h1><br/>
     <a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
 
     <a href="{{ pathFor 'teacher_new' }}">New question</a><br/>
