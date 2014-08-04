@@ -132,29 +132,26 @@
 
 <template name='teacher_summary'>
 	<a href="{{ pathFor 'teacher_home' }}">Back to home</a><br/>
-	<a href="{{ pathFor 'question_view'}}">Student current view</a>
+	<a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
+	<a href="{{ pathFor 'teacher_new'}}">Creat a new question</a>
     <div id="container_home">
     <h1>Teacher Summary</h1><br/>
-       <table class="gridTable" border="1">
+       <table class="gridTable" border="1" rules="rows">
     <tr>
-        <th style="width: 500px;">Questions</th>
-        <th>Status</th>
-        <th>to launch</th>
-        <th>to delete</th>
+        <th>Questions</th>
+		<th></th>
+		<th></th>
     </tr>
     {{#each questions}}
-    <tr class="gridRow">
-    <td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
-    <td class="selectionIndicator">see analysis /not presented</td>
-    <td class="selectionIndicator" style="width:100px">&nbsp;<input type="radio" name="launch">&nbsp;<select>
-  <option>active</option>
-  <option>inactive</option>
-</select></td>
-    <td><button class="delete">Delete</button></td>
+    <tr class="gridRow {{status}}">
+    <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
+    <td>{{status}}&nbsp;</td>
+    <td><button class="delete">X</button></td>
     </tr>
     {{/each}}
-
-    </table>
+    </table><br/>
+	<button id="deleteAll">delete all questions</button>
+	<button id="inactivateAll">inactive all questions</button>
     </div>
 </template>
 

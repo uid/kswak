@@ -14,10 +14,18 @@ div[id^='container']{
 	padding:1%;
 }
 
-.selectionIndicator {
-    text-align: center; /* center checkbox horizontally */
-    vertical-align: middle; /* center checkbox vertically */
+
+.gridTable: :nth-child(2){
+	border: 2px;
 }
+
+.frozen{
+background-color: #aeebf0;
+}
+.active{
+	background-color: rgba(205, 248, 205, 0.97);
+}
+
 
 .gridRow {
     height: 20px;   
