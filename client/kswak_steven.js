@@ -47,8 +47,8 @@ if (Meteor.isClient) {
         'submit form': function (event, template) {
             event.preventDefault();
 			//disable current launched question
-			if (Questions.findOne({status:{$in:['active', 'inactive']}}) != undefined){
-			Questions.update( Questions.findOne({status:{$in:['active', 'inactive']}})._id, {$set:{status:null}})
+			if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined){
+			Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:null}})
 			}
 			//create new question and launch it
             title = template.find("input[name=title]");
@@ -69,7 +69,7 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 correct: correct,
-                status: 'active', //active, inactive, null - not being launched
+                status: 'active', //active, frozen, inactive - not being launched
                 A: 0,
                 B: 0,
                 C: 0,
@@ -92,8 +92,6 @@ if (Meteor.isClient) {
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
 			console.log("new end");
             Router.go('/teacher/home');
-            
-
         }
   });
 	
@@ -101,7 +99,7 @@ if (Meteor.isClient) {
 		'click #change_mode': function (event, template){
 			console.log('here', Questions.findOne(this.question_id));
 			if ( Questions.findOne(this.question_id).status == 'active'){
-				Questions.update( this.question_id, {$set:{status:'inactive'}});
+				Questions.update( this.question_id, {$set:{status:'frozen'}});
 			}else{
 				Questions.update( this.question_id, {$set:{status:'active'}})
 			}															
@@ -110,7 +108,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
-            Questions.update({}, {$set:{status:null}});
+            Questions.update({}, {$set:{status:'inactive'}});
 			var selectionBox = event.target.parentElement.id;
 			//selectionBox.append('<input type="radio">');
 			//console.log("target", event.target.parentElement.lastChild)
@@ -126,6 +124,7 @@ if (Meteor.isClient) {
         'submit #student_question': function (event, template) {
 			console.log(this, 'student');
             event.preventDefault();
+			console.log(this.status)
 			if (this.status == 'active'){
 				var choice = template.find("input[name='choice']:checked");
 				if (choice == null) {
@@ -227,8 +226,7 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher/home',
 		template: function() {
-			if (Questions.findOne({status:{$in:['active', 'inactive']}}) == undefined){
-				console.log("all null?");
+			if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
 				return 'new'
 			}else{
 				return 'teacher_question_view'}
@@ -237,12 +235,12 @@ Router.map(function () {
             return Meteor.subscribe("questions")
         },
 		data: function() {
-            var question = Questions.findOne({status:{$in:['active', 'inactive']}});
+            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
 		    var question_id = question._id;
 			if (question.status == 'active'){
-				var status_control = 'change to inactive';
+				var status_control = 'to freeze';
 			}else{
-				var status_control = 'change to active';
+				var status_control = 'to activate';
 			}
             var answers = Answers.find().fetch();
             console.log("teach home", question)
@@ -306,81 +304,83 @@ Router.map(function () {
     this.route('question_view', {
         path: '/student',  //overrides the default '/home'
         template: 'question_view',
-        data: function() {console.log("here", Questions.findOne({status:{$in:['active', 'inactive']}}));
-						  return Questions.findOne({status:{$in:['active', 'inactive']}}); }
+        data: function() {
+			return Questions.findOne({status:{$in:['active', 'frozen']}}); }
     });
 
     this.route('teacher_new', {
         path: '/teacher/new',
         template: 'new',
     });
-//    this.route('teacher_question_view', {
-//        path: '/teacher/:_id',
-//        waitOn: function(){
-//            return Meteor.subscribe("questions")
-//        }
-//        ,
-//        template: 'teacher_question_view',
-//        data: function() {
-//			var question_id = this.params._id;
-//            var question = Questions.findOne(question_id);
-//			if (question.status == 'active'){
-//				var status_control = 'change to inactive';
-//			}else{
-//				var status_control = 'change to active';
-//			}
-//			
-//            var answers = Answers.find().fetch();
-//            console.log('userID: ' + Meteor.userId());
-//            var total = question.A + question.B + question.C + question.D;
-//            var percentA = 0;
-//            var percentB = 0;
-//            var percentC = 0;
-//            var percentD = 0;
-//
-//            if (total != 0) {
-//                percentA = 100.0*(question.A / total);
-//                percentB = 100.0*(question.B / total);
-//                percentC = 100.0*(question.C / total);
-//                percentD = 100.0*(question.D / total);
-//            }
-//
-//            var options = []
-//            options.push(
-//                {
-//                    option: "A",
-//                    choice: question.choice1,
-//                    voters: question.A,
-//                    percent: percentA.toFixed(0)
-//                },
-//                {
-//                    option: "B",
-//                    choice: question.choice2,
-//                    voters: question.B,
-//                    percent: percentB.toFixed(0)
-//                },
-//                {
-//                    option: "C",
-//                    choice: question.choice3,
-//                    voters: question.C,
-//                    percent: percentC.toFixed(0)
-//                },
-//                {
-//                    option: "D",
-//                    choice: question.choice4,
-//                    voters: question.D,
-//                    percent: percentD.toFixed(0)
-//                }
-//            );
-//
-//            return {
-//				question_id: question_id,
-//				status_control: status_control,
-//                options: options,
-//                title: question.title,
-//                correct: question.correct,
-//                total: total
-//            }
-//        },
-//    });
+    this.route('teacher_question_view', {
+        path: '/teacher/:_id',
+        waitOn: function(){
+            return Meteor.subscribe("questions")
+        }
+        ,
+        template: 'teacher_question_view',
+        data: function() {
+			var question_id = this.params._id;
+            var question = Questions.findOne(question_id);
+			if (question.status == 'active'){
+				var status_control = 'to freeze';
+			}else if(question.status == 'frozen'){
+				var status_control = 'to activate';
+			}else{
+				var status_control = 'launch the question';
+			}
+			
+            var answers = Answers.find().fetch();
+            console.log('userID: ' + Meteor.userId());
+            var total = question.A + question.B + question.C + question.D;
+            var percentA = 0;
+            var percentB = 0;
+            var percentC = 0;
+            var percentD = 0;
+
+            if (total != 0) {
+                percentA = 100.0*(question.A / total);
+                percentB = 100.0*(question.B / total);
+                percentC = 100.0*(question.C / total);
+                percentD = 100.0*(question.D / total);
+            }
+
+            var options = []
+            options.push(
+                {
+                    option: "A",
+                    choice: question.choice1,
+                    voters: question.A,
+                    percent: percentA.toFixed(0)
+                },
+                {
+                    option: "B",
+                    choice: question.choice2,
+                    voters: question.B,
+                    percent: percentB.toFixed(0)
+                },
+                {
+                    option: "C",
+                    choice: question.choice3,
+                    voters: question.C,
+                    percent: percentC.toFixed(0)
+                },
+                {
+                    option: "D",
+                    choice: question.choice4,
+                    voters: question.D,
+                    percent: percentD.toFixed(0)
+                }
+            );
+
+            return {
+				question_id: question_id,
+				status_control: status_control,
+                options: options,
+                title: question.title,
+                correct: question.correct,
+                total: total
+            }
+        },
+    });
 });
