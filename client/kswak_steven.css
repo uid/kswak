@@ -26,3 +26,7 @@ div[id^='container']{
 input[name="choice"]{
 	margin: 5px !important;
 }
+
+.chart rect {
+  fill: blue;
+}
