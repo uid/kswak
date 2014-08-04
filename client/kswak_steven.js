@@ -91,7 +91,7 @@ if (Meteor.isClient) {
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
 			console.log("new end");
-            Router.go('/teacher/' + question_id);
+            Router.go('/teacher/home');
             
 
         }
@@ -99,8 +99,7 @@ if (Meteor.isClient) {
 	
 	Template.teacher_question_view.events({
 		'click #change_mode': function (event, template){
-			
-			console.log('change mode', Questions.findOne(this.question_id));
+			console.log('here', Questions.findOne(this.question_id));
 			if ( Questions.findOne(this.question_id).status == 'active'){
 				Questions.update( this.question_id, {$set:{status:'inactive'}});
 			}else{
@@ -239,7 +238,12 @@ Router.map(function () {
         },
 		data: function() {
             var question = Questions.findOne({status:{$in:['active', 'inactive']}});
-			
+		    var question_id = question._id;
+			if (question.status == 'active'){
+				var status_control = 'change to inactive';
+			}else{
+				var status_control = 'change to active';
+			}
             var answers = Answers.find().fetch();
             console.log("teach home", question)
             console.log('userID: ' + Meteor.userId());
@@ -285,6 +289,8 @@ Router.map(function () {
             );
 
             return {
+				question_id: question_id,
+				status_control:status_control,
                 options: options,
                 title: question.title,
                 correct: question.correct,
@@ -308,73 +314,73 @@ Router.map(function () {
         path: '/teacher/new',
         template: 'new',
     });
-    this.route('teacher_question_view', {
-        path: '/teacher/:_id',
-        waitOn: function(){
-            return Meteor.subscribe("questions")
-        }
-        ,
-        template: 'teacher_question_view',
-        data: function() {
-			var question_id = this.params._id;
-            var question = Questions.findOne(question_id);
-			if (question.status == 'active'){
-				var status_control = 'change to inactive';
-			}else{
-				var status_control = 'change to active';
-			}
-			
-            var answers = Answers.find().fetch();
-            console.log('userID: ' + Meteor.userId());
-            var total = question.A + question.B + question.C + question.D;
-            var percentA = 0;
-            var percentB = 0;
-            var percentC = 0;
-            var percentD = 0;
-
-            if (total != 0) {
-                percentA = 100.0*(question.A / total);
-                percentB = 100.0*(question.B / total);
-                percentC = 100.0*(question.C / total);
-                percentD = 100.0*(question.D / total);
-            }
-
-            var options = []
-            options.push(
-                {
-                    option: "A",
-                    choice: question.choice1,
-                    voters: question.A,
-                    percent: percentA.toFixed(0)
-                },
-                {
-                    option: "B",
-                    choice: question.choice2,
-                    voters: question.B,
-                    percent: percentB.toFixed(0)
-                },
-                {
-                    option: "C",
-                    choice: question.choice3,
-                    voters: question.C,
-                    percent: percentC.toFixed(0)
-                },
-                {
-                    option: "D",
-                    choice: question.choice4,
-                    voters: question.D,
-                    percent: percentD.toFixed(0)
-                }
-            );
-
-            return {
-				question_id: question_id,
-				status_control: status_control,
-                options: options,
-                title: question.title,
-                correct: question.correct,
-                total: total
-            }
-        },
-    });
+//    this.route('teacher_question_view', {
+//        path: '/teacher/:_id',
+//        waitOn: function(){
+//            return Meteor.subscribe("questions")
+//        }
+//        ,
+//        template: 'teacher_question_view',
+//        data: function() {
+//			var question_id = this.params._id;
+//            var question = Questions.findOne(question_id);
+//			if (question.status == 'active'){
+//				var status_control = 'change to inactive';
+//			}else{
+//				var status_control = 'change to active';
+//			}
+//			
+//            var answers = Answers.find().fetch();
+//            console.log('userID: ' + Meteor.userId());
+//            var total = question.A + question.B + question.C + question.D;
+//            var percentA = 0;
+//            var percentB = 0;
+//            var percentC = 0;
+//            var percentD = 0;
+//
+//            if (total != 0) {
+//                percentA = 100.0*(question.A / total);
+//                percentB = 100.0*(question.B / total);
+//                percentC = 100.0*(question.C / total);
+//                percentD = 100.0*(question.D / total);
+//            }
+//
+//            var options = []
+//            options.push(
+//                {
+//                    option: "A",
+//                    choice: question.choice1,
+//                    voters: question.A,
+//                    percent: percentA.toFixed(0)
+//                },
+//                {
+//                    option: "B",
+//                    choice: question.choice2,
+//                    voters: question.B,
+//                    percent: percentB.toFixed(0)
+//                },
+//                {
+//                    option: "C",
+//                    choice: question.choice3,
+//                    voters: question.C,
+//                    percent: percentC.toFixed(0)
+//                },
+//                {
+//                    option: "D",
+//                    choice: question.choice4,
+//                    voters: question.D,
+//                    percent: percentD.toFixed(0)
+//                }
+//            );
+//
+//            return {
+//				question_id: question_id,
+//				status_control: status_control,
+//                options: options,
+//                title: question.title,
+//                correct: question.correct,
+//                total: total
+//            }
+//        },
+//    });
 });
