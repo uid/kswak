@@ -24,8 +24,22 @@ if (Meteor.isClient) {
 
         /* check for question type (t/f, mc2, mc3, etc. and create question_data based on that */
 
-        'click #t/f': function() {
-
+        'click .tf': function(event, template) {
+			console.log('t/f click');
+			if (Questions.findOne({status:{$in:['active', 'inactive']}}) != undefined) {
+				Questions.update( Questions.findOne({status:{$in:['active', 'inactive']}})._id, {$set:{status:null}})
+			}
+			var question_data = {
+				title: 'True/False',
+				choice1: 'T',
+				choice2: 'F',
+				status: 'active',
+				T: 0,
+				F: 0
+			}
+			
+			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Router.go('/teacher/' + question_id);
         },
 
         'click #mc2': function() {
@@ -47,16 +61,16 @@ if (Meteor.isClient) {
         'submit form': function (event, template) {
             event.preventDefault();
 			//disable current launched question
-			if (Questions.findOne({status:{$in:['active', 'inactive']}}) != undefined){
-			Questions.update( Questions.findOne({status:{$in:['active', 'inactive']}})._id, {$set:{status:null}})
+			if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined){
+			Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:null}})
 			}
 			//create new question and launch it
-            title = template.find("input[name=title]");
-            choice1 = template.find("input[name=choice_1]");
-            choice2 = template.find("input[name=choice_2]");
-            choice3 = template.find("input[name=choice_3]");
-            choice4 = template.find("input[name=choice_4]");
-            correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
+            var title = template.find("input[name=title]");
+            var choice1 = template.find("input[name=choice_1]");
+            var choice2 = template.find("input[name=choice_2]");
+            var choice3 = template.find("input[name=choice_3]");
+            var choice4 = template.find("input[name=choice_4]");
+            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
@@ -69,7 +83,7 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 correct: correct,
-                status: 'active', //active, inactive, null - not being launched
+                status: 'active', //active, frozen, inactive - not being launched
                 A: 0,
                 B: 0,
                 C: 0,
@@ -91,21 +105,24 @@ if (Meteor.isClient) {
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
 			console.log("new end");
-            Router.go('/teacher/' + question_id);
-            
-
+            Router.go('/teacher/home');
         }
   });
 	
 	Template.teacher_question_view.events({
-		'submit #change_mode': function (event, template){
-			console.log('change mode');
+		'click #change_mode': function (event, template){
+			console.log('here', Questions.findOne(this.question_id));
+			if ( Questions.findOne(this.question_id).status == 'active'){
+				Questions.update( this.question_id, {$set:{status:'frozen'}});
+			}else{
+				Questions.update( this.question_id, {$set:{status:'active'}})
+			}															
 		}
 	})
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
-            Questions.update({}, {$set:{status:null}});
+            Questions.update({}, {$set:{status:'inactive'}});
 			var selectionBox = event.target.parentElement.id;
 			//selectionBox.append('<input type="radio">');
 			//console.log("target", event.target.parentElement.lastChild)
@@ -121,42 +138,47 @@ if (Meteor.isClient) {
         'submit #student_question': function (event, template) {
 			console.log(this, 'student');
             event.preventDefault();
-            var choice = template.find("input[name='choice']:checked");
-            if (choice == null) {
-                console.log('ERROR: nothing chosen. Please choose an answer.')
-                $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
-            }
-            else {
-                var user_answer = choice.value;
-                var id = this._id;
-                console.log('id ' + id)
-                var question = Questions.findOne(id);
-                var answer_data = {
-                    question_id: id,
-                    answer: user_answer,
-                    user: Meteor.userId()
-                };
+			console.log(this.status)
+			if (this.status == 'active'){
+				var choice = template.find("input[name='choice']:checked");
+				if (choice == null) {
+					console.log('ERROR: nothing chosen. Please choose an answer.')
+					$('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
+				}
+				else {
+					var user_answer = choice.value;
+					var id = this._id;
+					console.log('id ' + id)
+					var question = Questions.findOne(id);
+					var answer_data = {
+						question_id: id,
+						answer: user_answer,
+						user: Meteor.userId()
+					};
 
-                var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
+					var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
 
-                switch (user_answer) { /* add E, T, F */
-                    case 'A':
-                        Questions.update(id, { $inc: {A: 1} });
-                        break;
-                    case 'B':
-                        Questions.update(id, {$inc: {B: 1}});
-                        break;
-                    case 'C':
-                        Questions.update(id, {$inc: {C: 1}});
-                        break;
-                    case 'D':
-                        Questions.update(id, {$inc: {D: 1}});
-                        break;
-                }
-                console.log("submitted!");
-                $('#submitFeedback').html('');
-            }
-        }
+					switch (user_answer) { /* add E, T, F */
+						case 'A':
+							Questions.update(id, { $inc: {A: 1} });
+							break;
+						case 'B':
+							Questions.update(id, {$inc: {B: 1}});
+							break;
+						case 'C':
+							Questions.update(id, {$inc: {C: 1}});
+							break;
+						case 'D':
+							Questions.update(id, {$inc: {D: 1}});
+							break;
+					}
+					$('#submitFeedback').html('Your submission is '+user_answer);
+				}
+			}else{
+				$('#submitFeedback').html('Question submission is closed')
+			}
+	}
+		
     });
 
 
@@ -220,8 +242,7 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher/home',
 		template: function() {
-			if (Questions.findOne({status:{$in:['active', 'inactive']}}) == undefined){
-				console.log("all null?");
+			if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
 				return 'new'
 			}else{
 				return 'teacher_question_view'}
@@ -230,8 +251,13 @@ Router.map(function () {
             return Meteor.subscribe("questions")
         },
 		data: function() {
-            var question = Questions.findOne({status:{$in:['active', 'inactive']}});
-			
+            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
+		    var question_id = question._id;
+			if (question.status == 'active'){
+				var status_control = 'to freeze';
+			}else{
+				var status_control = 'to activate';
+			}
             var answers = Answers.find().fetch();
             console.log("teach home", question)
             console.log('userID: ' + Meteor.userId());
@@ -277,6 +303,8 @@ Router.map(function () {
             );
 
             return {
+				question_id: question_id,
+				status_control:status_control,
                 options: options,
                 title: question.title,
                 correct: question.correct,
@@ -292,8 +320,8 @@ Router.map(function () {
     this.route('question_view', {
         path: '/student',  //overrides the default '/home'
         template: 'question_view',
-        data: function() {console.log("here", Questions.findOne({status:{$in:['active', 'inactive']}}));
-						  return Questions.findOne({status:{$in:['active', 'inactive']}}); }
+        data: function() {
+			return Questions.findOne({status:{$in:['active', 'frozen']}}); }
     });
 
     this.route('teacher_new', {
@@ -308,9 +336,17 @@ Router.map(function () {
         ,
         template: 'teacher_question_view',
         data: function() {
-            var question = Questions.findOne(this.params._id);
+			var question_id = this.params._id;
+            var question = Questions.findOne(question_id);
+			if (question.status == 'active'){
+				var status_control = 'to freeze';
+			}else if(question.status == 'frozen'){
+				var status_control = 'to activate';
+			}else{
+				var status_control = 'launch the question';
+			}
+			
             var answers = Answers.find().fetch();
-            console.log(question)
             console.log('userID: ' + Meteor.userId());
             var total = question.A + question.B + question.C + question.D;
             var percentA = 0;
@@ -354,6 +390,8 @@ Router.map(function () {
             );
 
             return {
+				question_id: question_id,
+				status_control: status_control,
                 options: options,
                 title: question.title,
                 correct: question.correct,
