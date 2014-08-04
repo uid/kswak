@@ -38,3 +38,14 @@ input[name="choice"]{
 .chart rect {
   fill: blue;
 }
+
+.alertBox{
+	position: absolute;
+	width:300px;
+	height: 100px;
+	text-align: center;
+	z-index: 2;
+	margin-left: 100px;
+	margin-top: -100px;
+	background-color: #fabdbd;
+}
