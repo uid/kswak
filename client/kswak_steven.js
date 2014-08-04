@@ -24,8 +24,22 @@ if (Meteor.isClient) {
 
         /* check for question type (t/f, mc2, mc3, etc. and create question_data based on that */
 
-        'click #t/f': function() {
-
+        'click .tf': function(event, template) {
+			console.log('t/f click');
+			if (Questions.findOne({status:{$in:['active', 'inactive']}}) != undefined) {
+				Questions.update( Questions.findOne({status:{$in:['active', 'inactive']}})._id, {$set:{status:null}})
+			}
+			var question_data = {
+				title: 'True/False',
+				choice1: 'T',
+				choice2: 'F',
+				status: 'active',
+				T: 0,
+				F: 0
+			}
+			
+			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Router.go('/teacher/' + question_id);
         },
 
         'click #mc2': function() {
@@ -51,12 +65,12 @@ if (Meteor.isClient) {
 			Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:null}})
 			}
 			//create new question and launch it
-            title = template.find("input[name=title]");
-            choice1 = template.find("input[name=choice_1]");
-            choice2 = template.find("input[name=choice_2]");
-            choice3 = template.find("input[name=choice_3]");
-            choice4 = template.find("input[name=choice_4]");
-            correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
+            var title = template.find("input[name=title]");
+            var choice1 = template.find("input[name=choice_1]");
+            var choice2 = template.find("input[name=choice_2]");
+            var choice3 = template.find("input[name=choice_3]");
+            var choice4 = template.find("input[name=choice_4]");
+            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
