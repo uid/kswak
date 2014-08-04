@@ -258,7 +258,7 @@ Router.map(function () {
 			}else{
 				var status_control = 'change to active';
 			}
-            var answers = Answers.find().fetch();
+            //var answers = Answers.find().fetch();
             console.log("teach home", question)
             console.log('userID: ' + Meteor.userId());
             var total = question.A + question.B + question.C + question.D;
