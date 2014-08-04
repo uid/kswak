@@ -45,12 +45,11 @@ if (Meteor.isClient) {
         },
 
         'submit form': function (event, template) {
-
             event.preventDefault();
 			//disable current launched question
-			if (Questions.findOne({live:true}) != undefined ){
-			Questions.update(Questions.findOne({live:true})._id, {$set:{live:false}})
-            }
+			if (Questions.findOne({status:{$in:['active', 'inactive']}}) != undefined){
+			Questions.update( Questions.findOne({status:{$in:['active', 'inactive']}})._id, {$set:{status:null}})
+			}
 			//create new question and launch it
             title = template.find("input[name=title]");
             choice1 = template.find("input[name=choice_1]");
@@ -70,8 +69,7 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 correct: correct,
-                status: false,
-                live: false,
+                status: 'active', //active, inactive, null - not being launched
                 A: 0,
                 B: 0,
                 C: 0,
@@ -92,21 +90,26 @@ if (Meteor.isClient) {
             });
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+			console.log("new end");
             Router.go('/teacher/' + question_id);
             
 
         }
   });
+	
+	Template.teacher_question_view.events({
+		'submit #change_mode': function (event, template){
+			console.log('change mode');
+		}
+	})
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
-            if (Questions.findOne({live:true}) != undefined ){
-                Questions.update(Questions.findOne({live:true})._id, {$set:{live:false}})
-            }
+            Questions.update({}, {$set:{status:null}});
 			var selectionBox = event.target.parentElement.id;
 			//selectionBox.append('<input type="radio">');
 			//console.log("target", event.target.parentElement.lastChild)
-            Questions.update(this._id, {$set:{live:true}});
+            Questions.update(this._id, {$set:{status:'active'}});
         },
         'click .delete': function (event, template){
             Questions.remove(this._id)
@@ -116,6 +119,7 @@ if (Meteor.isClient) {
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
+			console.log(this, 'student');
             event.preventDefault();
             var choice = template.find("input[name='choice']:checked");
             if (choice == null) {
@@ -155,6 +159,7 @@ if (Meteor.isClient) {
         }
     });
 
+
 //    Template.projector_view.rendered = function(){
         //KEEP CODE BELOW JUST BECAUSE IT MIGHT MAKE LIFE EASIER
         //this will only work if we keep the question_view that uses id
@@ -179,6 +184,7 @@ if (Meteor.isClient) {
         console.log(a);
 //
 //    }
+
 }
 
 if (Meteor.isServer) {
@@ -190,7 +196,6 @@ if (Meteor.isServer) {
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
-    this.route('teacher');  // By default, path = '/teacher', template = 'teacher'
     this.route('home', {
         path: '/',
     });
@@ -198,15 +203,20 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher/home',
 		template: function() {
-			if (Questions.findOne({live:true}) == undefined){
+			if (Questions.findOne({status:{$in:['active', 'inactive']}}) == undefined){
+				console.log("all null?");
 				return 'new'
 			}else{
 				return 'teacher_question_view'}
 			},
+		waitOn: function(){
+            return Meteor.subscribe("questions")
+        },
 		data: function() {
-            var question = Questions.findOne({live:true});
+            var question = Questions.findOne({status:{$in:['active', 'inactive']}});
+			
             var answers = Answers.find().fetch();
-            console.log(question)
+            console.log("teach home", question)
             console.log('userID: ' + Meteor.userId());
             var total = question.A + question.B + question.C + question.D;
             var percentA = 0;
@@ -265,7 +275,8 @@ Router.map(function () {
     this.route('question_view', {
         path: '/student',  //overrides the default '/home'
         template: 'question_view',
-        data: function() {return Questions.findOne({live:true}); }
+        data: function() {console.log("here", Questions.findOne({status:{$in:['active', 'inactive']}}));
+						  return Questions.findOne({status:{$in:['active', 'inactive']}}); }
     });
 
     this.route('teacher_new', {

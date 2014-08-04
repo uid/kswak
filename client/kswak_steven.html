@@ -12,7 +12,6 @@
 </head>
 
 <body>
-    {{>home}}
 </body>
 
 <template name="new">
@@ -82,8 +81,14 @@
 
 
 <template name='teacher_question_view'>
-	<h2>Launched question</h2>
+	<h1>Launched question</h1>
     <div id="container_teacher_question_view">
+	<a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
+	<a href="{{ pathFor 'teacher_summary' }}">question log</a><br/>
+		
+	<button style="margin-left:300px" id='change_mode'>Change mode</button>
+	  
+
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -100,7 +105,16 @@
         Correct: {{correct}}<br>
         Total number of responders: {{total}}
     </div>
-	<a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
+    </div>
+</template>
+
+
+<template name='projector_view'>
+    <div class="svg-wrapper">
+        {{#constant}}
+
+        {{/constant}}
+
     </div>
 </template>
 
@@ -118,11 +132,10 @@
 
 
 <template name='teacher_summary'>
+	<a href="{{ pathFor 'teacher_home' }}">Back to home</a><br/>
+	<a href="{{ pathFor 'question_view'}}">Student current view</a>
     <div id="container_home">
     <h1>Teacher Summary</h1><br/>
-    <a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
-
-    <a href="{{ pathFor 'teacher_new' }}">New question</a><br/>
        <table class="gridTable" border="1">
     <tr>
         <th style="width: 500px;">Questions</th>
