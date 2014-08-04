@@ -2,6 +2,17 @@ Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
 Answers = new Meteor.Collection("answers");
 
+
+//set all questions inactive and if an id is passed, launch its question 
+function launchQuestion(id){
+	if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
+		Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+	}
+	if (typeof id != undefined){
+		Questions.update( id, {$set:{status:'active'}})
+	}
+}
+
 if (Meteor.isClient) {
     Template.home.helpers({
         questions: function() {
@@ -11,6 +22,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
+			console.log( Questions.find() );
             return Questions.find();
         }
     });
@@ -26,9 +38,7 @@ if (Meteor.isClient) {
 
         'click .tf': function(event, template) {
 			console.log('t/f click');
-			if (Questions.findOne({status:{$in:['active', 'inactive']}}) != undefined) {
-				Questions.update( Questions.findOne({status:{$in:['active', 'inactive']}})._id, {$set:{status:null}})
-			}
+			
 			var question_data = {
 				title: 'True/False',
 				choice1: 'T',
@@ -38,8 +48,11 @@ if (Meteor.isClient) {
 				F: 0
 			}
 			
+			launchQuestion();
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-            Router.go('/teacher/' + question_id);
+			
+			
+            Router.go('/teacher/home');
         },
 
         'click #mc2': function() {
@@ -61,9 +74,7 @@ if (Meteor.isClient) {
         'submit form': function (event, template) {
             event.preventDefault();
 			//disable current launched question
-			if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined){
-			Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:null}})
-			}
+			launchQuestion();
 			//create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice_1]");
@@ -111,12 +122,14 @@ if (Meteor.isClient) {
 	
 	Template.teacher_question_view.events({
 		'click #change_mode': function (event, template){
-			console.log('here', Questions.findOne(this.question_id));
 			if ( Questions.findOne(this.question_id).status == 'active'){
 				Questions.update( this.question_id, {$set:{status:'frozen'}});
-			}else{
+			}else if( Questions.findOne(this.question_id).status == 'frozen') {
 				Questions.update( this.question_id, {$set:{status:'active'}})
-			}															
+			}else{
+				launchQuestion();
+				Questions.update( this.question_id, {$set:{status:'active'}})
+			}
 		}
 	})
 
@@ -130,8 +143,10 @@ if (Meteor.isClient) {
         },
         'click .delete': function (event, template){
             Questions.remove(this._id)
-        }
-
+        },
+		'click #deleteAll':function (event, template){
+			Questions.remove({status:'inactive'});
+		}
     })
 
     Template.question_view.events({
@@ -313,6 +328,9 @@ Router.map(function () {
 
 	this.route('teacher_summary', {
         path: 'teacher/summary',
+		waitOn: function(){
+            return Meteor.subscribe("questions")
+        }
     });
 
     this.route('question_view', {
