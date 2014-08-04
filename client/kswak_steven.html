@@ -18,15 +18,18 @@
     <title>KSWAK Teacher | Add New Question</title> 
     <div id="container_new">
     <h1>Create a question</h1>
+		
+	<h4>Quick Launch:</h4>
+		<button class='tf'>True/False</button>
+		<button id='mc2'>MC (2 choices)</button>
+		<button id='mc3'>MC (3 choices)</button>
+		<button id='mc4'>MC (4 choices)</button>
+		<button id='mc5'>MC (5 choices)</button>
+    <br><br>     <!-- for testing; Remove -->
 
-    <button id='t/f'>True/False</button>
-    <button id='mc2'>MC (2 choices)</button>
-    <button id='mc3'>MC (3 choices)</button>
-    <button id='mc4'>MC (4 choices)</button>
-    <button id='mc5'>MC (5 choices)</button>
-        <br><br>     <!-- for testing; Remove -->
-
-    <div class='form_container'>
+    
+	<h4>Custom:</h4>	
+	<div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title"> <br>
             Choices: <br>
@@ -57,10 +60,6 @@
         </form>
     </div>
     </div>
-</template>
-
-<template name='teacher_t/f_question_view'>
-
 </template>
 
 <template name='question_view'>
