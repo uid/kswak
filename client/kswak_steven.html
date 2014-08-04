@@ -144,14 +144,13 @@
     {{#each questions}}
     <tr class="gridRow {{status}}">
     <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
-    <td>{{status}}</td>
+    <td>{{status}}&nbsp;</td>
     <td><button class="delete">X</button></td>
     </tr>
     {{/each}}
     </table><br/>
 	<button id="deleteAll">delete all questions</button>
-	<button id="inactiveAll">inactive all questions</button>
-		
+	<button id="inactivateAll">inactive all questions</button>
     </div>
 </template>
 
