@@ -98,8 +98,14 @@ if (Meteor.isClient) {
   });
 	
 	Template.teacher_question_view.events({
-		'submit #change_mode': function (event, template){
-			console.log('change mode');
+		'click #change_mode': function (event, template){
+			
+			console.log('change mode', Questions.findOne(this.question_id));
+			if ( Questions.findOne(this.question_id).status == 'active'){
+				Questions.update( this.question_id, {$set:{status:'inactive'}});
+			}else{
+				Questions.update( this.question_id, {$set:{status:'active'}})
+			}															
 		}
 	})
 
@@ -121,42 +127,46 @@ if (Meteor.isClient) {
         'submit #student_question': function (event, template) {
 			console.log(this, 'student');
             event.preventDefault();
-            var choice = template.find("input[name='choice']:checked");
-            if (choice == null) {
-                console.log('ERROR: nothing chosen. Please choose an answer.')
-                $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
-            }
-            else {
-                var user_answer = choice.value;
-                var id = this._id;
-                console.log('id ' + id)
-                var question = Questions.findOne(id);
-                var answer_data = {
-                    question_id: id,
-                    answer: user_answer,
-                    user: Meteor.userId()
-                };
+			if (this.status == 'active'){
+				var choice = template.find("input[name='choice']:checked");
+				if (choice == null) {
+					console.log('ERROR: nothing chosen. Please choose an answer.')
+					$('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
+				}
+				else {
+					var user_answer = choice.value;
+					var id = this._id;
+					console.log('id ' + id)
+					var question = Questions.findOne(id);
+					var answer_data = {
+						question_id: id,
+						answer: user_answer,
+						user: Meteor.userId()
+					};
 
-                var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
+					var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
 
-                switch (user_answer) { /* add E, T, F */
-                    case 'A':
-                        Questions.update(id, { $inc: {A: 1} });
-                        break;
-                    case 'B':
-                        Questions.update(id, {$inc: {B: 1}});
-                        break;
-                    case 'C':
-                        Questions.update(id, {$inc: {C: 1}});
-                        break;
-                    case 'D':
-                        Questions.update(id, {$inc: {D: 1}});
-                        break;
-                }
-                console.log("submitted!");
-                $('#submitFeedback').html('');
-            }
-        }
+					switch (user_answer) { /* add E, T, F */
+						case 'A':
+							Questions.update(id, { $inc: {A: 1} });
+							break;
+						case 'B':
+							Questions.update(id, {$inc: {B: 1}});
+							break;
+						case 'C':
+							Questions.update(id, {$inc: {C: 1}});
+							break;
+						case 'D':
+							Questions.update(id, {$inc: {D: 1}});
+							break;
+					}
+					$('#submitFeedback').html('Your submission is '+user_answer);
+				}
+			}else{
+				$('#submitFeedback').html('Question submission is closed')
+			}
+	}
+		
     });
 
 
@@ -291,9 +301,15 @@ Router.map(function () {
         ,
         template: 'teacher_question_view',
         data: function() {
-            var question = Questions.findOne(this.params._id);
+			var question_id = this.params._id;
+            var question = Questions.findOne(question_id);
+			if (question.status == 'active'){
+				var status_control = 'change to inactive';
+			}else{
+				var status_control = 'change to active';
+			}
+			
             var answers = Answers.find().fetch();
-            console.log(question)
             console.log('userID: ' + Meteor.userId());
             var total = question.A + question.B + question.C + question.D;
             var percentA = 0;
@@ -337,6 +353,8 @@ Router.map(function () {
             );
 
             return {
+				question_id: question_id,
+				status_control: status_control,
                 options: options,
                 title: question.title,
                 correct: question.correct,

@@ -87,9 +87,7 @@
 	<a href="{{ pathFor 'teacher_summary' }}">question log</a><br/>
 	<a href="{{ pathFor 'question_view' }}">student view</a><br/> 
 		
-	<button style="margin-left:300px" id='change_mode'>Change mode</button>
-	  
-
+	<button style="margin-left:300px" id='change_mode'>{{status_control}}</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
