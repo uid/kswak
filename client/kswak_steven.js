@@ -24,8 +24,9 @@ if (Meteor.isClient) {
 
         /* check for question type (t/f, mc2, mc3, etc. and create question_data based on that */
 
-        'click #t/f': function() {
-
+        'click #t/f': function(event, template) {
+			var title = 'True/False';
+			//var T = 
         },
 
         'click #mc2': function() {
