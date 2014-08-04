@@ -187,27 +187,32 @@ if (Meteor.isClient) {
         var teachQuestViewTemp = $(this.find("#container_teacher_question_view"));
         teachQuestViewTemp.append("<br><br>")
         teachQuestViewTemp.append("<div class='random'>Random Temporary Thing: "+ this.data.title +"</div>");
-        teachQuestViewTemp.append("<div class='chart'></div>");
+        teachQuestViewTemp.append("<div class='questionCopy'></div>")
+        teachQuestViewTemp.append("<svg class='chart' id='bar'></svg>");
 
         console.log(this);
         console.log(this.data.options)
 
 
-        var percentages = []
+        var percentages = [];
+        var choicesList = [];
         var optionsLen = this.data.options.length;
         for (var jj=0; jj < optionsLen; jj++){
             percentages.push(1*this.data.options[jj].percent);
-            console.log(this.data.options[jj].percent)
+            choicesList.push(this.data.options[jj].choice);
         }
         console.log(percentages);
+        console.log(choicesList);
+
+        $('.questionCopy').append();
 
         var width = 420;
         var barHeight = 20;
         var x = d3.scale.linear()
             .domain([0, d3.max(percentages)])
             .range([0, width]);
-        var chart = d3.select(".chart")
-            .attr("width", width)
+        var chart = d3.select("#bar")
+            .attr("width", width+80)
             .attr("height", barHeight * optionsLen);
         var bar = chart.selectAll("g")
             .data(percentages)
@@ -216,11 +221,11 @@ if (Meteor.isClient) {
         bar.append("rect")
             .attr("width", x)
             .attr("height", barHeight - 1);
-        // bar.append("text")
-        //     .attr("x", function(d) { return x(d) - 3; })
-        //     .attr("y", barHeight / 2)
-        //     .attr("dy", ".35em")
-        //     .text(function(d) { return d; });
+        bar.append("text")
+            .attr("x", function(d) { return x(d) + 10; })
+            .attr("y", barHeight / 2)
+            .attr("dy", ".35em")
+            .text(function(d) { return d; });
 
         }
 
