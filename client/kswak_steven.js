@@ -197,22 +197,24 @@ if (Meteor.isClient) {
     });
 
 
-    Template.teacher_question_view.rendered = function(){
+    Template.teacher_question_view.rendered = function(){ 
         // $(this.find("#container_teacher_question_view")).append("<div>GOOD MORNING: "+this.data.title+"</div>");
         var teachQuestViewTemp = $(this.find("#container_teacher_question_view"));
         teachQuestViewTemp.append("<br><br>")
-        teachQuestViewTemp.append("<div>Random Temporary Thing: "+ this.data.title+"</div>");
+        teachQuestViewTemp.append("<div class='random'>Random Temporary Thing: "+ this.data.title +"</div>");
         teachQuestViewTemp.append("<div class='chart'></div>");
 
-        console.log("THIS THING");
+        console.log(this);
+        console.log(this.data.options)
+
 
         var percentages = []
         var optionsLen = this.data.options.length;
         for (var jj=0; jj < optionsLen; jj++){
-            percentages.push(this.data.options[jj].percent);
-            console.log(this.data.options[jj].percent);
+            percentages.push(1*this.data.options[jj].percent);
+            console.log(this.data.options[jj].percent)
         }
-        console.log(this);
+        console.log(percentages);
 
         var width = 420;
         var barHeight = 20;
@@ -229,11 +231,11 @@ if (Meteor.isClient) {
         bar.append("rect")
             .attr("width", x)
             .attr("height", barHeight - 1);
-        bar.append("text")
-            .attr("x", function(d) { return x(d) - 3; })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
-            .text(function(d) { return d; });
+        // bar.append("text")
+        //     .attr("x", function(d) { return x(d) - 3; })
+        //     .attr("y", barHeight / 2)
+        //     .attr("dy", ".35em")
+        //     .text(function(d) { return d; });
 
         }
 
@@ -414,5 +416,10 @@ Router.map(function () {
                 total: total
             }
         },
+        action: function(){
+            if (this.ready()){
+                this.render()
+            }
+        }
     });
 });

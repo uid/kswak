@@ -34,3 +34,7 @@ background-color: #aeebf0;
 input[name="choice"]{
 	margin: 5px !important;
 }
+
+.chart rect {
+  fill: blue;
+}
