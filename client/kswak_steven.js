@@ -160,28 +160,6 @@ if (Meteor.isClient) {
     });
 
 
-//    Template.projector_view.rendered = function(){
-        //KEEP CODE BELOW JUST BECAUSE IT MIGHT MAKE LIFE EASIER
-        //this will only work if we keep the question_view that uses id
-        // var id = Router.current().path.substr(1);
-        // var question = Questions.findOne(id);
-        // var answers = Answers.find().fetch();
-        // console.log(question)
-        // console.log('userID: ' + Meteor.userId());
-        // var total = question.A + question.B + question.C + question.D;
-        // var percentA = 0;
-        // var percentB = 0;
-        // var percentC = 0;
-        // var percentD = 0;
-
-        // if (total != 0) {
-        //     percentA = 100.0*(question.A / total);
-        //     percentB = 100.0*(question.B / total);
-        //     percentC = 100.0*(question.C / total);
-        //     percentD = 100.0*(question.D / total);
-        // }
-    }
-
     Template.teacher_question_view.rendered = function(){
         // $(this.find("#container_teacher_question_view")).append("<div>GOOD MORNING: "+this.data.title+"</div>");
         var teachQuestViewTemp = $(this.find("#container_teacher_question_view"));
