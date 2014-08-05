@@ -11,28 +11,28 @@
 }
 
 div[id^='container']{
-	padding:1%;
+    padding:1%;
 }
 
 
 .gridTable: :nth-child(2){
-	border: 2px;
+    border: 2px;
 }
 
 .frozen{
 background-color: #aeebf0;
 }
 .active{
-	background-color: rgba(205, 248, 205, 0.97);
+    background-color: rgba(205, 248, 205, 0.97);
 }
 
 
 .gridRow {
-    height: 20px;   
+    height: 20px;
 }
 
 input[name="choice"]{
-	margin: 5px !important;
+    margin: 5px !important;
 }
 
 .chart rect {
@@ -40,12 +40,12 @@ input[name="choice"]{
 }
 
 .alertBox{
-	position: absolute;
-	width:300px;
-	height: 100px;
-	text-align: center;
-	z-index: 2;
-	margin-left: 100px;
-	margin-top: -100px;
-	background-color: #fabdbd;
+    position: absolute;
+    width:300px;
+    height: 100px;
+    text-align: center;
+    z-index: 2;
+    margin-left: 100px;
+    margin-top: -100px;
+    background-color: #fabdbd;
 }

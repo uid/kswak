@@ -15,21 +15,21 @@
 </body>
 
 <template name="new">
-    <title>KSWAK Teacher | Add New Question</title> 
+    <title>KSWAK Teacher | Add New Question</title>
     <div id="container_new">
     <h1>Create a question</h1>
-		
-	<h4>Quick Launch:</h4>
-		<button class='tf'>True/False</button>
-		<button id='mc2'>MC (2 choices)</button>
-		<button id='mc3'>MC (3 choices)</button>
-		<button id='mc4'>MC (4 choices)</button>
-		<button id='mc5'>MC (5 choices)</button>
+
+    <h4>Quick Launch:</h4>
+        <button class='tf'>True/False</button>
+        <button id='mc2'>MC (2 choices)</button>
+        <button id='mc3'>MC (3 choices)</button>
+        <button id='mc4'>MC (4 choices)</button>
+        <button id='mc5'>MC (5 choices)</button>
     <br><br>     <!-- for testing; Remove -->
 
-    
-	<h4>Custom:</h4>	
-	<div class='form_container'>
+
+    <h4>Custom:</h4>
+    <div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title"> <br>
             Choices: <br>
@@ -63,7 +63,7 @@
 </template>
 
 <template name='question_view'>
-	<a href="{{ pathFor 'teacher_home' }}">teacher home</a><br/> 
+    <a href="{{ pathFor 'teacher_home' }}">teacher home</a><br/>
     <title>KSWAK | {{title}}</title>
     <h1>Question view</h1>
     <div id="container_question_view">
@@ -82,11 +82,11 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-	<a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
-	<a href="{{ pathFor 'teacher_summary' }}">question log</a><br/>
-	<a href="{{ pathFor 'question_view' }}">student view</a><br/> 
-		
-	<button style="margin-left:300px" id='change_mode'>{{status_control}}</button>
+    <a href="{{ pathFor 'teacher_new' }}">launch new question</a><br/>
+    <a href="{{ pathFor 'teacher_summary' }}">question log</a><br/>
+    <a href="{{ pathFor 'question_view' }}">student view</a><br/>
+
+    <button style="margin-left:300px" id='change_mode'>{{status_control}}</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -124,23 +124,23 @@
     <div id="container_home">
     {{> loginButtons }}<br/>
     <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
-	<a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
+    <a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
     <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
     </div>
 </template>
 
 
 <template name='teacher_summary'>
-	<a href="{{ pathFor 'teacher_home' }}">Back to home</a><br/>
-	<a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
-	<a href="{{ pathFor 'teacher_new'}}">Creat a new question</a>
+    <a href="{{ pathFor 'teacher_home' }}">Back to home</a><br/>
+    <a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
+    <a href="{{ pathFor 'teacher_new'}}">Creat a new question</a>
     <div id="container_home">
     <h1>Teacher Summary</h1><br/>
        <table class="gridTable" border="1" rules="rows">
     <tr>
         <th>Questions</th>
-		<th></th>
-		<th></th>
+        <th></th>
+        <th></th>
     </tr>
     {{#each questions}}
     <tr class="gridRow {{status}}">
@@ -150,34 +150,34 @@
     </tr>
     {{/each}}
     </table><br/>
-<!--	<button id="deleteAll">delete all questions</button>-->
-	<button id="inactivateAll" class="btn btn-primary">inactive all questions</button>
-   
+<!--    <button id="deleteAll">delete all questions</button>-->
+    <button id="inactivateAll" class="btn btn-primary">inactivate all</button>
+
 <!-- Bootstrap delete all warning -->
-<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-  Delete all
+<button class="btn btn-primary" data-toggle="model" data-target="#myModel">
+  delete all
 </button>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Warning!</h4>
+<div class="model fade" id="myModel" tabindex="-1" role="dialog" aria-labelledby="myModelLabel" aria-hidden="true">
+  <div class="model-dialog">
+    <div class="model-content">
+      <div class="model-header">
+        <button type="button" class="close" data-dismiss="model"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="model-title" id="myModelLabel">Warning!</h4>
       </div>
-      <div class="modal-body">
-        Are you sure you to want to DELETE ALL questions, except launched one?
+      <div class="model-body">
+        Are you sure you to want to DELETE ALL questions, except the launched one?
       </div>
-      <div class="modal-footer">
-        <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="modal">Yes</button>
-		<button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
-		  
+      <div class="model-footer">
+        <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="model">Yes</button>
+        <button type="button" class="btn btn-primary" data-dismiss="model">No</button>
+
       </div>
     </div>
   </div>
 </div>
-		
-</div>		
-	
+
+</div>
+
 </template>
 
 
