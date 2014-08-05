@@ -1,19 +1,57 @@
 <head>
     <title>KSWAK</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
-
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
 
 </head>
 
 <body>
-    {{> home}}
+    {{> nav}}
 </body>
+
+
+<template name='home'>
+    <title>KSWAK | HOME</title>
+    <div id="container_home">
+    {{> loginButtons }}<br/>
+    <a href="{{ pathFor 'teacher_new' }}">new question</a><br/>
+    <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
+    <a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
+    <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
+    </div>
+</template>
+
+<template name='nav'>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+       <div class="navbar-inner">
+         <div class="container">
+           <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+             <span class="icon-bar"></span>
+           </button>
+           <a class="brand" href="/">kswak</a>
+           <div class="nav-collapse collapse">
+             <ul class="nav">
+               <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
+               <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
+               <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
+               <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+             </ul>
+<!--
+             <ul class="nav pull-right">
+                 <li>
+                     {{loginButtons}}
+                 </li>
+             </ul>
+-->
+           </div><!--/.nav-collapse -->
+         </div>
+       </div>
+    </div>
+</template>
 
 <template name="new">
     <title>KSWAK Teacher | Add New Question</title>
@@ -114,20 +152,6 @@
     </div>
 </template>
 
-
-
-<template name='home'>
-    <title>KSWAK | HOME</title>
-    <div id="container_home">
-    {{> loginButtons }}<br/>
-    <a href="{{ pathFor 'teacher_new' }}">new question</a><br/>
-    <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
-    <a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
-    <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
-    </div>
-</template>
-
-
 <template name='teacher_summary'>
     <div id="container_home">
     <h1>Teacher Summary</h1><br/>
@@ -174,8 +198,3 @@
 </div>
 
 </template>
-
-
-
-
-

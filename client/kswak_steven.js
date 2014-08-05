@@ -262,9 +262,9 @@ if (Meteor.isServer) {
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
-//    this.route('home', {
-//        path: '/',
-//    });
+    this.route('home', {
+        path: '/',
+    });
 
     this.route('teacher_home', {
         path: '/', //'teacher/home'
