@@ -2,6 +2,10 @@ body {
   padding-top: 60px;
 }
 
+#login-dropdown-list .dropdown-menu {
+    left: -120px;
+}
+
 #input_choices {
     padding-left: 30px;
 }
