@@ -12,6 +12,7 @@
 </head>
 
 <body>
+    {{> home}}
 </body>
 
 <template name="new">
@@ -63,7 +64,6 @@
 </template>
 
 <template name='question_view'>
-    <a href="{{ pathFor 'teacher_home' }}">teacher home</a><br/>
     <title>KSWAK | {{title}}</title>
     <h1>Question view</h1>
     <div id="container_question_view">
@@ -123,6 +123,7 @@
     <title>KSWAK | HOME</title>
     <div id="container_home">
     {{> loginButtons }}<br/>
+    <a href="{{ pathFor 'new' }}">new question</a><br/>
     <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
     <a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
     <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
@@ -131,9 +132,6 @@
 
 
 <template name='teacher_summary'>
-    <a href="{{ pathFor 'teacher_home' }}">Back to home</a><br/>
-    <a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
-    <a href="{{ pathFor 'teacher_new'}}">Creat a new question</a>
     <div id="container_home">
     <h1>Teacher Summary</h1><br/>
        <table class="gridTable" border="1" rules="rows">
