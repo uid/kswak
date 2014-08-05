@@ -21,7 +21,6 @@
 		
 	<h4>Quick Launch:</h4>
 		<button class='tf'>True/False</button>
-		<button id='mc2'>MC (2 choices)</button>
 		<button id='mc3'>MC (3 choices)</button>
 		<button id='mc4'>MC (4 choices)</button>
 		<button id='mc5'>MC (5 choices)</button>
@@ -73,7 +72,9 @@
         <input type="radio" name="choice" value="B">{{choice2}}<br>
         <input type="radio" name="choice" value="C">{{choice3}}<br>
         <input type="radio" name="choice" value="D">{{choice4}}<br>
-        <input type="submit" name="submit" value="Submit">
+		<input type="radio" name="choice" value="E">{{choice5}}<br>
+		<input type="radio" name="choice" value="F">{{choice6}}<br>
+        <input type="submit" name="submit" value="Submit"> 
         <div id="submitFeedback"></div>
     </form>
     </div>
@@ -102,6 +103,7 @@
         </table><br>
         Correct: {{correct}}<br>
         Total number of responders: {{total}}
+
     </div>
     </div>
 </template>
@@ -131,30 +133,52 @@
 
 <template name='teacher_summary'>
 	<a href="{{ pathFor 'teacher_home' }}">Back to home</a><br/>
-	<a href="{{ pathFor 'question_view'}}">Student current view</a>
+	<a href="{{ pathFor 'question_view'}}">Student current view</a><br/>
+	<a href="{{ pathFor 'teacher_new'}}">Creat a new question</a>
     <div id="container_home">
     <h1>Teacher Summary</h1><br/>
-       <table class="gridTable" border="1">
+       <table class="gridTable" border="1" rules="rows">
     <tr>
-        <th style="width: 500px;">Questions</th>
-        <th>Status</th>
-        <th>to launch</th>
-        <th>to delete</th>
+        <th>Questions</th>
+		<th></th>
+		<th></th>
     </tr>
     {{#each questions}}
-    <tr class="gridRow">
-    <td class="question" style="width:500px"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
-    <td class="selectionIndicator">see analysis /not presented</td>
-    <td class="selectionIndicator" style="width:100px">&nbsp;<input type="radio" name="launch">&nbsp;<select>
-  <option>active</option>
-  <option>inactive</option>
-</select></td>
-    <td><button class="delete">Delete</button></td>
+    <tr class="gridRow {{status}}">
+    <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
+    <td>{{status}}&nbsp;</td>
+    <td><button class="delete">X</button></td>
     </tr>
     {{/each}}
-
-    </table>
+    </table><br/>
+<!--	<button id="deleteAll">delete all questions</button>-->
+	<button id="inactivateAll" class="btn btn-primary">inactive all questions</button>
+   
+<!-- Bootstrap delete all warning -->
+<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  Delete all
+</button>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Warning!</h4>
+      </div>
+      <div class="modal-body">
+        Are you sure you to want to DELETE ALL questions, except launched one?
+      </div>
+      <div class="modal-footer">
+        <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="modal">Yes</button>
+		<button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+		  
+      </div>
     </div>
+  </div>
+</div>
+		
+</div>		
+	
 </template>
 
 
