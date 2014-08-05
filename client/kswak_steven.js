@@ -38,7 +38,7 @@ if (Meteor.isClient) {
 
         /* check for question type (t/f, mc2, mc3, etc. and create question_data based on that */
 
-        'click .tf': function(event, template) {
+        'click #tf': function(event, template) {
 			var question_data = {
 				title: 'True/False',
 				type: 'tf',
@@ -52,6 +52,21 @@ if (Meteor.isClient) {
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
             Router.go('/teacher/home');
         },
+		
+		'click #mc2': function() {
+			var question_data = {
+				title: 'MC (2 choice)',
+				type: 'mc2',
+				choice1: 'A',
+				choice2: 'B',
+				status: 'active',
+				A: 0,
+				B: 0
+			}
+			launchQuestion();
+			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+			Router.go('/teacher/home');
+		},
 
         'click #mc3': function() {
 			var question_data = {
@@ -109,6 +124,29 @@ if (Meteor.isClient) {
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
 			Router.go('/teacher/home');
         },
+		
+		'click #mc6': function() {
+			var question_data = {
+				title: 'MC (6 choice)',
+				type: 'mc6',
+				choice1: 'A',
+				choice2: 'B',
+				choice3: 'C',
+				choice4: 'D',
+				choice5: 'E',
+				choice6: 'F',
+				status: 'active',
+				A: 0, 
+				B: 0,
+				C: 0,
+				D: 0,
+				E: 0,
+				F: 0
+			}
+			launchQuestion();
+			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+			Router.go('/teacher/home');	
+		},
 
         'submit form': function (event, template) {
             event.preventDefault();
@@ -233,14 +271,11 @@ if (Meteor.isClient) {
 						case 'E':
 							Questions.update(id, {$inc: {E: 1}});
 							break;
-						case 'T':
-							Questions.update(id, {$inc: {True: 1}});
-							break;
 						case 'F':
-							Questions.update(id, {$inc: {False: 1}});
+							Questions.update(id, {$inc: {F: 1}});
 							break;
 					}
-					$('#submitFeedback').html('Your submission is '+user_answer);
+					$('#submitFeedback').html('Your submission is ' + user_answer);
 				}
 			} else {
 				$('#submitFeedback').html('Question submission is closed')
@@ -259,8 +294,8 @@ if (Meteor.isClient) {
                 console.log("new relply")
                 $('#bar').empty();
 
-                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
-                choicesList = ["A", "B", "C", "D", "E", "T", "F"];
+                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.F];
+                choicesList = ["A", "B", "C", "D", "E", "F"];
                 // for (var jj=0; jj < optionsLen; jj++){
                 //     percentages.push(1*tThis.data.options[jj].percent);
                 //     choicesList.push(tThis.data.options[jj].choice);
@@ -314,7 +349,8 @@ var calcPercentages = function(question, question_type) {
 	var b = 0;
 	var c = 0;
 	var d = 0;
-	var e = 0
+	var e = 0;
+	var f = 0;
 	var tr = 0;
 	var fal = 0;
 	switch (question_type) {
@@ -334,6 +370,13 @@ var calcPercentages = function(question, question_type) {
 				d = 100.0*(question.D / total);
 			}
 			return [total, a.toFixed(0), b.toFixed(0), c.toFixed(0), d.toFixed(0)];
+		case 'mc2':
+			total = question.A + question.B;
+			if (total != 0) {
+				a = 100.0*(question.A / total);
+				b = 100.0*(question.B / total);
+			}
+			return [total, a.toFixed(0), b.toFixed(0)];
 		case 'mc3':
 			total = question.A + question.B + question.C;
 			if (total != 0) {
@@ -361,6 +404,17 @@ var calcPercentages = function(question, question_type) {
 				e = 100.0*(question.E / total);
 			}
 			return [total, a.toFixed(0), b.toFixed(0), c.toFixed(0), d.toFixed(0), e.toFixed(0)];
+		case 'mc6':
+			total = question.A + question.B + question.C + question.D + question.E + question.F;
+			if (total != 0) {
+				a = 100.0*(question.A / total);
+				b = 100.0*(question.B / total);
+				c = 100.0*(question.C / total);
+				d = 100.0*(question.D / total);
+				e = 100.0*(question.E / total);
+				f = 100.0*(question.F / total);
+			}
+			return [total, a.toFixed(0), b.toFixed(0), c.toFixed(0), d.toFixed(0), e.toFixed(0), f.toFixed(0)];
 	}
 }
 
@@ -422,6 +476,21 @@ var passData = function() {
 					choice: question.choice4,
 					voters: question.D,
 					percent: stats[4]
+				}
+			);
+		} else if (question.type == 'mc2') {
+			options.push(
+				{
+					option: '',
+					choice: question.choice1,
+					voters: question.A,
+					percent: stats[1]
+				},
+				{
+					option: '',
+					choice: question.choice2,
+					voters: question.B,
+					percent: stats[2]
 				}
 			);
 		} else if (question.type == 'mc3') {
@@ -505,6 +574,46 @@ var passData = function() {
 					percent: stats[5]
 				}
 			);	
+		} else if (question.type == 'mc6') {
+			options.push(
+				{
+					option: '',
+					choice: question.choice1,
+					voters: question.A,
+					percent: stats[1]
+				},
+				{
+					option: '',
+					choice: question.choice2,
+					voters: question.B,
+					percent: stats[2]
+				},
+				{
+					option: '',
+					choice: question.choice3,
+					voters: question.C,
+					percent: stats[3]
+				},
+				{
+					option: '',
+					choice: question.choice4,
+					voters: question.D,
+					percent: stats[4]	
+				},
+				{
+					option: '',
+					choice: question.choice5,
+					voters: question.E,
+					percent: stats[5]
+				},
+				{
+					option: '',
+					choice: question.choice6,
+					voters: question.F,
+					percent: stats[6]
+				}
+			);
+			console.log('mc6 options: ' + options);
 		}
 
 		return {
@@ -565,7 +674,7 @@ Router.map(function () {
         }
         ,
         template: 'teacher_question_view',
-		data: function() { passData(); },
+		data: function() { return passData(); },
         action: function(){
             if (this.ready()){
                 this.render()
