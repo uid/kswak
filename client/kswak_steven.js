@@ -233,8 +233,7 @@ if (Meteor.isClient) {
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
-            event.preventDefault();
-			
+            event.preventDefault();			
 			if (this.status == 'active'){
 				var choice = template.find("input[name='choice']:checked");
 				if (choice == null) {
@@ -285,18 +284,24 @@ if (Meteor.isClient) {
         var choicesList = [];
         var optionsLen = 7;
         var qs = Questions.find();
+        var total = 0;
         qs.observe({
 
             changed: function(newQuestion, oldQuestion){
                 console.log("new relply")
                 $('#bar').empty();
-
-                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
+                counts = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
                 choicesList = ["A", "B", "C", "D", "E", "T", "F"];
-                // for (var jj=0; jj < optionsLen; jj++){
-                //     percentages.push(1*tThis.data.options[jj].percent);
-                //     choicesList.push(tThis.data.options[jj].choice);
-                // }
+                total = 0;   
+                for (var jj=0; jj<counts.length; jj++){
+                    total = total + counts[jj];
+                }
+                console.log(total);
+
+                percentages = [];
+                for (var ii=0; ii<counts.length; ii++){
+                    percentages.push((counts[ii] * 100 / total).toFixed(0))
+                }
 
                 console.log(percentages);
                 console.log(choicesList);
@@ -322,10 +327,39 @@ if (Meteor.isClient) {
                     .attr("x", function(d) { return x(d) + 10; })
                     .attr("y", barHeight / 2)
                     .attr("dy", ".35em")
-                    .text(function(d) { return d; });
-        	}
-           });
-        }
+
+                    .text(function(d) { return d + "%"; });
+
+
+            }
+        })
+
+        //Bar Chart
+        // var width = 420;
+        // var barHeight = 20;
+        // var x = d3.scale.linear()
+        //     .domain([0, d3.max(percentages)])
+        //     .range([0, width]);
+        // var chart = d3.select("#bar")
+        //     .attr("width", width+80)
+        //     .attr("height", barHeight * optionsLen);
+        // var bar = chart.selectAll("g")
+        //     .data(percentages)
+        //     .enter().append("g")
+        //     .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+        // bar.append("rect")
+        //     .attr("width", x)
+        //     .attr("height", barHeight - 1);
+        // bar.append("text")
+        //     .attr("x", function(d) { return x(d) + 10; })
+        //     .attr("y", barHeight / 2)
+        //     .attr("dy", ".35em")
+        //     .text(function(d) { return d; });
+
+
+
+    }
+
 }
 
 
