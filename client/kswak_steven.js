@@ -205,51 +205,78 @@ if (Meteor.isClient) {
 
 
     Template.teacher_question_view.rendered = function(){ 
-        // $(this.find("#container_teacher_question_view")).append("<div>GOOD MORNING: "+this.data.title+"</div>");
-        var teachQuestViewTemp = $(this.find("#container_teacher_question_view"));
-        teachQuestViewTemp.append("<br><br>")
-        teachQuestViewTemp.append("<div class='random'>Random Temporary Thing: "+ this.data.title +"</div>");
-        teachQuestViewTemp.append("<div class='questionCopy'></div>")
-        teachQuestViewTemp.append("<svg class='chart' id='bar'></svg>");
-
-        console.log(this);
-        console.log(this.data.options)
-
-
         var percentages = [];
         var choicesList = [];
-        var optionsLen = this.data.options.length;
-        for (var jj=0; jj < optionsLen; jj++){
-            percentages.push(1*this.data.options[jj].percent);
-            choicesList.push(this.data.options[jj].choice);
-        }
-        console.log(percentages);
-        console.log(choicesList);
+        var optionsLen = 7;
+        var qs = Questions.find();
+        qs.observe({
+ 
+            changed: function(newQuestion, oldQuestion){
+                console.log("new relply")
+                $('#bar').empty();
 
-        $('.questionCopy').append();
+                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
+                choicesList = ["A", "B", "C", "D", "E", "T", "F"];       
+                // for (var jj=0; jj < optionsLen; jj++){
+                //     percentages.push(1*tThis.data.options[jj].percent);
+                //     choicesList.push(tThis.data.options[jj].choice);
+                // }
 
-        var width = 420;
-        var barHeight = 20;
-        var x = d3.scale.linear()
-            .domain([0, d3.max(percentages)])
-            .range([0, width]);
-        var chart = d3.select("#bar")
-            .attr("width", width+80)
-            .attr("height", barHeight * optionsLen);
-        var bar = chart.selectAll("g")
-            .data(percentages)
-            .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
-        bar.append("rect")
-            .attr("width", x)
-            .attr("height", barHeight - 1);
-        bar.append("text")
-            .attr("x", function(d) { return x(d) + 10; })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
-            .text(function(d) { return d; });
+                console.log(percentages);
+                console.log(choicesList);
 
-        }
+                //percentages = [29, 39]
+                //Bar Chart
+                var width = 420;
+                var barHeight = 20;
+                var x = d3.scale.linear()
+                    .domain([0, d3.max(percentages)])
+                    .range([0, width]);
+                var chart = d3.select("#bar")
+                    .attr("width", width+80)
+                    .attr("height", barHeight * optionsLen);
+                var bar = chart.selectAll("g")
+                    .data(percentages)
+                    .enter().append("g")
+                    .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+                bar.append("rect")
+                    .attr("width", x)
+                    .attr("height", barHeight - 1);
+                bar.append("text")
+                    .attr("x", function(d) { return x(d) + 10; })
+                    .attr("y", barHeight / 2)
+                    .attr("dy", ".35em")
+                    .text(function(d) { return d; });
+
+
+            }
+        })
+
+        //Bar Chart
+        // var width = 420;
+        // var barHeight = 20;
+        // var x = d3.scale.linear()
+        //     .domain([0, d3.max(percentages)])
+        //     .range([0, width]);
+        // var chart = d3.select("#bar")
+        //     .attr("width", width+80)
+        //     .attr("height", barHeight * optionsLen);
+        // var bar = chart.selectAll("g")
+        //     .data(percentages)
+        //     .enter().append("g")
+        //     .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+        // bar.append("rect")
+        //     .attr("width", x)
+        //     .attr("height", barHeight - 1);
+        // bar.append("text")
+        //     .attr("x", function(d) { return x(d) + 10; })
+        //     .attr("y", barHeight / 2)
+        //     .attr("dy", ".35em")
+        //     .text(function(d) { return d; });
+
+
+
+    }
 
 }
 
