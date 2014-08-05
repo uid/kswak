@@ -205,22 +205,30 @@ if (Meteor.isClient) {
 
 
     Template.teacher_question_view.rendered = function(){ 
+        var counts = [];
         var percentages = [];
         var choicesList = [];
         var optionsLen = 7;
         var qs = Questions.find();
+        var total = 0;
         qs.observe({
  
             changed: function(newQuestion, oldQuestion){
                 console.log("new relply")
                 $('#bar').empty();
 
-                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
-                choicesList = ["A", "B", "C", "D", "E", "T", "F"];       
-                // for (var jj=0; jj < optionsLen; jj++){
-                //     percentages.push(1*tThis.data.options[jj].percent);
-                //     choicesList.push(tThis.data.options[jj].choice);
-                // }
+                counts = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
+                choicesList = ["A", "B", "C", "D", "E", "T", "F"];
+                total = 0;   
+                for (var jj=0; jj<counts.length; jj++){
+                    total = total + counts[jj];
+                }
+                console.log(total);
+
+                percentages = [];
+                for (var ii=0; ii<counts.length; ii++){
+                    percentages.push((counts[ii] * 100 / total).toFixed(0))
+                }
 
                 console.log(percentages);
                 console.log(choicesList);
@@ -246,7 +254,7 @@ if (Meteor.isClient) {
                     .attr("x", function(d) { return x(d) + 10; })
                     .attr("y", barHeight / 2)
                     .attr("dy", ".35em")
-                    .text(function(d) { return d; });
+                    .text(function(d) { return d + "%"; });
 
 
             }
