@@ -132,7 +132,11 @@ if (Meteor.isClient) {
                 launchQuestion();
                 Questions.update( this.question_id, {$set:{status:'active'}})
             }
-        }
+        },
+		'click #edit': function (event, template){
+			Session.set("editing", this.question_id);
+			Router.go('/teacher/edit')    
+		}
     })
 
     Template.teacher_summary.events({
@@ -155,6 +159,40 @@ if (Meteor.isClient) {
             launchQuestion()
         }
     })
+	
+	Template.teacher_edit.events({
+		'click #cancel': function(event, template){
+			Router.go('/teacher/home')
+			
+		},
+		'click #save': function(event, template){
+			var question = Session.get('editing');
+			console.log(question);
+			//disable current launched question
+			launchQuestion();
+			//create new question and launch it
+            var title = template.find("input[name=title]");
+            var choice1 = template.find("input[name=choice_1]");
+            var choice2 = template.find("input[name=choice_2]");
+            var choice3 = template.find("input[name=choice_3]");
+            var choice4 = template.find("input[name=choice_4]");
+            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
+            if (correct == null){
+                console.log('ERROR: nothing chosen. Please choose a correct answer.')
+                $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
+            }
+			console.log('to update', question);
+			Questions.update( question, {$set:{title:title.value,
+											   choice1:choice1.value,
+											   choice2:choice2.value,
+											   choice3:choice3.value,
+											   choice4:choice4.value,
+											   correct:correct,
+											   status:'active'}})
+			console.log('after edition', Questions.findOne(question));
+			Router.go('/teacher/home')
+		}
+	})
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
@@ -388,6 +426,14 @@ Router.map(function () {
         path: '/teacher/new',
         template: 'new',
     });
+	
+	this.route('teacher_edit',{
+		path:'/teacher/edit',
+		data: function() {
+			var question = Session.get('editing');
+			return Questions.findOne(question);
+		}
+	})
     this.route('teacher_question_view', {
         path: '/teacher/:_id',
         waitOn: function(){
