@@ -57,15 +57,12 @@
     <title>KSWAK Teacher | Add New Question</title>
     <div id="container_new">
     <h1>Create a question</h1>
-
-    <h4>Quick Launch:</h4>
-        <button class='tf'>True/False</button>
-        <button id='mc2'>MC (2 choices)</button>
-        <button id='mc3'>MC (3 choices)</button>
-        <button id='mc4'>MC (4 choices)</button>
-        <button id='mc5'>MC (5 choices)</button>
-    <br><br>     <!-- for testing; Remove -->
-
+		
+	<h4>Quick Launch:</h4>
+		<button class='tf'>True/False</button>
+		<button id='mc3'>MC (3 choices)</button>
+		<button id='mc4'>MC (4 choices)</button>
+		<button id='mc5'>MC (5 choices)</button>
 
     <h4>Custom:</h4>
     <div class='form_container'>
@@ -111,7 +108,9 @@
         <input type="radio" name="choice" value="B">{{choice2}}<br>
         <input type="radio" name="choice" value="C">{{choice3}}<br>
         <input type="radio" name="choice" value="D">{{choice4}}<br>
-        <input type="submit" name="submit" value="Submit">
+		<input type="radio" name="choice" value="E">{{choice5}}<br>
+		<input type="radio" name="choice" value="F">{{choice6}}<br>
+        <input type="submit" name="submit" value="Submit"> 
         <div id="submitFeedback"></div>
     </form>
     </div>
