@@ -4,14 +4,14 @@ questionsHandle = Meteor.subscribe("questions");
 
 
 //set all questions inactive
-//If an id is passed, launch its question 
+//If an id is passed, launch its question
 function launchQuestion(id){
-	if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
-		Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
-	}
-	if (typeof id != undefined){
-		Questions.update( id, {$set:{status:'active'}})
-	}
+    if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
+        Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+    }
+    if (typeof id != undefined){
+        Questions.update( id, {$set:{status:'active'}})
+    }
 }
 
 
@@ -24,7 +24,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
-			console.log( Questions.find() );
+            console.log( Questions.find() );
             return Questions.find();
         }
     });
@@ -112,9 +112,9 @@ if (Meteor.isClient) {
 
         'submit form': function (event, template) {
             event.preventDefault();
-			//disable current launched question
-			launchQuestion();
-			//create new question and launch it
+            //disable current launched question
+            launchQuestion();
+            //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice_1]");
             var choice2 = template.find("input[name=choice_2]");
@@ -139,7 +139,7 @@ if (Meteor.isClient) {
 				B: 0,
 				C: 0,
 				D: 0,
-			};
+			}
 			
 			
 			/*console.log('options: ' + question_data.options);
@@ -157,7 +157,7 @@ if (Meteor.isClient) {
             });
 
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-			console.log("new end");
+            console.log("new end");
             Router.go('/teacher/home');
         }
   });
@@ -167,41 +167,42 @@ if (Meteor.isClient) {
 			console.log(this);
 			if ( Questions.findOne(this.question_id).status == 'active'){
 				Questions.update( this.question_id, {$set:{status:'frozen'}});
-			}else if( Questions.findOne(this.question_id).status == 'frozen') {
+			} else if ( Questions.findOne(this.question_id).status == 'frozen') {
 				Questions.update( this.question_id, {$set:{status:'active'}})
-			}else{
+			} else {
 				launchQuestion();
 				Questions.update( this.question_id, {$set:{status:'active'}})
 			}
 		}
-	})
+	});
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
             Questions.update({}, {$set:{status:'inactive'}});
-			var selectionBox = event.target.parentElement.id;
-			//selectionBox.append('<input type="radio">');
-			//console.log("target", event.target.parentElement.lastChild)
+            var selectionBox = event.target.parentElement.id;
+            //selectionBox.append('<input type="radio">');
+            //console.log("target", event.target.parentElement.lastChild)
             Questions.update(this._id, {$set:{status:'active'}});
         },
         'click .delete': function (event, template){
             Questions.remove(this._id)
         },
-		'click #deleteAll':function (event, template){
-			Questions.find({status:'inactive'}).forEach(function(question){
-				Questions.remove(question._id);
-			});
-		},
-		'click #inactivateAll': function(event, template){
-			launchQuestion()
-		}
-    })
+        'click #deleteAll':function (event, template){
+            Questions.find({status:'inactive'}).forEach(function(question){
+                Questions.remove(question._id);
+            });
+        },
+        'click #inactivateAll': function(event, template){
+            launchQuestion()
+        }
+    });
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
-			console.log(this, 'student');
+            console.log(this, 'student');
             event.preventDefault();
 			console.log(this.status)
+			
 			if (this.status == 'active'){
 				var choice = template.find("input[name='choice']:checked");
 				if (choice == null) {
@@ -215,13 +216,6 @@ if (Meteor.isClient) {
 					var id = this._id;
 					console.log('id ' + id)
 					var question = Questions.findOne(id);
-					/*var answer_data = {
-						question_id: id,
-						answer: user_answer,
-						user: Meteor.userId()
-					};*/
-
-					//var answer_id = Answers.insert(answer_data, function(err) { /* handle error */ });
 
 					switch (user_answer) { /* add E, T, F */
 						case 'A':
@@ -248,62 +242,60 @@ if (Meteor.isClient) {
 					}
 					$('#submitFeedback').html('Your submission is '+user_answer);
 				}
-			}else{
+			} else {
 				$('#submitFeedback').html('Question submission is closed')
 			}
-	}
-		
-    });
+		}
+	});
 
-
-    /*Template.teacher_question_view.rendered = function(){ 
-        // $(this.find("#container_teacher_question_view")).append("<div>GOOD MORNING: "+this.data.title+"</div>");
-        var teachQuestViewTemp = $(this.find("#container_teacher_question_view"));
-        teachQuestViewTemp.append("<br><br>")
-        teachQuestViewTemp.append("<div class='random'>Random Temporary Thing: "+ this.data.title +"</div>");
-        teachQuestViewTemp.append("<div class='questionCopy'></div>")
-        teachQuestViewTemp.append("<svg class='chart' id='bar'></svg>");
-
-        console.log(this);
-        console.log(this.data.options)
-
-
+    Template.teacher_question_view.rendered = function(){
         var percentages = [];
         var choicesList = [];
-        var optionsLen = this.data.options.length;
-        for (var jj=0; jj < optionsLen; jj++){
-            percentages.push(1*this.data.options[jj].percent);
-            choicesList.push(this.data.options[jj].choice);
+        var optionsLen = 7;
+        var qs = Questions.find();
+        qs.observe({
+
+            changed: function(newQuestion, oldQuestion){
+                console.log("new relply")
+                $('#bar').empty();
+
+                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
+                choicesList = ["A", "B", "C", "D", "E", "T", "F"];
+                // for (var jj=0; jj < optionsLen; jj++){
+                //     percentages.push(1*tThis.data.options[jj].percent);
+                //     choicesList.push(tThis.data.options[jj].choice);
+                // }
+
+                console.log(percentages);
+                console.log(choicesList);
+
+                //percentages = [29, 39]
+                //Bar Chart
+                var width = 420;
+                var barHeight = 20;
+                var x = d3.scale.linear()
+                    .domain([0, d3.max(percentages)])
+                    .range([0, width]);
+                var chart = d3.select("#bar")
+                    .attr("width", width+80)
+                    .attr("height", barHeight * optionsLen);
+                var bar = chart.selectAll("g")
+                    .data(percentages)
+                    .enter().append("g")
+                    .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
+                bar.append("rect")
+                    .attr("width", x)
+                    .attr("height", barHeight - 1);
+                bar.append("text")
+                    .attr("x", function(d) { return x(d) + 10; })
+                    .attr("y", barHeight / 2)
+                    .attr("dy", ".35em")
+                    .text(function(d) { return d; });
+        	}
+           });
         }
-        console.log(percentages);
-        console.log(choicesList);
-
-        $('.questionCopy').append();
-
-        var width = 420;
-        var barHeight = 20;
-        var x = d3.scale.linear()
-            .domain([0, d3.max(percentages)])
-            .range([0, width]);
-        var chart = d3.select("#bar")
-            .attr("width", width+80)
-            .attr("height", barHeight * optionsLen);
-        var bar = chart.selectAll("g")
-            .data(percentages)
-            .enter().append("g")
-            .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
-        bar.append("rect")
-            .attr("width", x)
-            .attr("height", barHeight - 1);
-        bar.append("text")
-            .attr("x", function(d) { return x(d) + 10; })
-            .attr("y", barHeight / 2)
-            .attr("dy", ".35em")
-            .text(function(d) { return d; });
-
-        }*/
-
 }
+
 
 if (Meteor.isServer) {
     Meteor.startup(function () {
@@ -544,72 +536,12 @@ Router.map(function () {
             return Meteor.subscribe("questions")
         },
 		data: function() { return passData(); },
-		/*data: function() {
-            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-		    var question_id = question._id;
-			if (question.status == 'active'){
-				var status_control = 'to freeze';
-			}else{
-				var status_control = 'to activate';
-			}
-            //var answers = Answers.find().fetch();
-            //console.log("teach home", question)
-            //console.log('userID: ' + Meteor.userId());
-            var total = question.A + question.B + question.C + question.D;
-            var percentA = 0;
-            var percentB = 0;
-            var percentC = 0;
-            var percentD = 0;
 
-            if (total != 0) {
-                percentA = 100.0*(question.A / total);
-                percentB = 100.0*(question.B / total);
-                percentC = 100.0*(question.C / total);
-                percentD = 100.0*(question.D / total);
-            }
-
-            var options = []
-            options.push(
-                {
-                    option: "A",
-                    choice: question.choice1,
-                    voters: question.A,
-                    percent: percentA.toFixed(0)
-                },
-                {
-                    option: "B",
-                    choice: question.choice2,
-                    voters: question.B,
-                    percent: percentB.toFixed(0)
-                },
-                {
-                    option: "C",
-                    choice: question.choice3,
-                    voters: question.C,
-                    percent: percentC.toFixed(0)
-                },
-                {
-                    option: "D",
-                    choice: question.choice4,
-                    voters: question.D,
-                    percent: percentD.toFixed(0)
-                }
-            );
-
-            return {
-				question_id: question_id,
-				status_control:status_control,
-                options: options,
-                title: question.title,
-                correct: question.correct,
-                total: total
-            }
-        }*/
     });
 
-	this.route('teacher_summary', {
+    this.route('teacher_summary', {
         path: 'teacher/summary',
-		waitOn: function(){
+        waitOn: function(){
             return Meteor.subscribe("questions")
         }
     });
@@ -634,72 +566,6 @@ Router.map(function () {
         ,
         template: 'teacher_question_view',
 		data: function() { passData(); },
-        /*data: function() {
-			console.log('data anon function called')
-			var question_id = this.params._id;
-            var question = Questions.findOne(question_id);
-			if (question.status == 'active'){
-				var status_control = 'to freeze';
-			}else if(question.status == 'frozen'){
-				var status_control = 'to activate';
-			}else{
-				var status_control = 'launch the question';
-			}
-			
-            //var answers = Answers.find().fetch();
-            console.log('userID: ' + Meteor.userId());
-            var total = question.A + question.B + question.C + question.D;
-            var percentA = 0;
-            var percentB = 0;
-            var percentC = 0;
-            var percentD = 0;
-
-            if (total != 0) {
-                percentA = 100.0*(question.A / total);
-                percentB = 100.0*(question.B / total);
-                percentC = 100.0*(question.C / total);
-                percentD = 100.0*(question.D / total);
-            }
-
-            var options = []
-            options.push(
-                {
-                    option: "A",
-                    choice: question.choice1,
-                    voters: question.A,
-                    percent: percentA.toFixed(0)
-                },
-                {
-                    option: "B",
-                    choice: question.choice2,
-                    voters: question.B,
-                    percent: percentB.toFixed(0)
-                },
-                {
-                    option: "C",
-                    choice: question.choice3,
-                    voters: question.C,
-                    percent: percentC.toFixed(0)
-                },
-                {
-                    option: "D",
-                    choice: question.choice4,
-                    voters: question.D,
-                    percent: percentD.toFixed(0)
-                }
-            );
-
-            return {
-				question_id: question_id,
-				status_control: status_control,
-                options: options,
-                title: question.title,
-                correct: question.correct,
-                total: total
-            }
-        },*/
-		
-        //},
         action: function(){
             if (this.ready()){
                 this.render()
