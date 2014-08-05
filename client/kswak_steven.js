@@ -204,19 +204,19 @@ if (Meteor.isClient) {
     });
 
 
-    Template.teacher_question_view.rendered = function(){ 
+    Template.teacher_question_view.rendered = function(){
         var percentages = [];
         var choicesList = [];
         var optionsLen = 7;
         var qs = Questions.find();
         qs.observe({
- 
+
             changed: function(newQuestion, oldQuestion){
                 console.log("new relply")
                 $('#bar').empty();
 
                 percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.T, newQuestion.F];
-                choicesList = ["A", "B", "C", "D", "E", "T", "F"];       
+                choicesList = ["A", "B", "C", "D", "E", "T", "F"];
                 // for (var jj=0; jj < optionsLen; jj++){
                 //     percentages.push(1*tThis.data.options[jj].percent);
                 //     choicesList.push(tThis.data.options[jj].choice);
@@ -294,7 +294,7 @@ Router.map(function () {
     });
 
     this.route('teacher_home', {
-        path: '/', //'teacher/home'
+        path: '/teacher/home',
         template: function() {
             if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
                 return 'new'
