@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
-
+	
 
 </head>
 
@@ -55,15 +55,12 @@
     <title>KSWAK Teacher | Add New Question</title>
     <div id="container_new">
     <h1>Create a question</h1>
-
-    <h4>Quick Launch:</h4>
-        <button class='tf'>True/False</button>
-        <button id='mc2'>MC (2 choices)</button>
-        <button id='mc3'>MC (3 choices)</button>
-        <button id='mc4'>MC (4 choices)</button>
-        <button id='mc5'>MC (5 choices)</button>
-    <br><br>     <!-- for testing; Remove -->
-
+		
+	<h4>Quick Launch:</h4>
+		<button class='tf'>True/False</button>
+		<button id='mc3'>MC (3 choices)</button>
+		<button id='mc4'>MC (4 choices)</button>
+		<button id='mc5'>MC (5 choices)</button>
 
     <h4>Custom:</h4>
     <div class='form_container'>
@@ -109,7 +106,9 @@
         <input type="radio" name="choice" value="B">{{choice2}}<br>
         <input type="radio" name="choice" value="C">{{choice3}}<br>
         <input type="radio" name="choice" value="D">{{choice4}}<br>
-        <input type="submit" name="submit" value="Submit">
+		<input type="radio" name="choice" value="E">{{choice5}}<br>
+		<input type="radio" name="choice" value="F">{{choice6}}<br>
+        <input type="submit" name="submit" value="Submit"> 
         <div id="submitFeedback"></div>
     </form>
     </div>
@@ -119,7 +118,7 @@
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
 
-    <button style="margin-left:300px" id='change_mode'>{{status_control}}</button>
+    <button style="margin-left:300px" id='change_mode'>{{status_control}}</button><button id='edit'>Edit</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -172,32 +171,63 @@
     </tr>
     {{/each}}
     </table><br/>
-<!--    <button id="deleteAll">delete all questions</button>-->
     <button id="inactivateAll" class="btn btn-primary">inactivate all</button>
 
 <!-- Bootstrap delete all warning -->
-<button class="btn btn-primary" data-toggle="model" data-target="#myModel">
-  delete all
+<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+  Delete all
 </button>
-<div class="model fade" id="myModel" tabindex="-1" role="dialog" aria-labelledby="myModelLabel" aria-hidden="true">
-  <div class="model-dialog">
-    <div class="model-content">
-      <div class="model-header">
-        <button type="button" class="close" data-dismiss="model"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="model-title" id="myModelLabel">Warning!</h4>
+</div>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:-100px">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel">Warning!</h4>
       </div>
-      <div class="model-body">
-        Are you sure you to want to DELETE ALL questions, except the launched one?
+      <div class="modal-body">
+        Are you sure you to want to DELETE ALL questions, except launched one?
       </div>
-      <div class="model-footer">
-        <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="model">Yes</button>
-        <button type="button" class="btn btn-primary" data-dismiss="model">No</button>
-
+      <div class="modal-footer">
+        <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="modal">Yes</button>
+		<button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+		  
       </div>
     </div>
   </div>
 </div>
+</template>
 
-</div>
-
+<template name='teacher_edit'>
+	<div class='form_container'>
+        <form id='question_form'>
+            Question: <input type="text" name="title" value={{title}}> <br>
+            Choices: <br>
+            <table id='input_choices'>
+                <tr>
+                    <td align='right'>A </td>
+                    <td align='left'><input type="text" name="choice_1" value={{choice1}}></td>
+                    <td align='left'><input type="radio" value=A name="correct"></td>
+                </tr>
+                <tr>
+                    <td align='right'>B </td>
+                    <td align='left'><input type="text" name="choice_2" value={{choice2}}></td>
+                    <td align='left'><input type="radio" value=B name="correct"></td>
+                </tr>
+                <tr>
+                    <td align='right'>C </td>
+                    <td align='left'><input type="text" name="choice_3" value={{choice3}}></td>
+                    <td align='left'><input type="radio" value=C name="correct"></td>
+                </tr>
+                <tr>
+                    <td align='right'>D </td>
+                    <td align='left'><input type="text" name="choice_4" value={{choice4}}></td>
+                    <td align='left'><input type="radio" value=D name="correct"></td>
+                </tr>
+            </table>
+			 <div id="publishFeedback"></div>
+        </form>
+		<button id="cancel" class="btn btn-primary">Cancel</button>
+		<button id="save" class="btn btn-primary">Save changes</button>
+    </div>
 </template>
