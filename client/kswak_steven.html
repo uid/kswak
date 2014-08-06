@@ -58,11 +58,14 @@
     <h1>Create a question</h1>
 
     <h4>Quick Launch:</h4>
-        <button class='tf'>True/False</button>
+        <button id='tf'>True/False</button>
+        <button id='mc2'>MC (2 choices)</button>
         <button id='mc3'>MC (3 choices)</button>
         <button id='mc4'>MC (4 choices)</button>
         <button id='mc5'>MC (5 choices)</button>
+        <button id='mc6'>MC (6 choices)</button>
 
+    <br>
     <h4>Custom:</h4>
     <div class='form_container'>
         <form id='question_form'>
@@ -103,12 +106,13 @@
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
-        <input type="radio" name="choice" value="A">{{choice1}}<br>
-        <input type="radio" name="choice" value="B">{{choice2}}<br>
-        <input type="radio" name="choice" value="C">{{choice3}}<br>
-        <input type="radio" name="choice" value="D">{{choice4}}<br>
-        <input type="radio" name="choice" value="E">{{choice5}}<br>
-        <input type="radio" name="choice" value="F">{{choice6}}<br>
+        <table>
+        {{#each options}}
+        <tr>
+        <input type="radio" name="choice" value={{letter}}>{{choice}}
+        </tr>
+        {{/each}}
+        </table>
         <input type="submit" name="submit" value="Submit">
         <div id="submitFeedback"></div>
     </form>
