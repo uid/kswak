@@ -1,6 +1,7 @@
 Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
 //Responses = new Meteor.Collection("responses");
+Accounts = new Meteor.Collection("accounts");
 
 //set all questions inactive
 //If an id is passed, launch its question
@@ -11,9 +12,22 @@ function launchQuestion(id){
     if (typeof id != undefined){
         Questions.update( id, {$set:{status:'active'}})
     }
-	Router.go('/teacher/home');
+    Router.go('/teacher/home');
 }
 
+function getUsernameFromBase64(base64String) {
+    //decode base64 from url
+    //decode that result using decryptAES
+    //return username
+}
+
+function createAccount(username){
+    var account_data = {
+        username: username,
+        user_email: username+'@mit.edu',
+    }
+    var account_id = Accounts.insert(account_data, function(err) { /**/ });
+}
 
 if (Meteor.isClient) {
     Template.home.helpers({
@@ -32,136 +46,136 @@ if (Meteor.isClient) {
 
     Template.new.events({
         'click #tf': function(event, template) {
-			var question_data = {
-				title: 'True/False',
-				type: 'tf',
-				choice1: 'True',
-				choice2: 'False',
-				choice3: '',
-				choice4: '',
-				choice5: '',
-				choice6: '',
-				status: 'active',
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			launchQuestion();
-			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            var question_data = {
+                title: 'True/False',
+                type: 'tf',
+                choice1: 'True',
+                choice2: 'False',
+                choice3: '',
+                choice4: '',
+                choice5: '',
+                choice6: '',
+                status: 'active',
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+            launchQuestion();
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         },
-		
-		'click #mc2': function() {
-			var question_data = {
-				title: 'MC (2 choice)',
-				type: 'mc2',
-				choice1: 'A',
-				choice2: 'B',
-				choice3: '',
-				choice4: '',
-				choice5: '',
-				choice6: '',
-				status: 'active',
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			launchQuestion();
-			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-		},
+
+        'click #mc2': function() {
+            var question_data = {
+                title: 'MC (2 choice)',
+                type: 'mc2',
+                choice1: 'A',
+                choice2: 'B',
+                choice3: '',
+                choice4: '',
+                choice5: '',
+                choice6: '',
+                status: 'active',
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+            launchQuestion();
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+        },
 
         'click #mc3': function() {
-			var question_data = {
-				title: 'MC (3 choice)',
-				type: 'mc3',
-				choice1: 'A',
-				choice2: 'B',
-				choice3: 'C',
-				choice4: '',
-				choice5: '',
-				choice6: '',
-				status: 'active',
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			launchQuestion();
-			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            var question_data = {
+                title: 'MC (3 choice)',
+                type: 'mc3',
+                choice1: 'A',
+                choice2: 'B',
+                choice3: 'C',
+                choice4: '',
+                choice5: '',
+                choice6: '',
+                status: 'active',
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+            launchQuestion();
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         },
 
         'click #mc4': function() {
-			var question_data = {
-				title: 'MC (4 choice)',
-				type: 'mc4',
-				choice1: 'A',
-				choice2: 'B',
-				choice3: 'C',
-				choice4: 'D',
-				choice5: '',
-				choice6: '',
-				status: 'active',
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			launchQuestion();
-			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            var question_data = {
+                title: 'MC (4 choice)',
+                type: 'mc4',
+                choice1: 'A',
+                choice2: 'B',
+                choice3: 'C',
+                choice4: 'D',
+                choice5: '',
+                choice6: '',
+                status: 'active',
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+            launchQuestion();
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         },
 
         'click #mc5': function() {
-			var question_data = {
-				title: 'MC (5 choice)',
-				type: 'mc5',
-				choice1: 'A',
-				choice2: 'B',
-				choice3: 'C',
-				choice4: 'D',
-				choice5: 'E',
-				choice6: '',
-				status: 'active',
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			launchQuestion();
-			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            var question_data = {
+                title: 'MC (5 choice)',
+                type: 'mc5',
+                choice1: 'A',
+                choice2: 'B',
+                choice3: 'C',
+                choice4: 'D',
+                choice5: 'E',
+                choice6: '',
+                status: 'active',
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+            launchQuestion();
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         },
-		
-		'click #mc6': function() {
-			var question_data = {
-				title: 'MC (6 choice)',
-				type: 'mc6',
-				choice1: 'A',
-				choice2: 'B',
-				choice3: 'C',
-				choice4: 'D',
-				choice5: 'E',
-				choice6: 'F',
-				status: 'active',
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			launchQuestion();
-			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-		},
+
+        'click #mc6': function() {
+            var question_data = {
+                title: 'MC (6 choice)',
+                type: 'mc6',
+                choice1: 'A',
+                choice2: 'B',
+                choice3: 'C',
+                choice4: 'D',
+                choice5: 'E',
+                choice6: 'F',
+                status: 'active',
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+            launchQuestion();
+            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+        },
 
         'submit form': function (event, template) {
             event.preventDefault();
@@ -178,23 +192,23 @@ if (Meteor.isClient) {
 
             var question_data = {
                 title: title.value,
-				type: 'custom',
+                type: 'custom',
                 choice1: choice1.value,
                 choice2: choice2.value,
                 choice3: choice3.value,
                 choice4: choice4.value,
-				choice5: '',
-				choice6: '',
+                choice5: '',
+                choice6: '',
                 correct: correct,
                 status: 'active', //active, frozen, inactive - not being launched
-				A: 0, 
-				B: 0,
-				C: 0,
-				D: 0,
-				E: 0,
-				F: 0
-			}
-			
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0,
+                E: 0,
+                F: 0
+            }
+
 
             //reset fields
             title.value = "";
@@ -222,10 +236,10 @@ if (Meteor.isClient) {
                 Questions.update( this.question_id, {$set:{status:'active'}})
             }
         },
-		'click #edit': function (event, template){
-			Session.set("editing", this.question_id);
-			Router.go('/teacher/edit')    
-		}
+        'click #edit': function (event, template){
+            Session.set("editing", this.question_id);
+            Router.go('/teacher/edit')
+        }
     })
 
     Template.teacher_summary.events({
@@ -248,17 +262,17 @@ if (Meteor.isClient) {
             launchQuestion()
         }
     })
-	
-	Template.teacher_edit.events({
-		'click #cancel': function(event, template){
-			Router.go('/teacher/home')
-			
-		},
-		'click #save': function(event, template){
-			var question = Session.get('editing');
-			//disable current launched question
-			launchQuestion();
-			//create new question and launch it
+
+    Template.teacher_edit.events({
+        'click #cancel': function(event, template){
+            Router.go('/teacher/home')
+
+        },
+        'click #save': function(event, template){
+            var question = Session.get('editing');
+            //disable current launched question
+            launchQuestion();
+            //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice_1]");
             var choice2 = template.find("input[name=choice_2]");
@@ -269,59 +283,59 @@ if (Meteor.isClient) {
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
-			Questions.update(question, {$set:{title:title.value,
-											   choice1:choice1.value,
-											   choice2:choice2.value,
-											   choice3:choice3.value,
-											   choice4:choice4.value,
-											   correct:correct,
-											   status:'active'}})
-			Router.go('/teacher/home')
-		}
-	})
+            Questions.update(question, {$set:{title:title.value,
+                                               choice1:choice1.value,
+                                               choice2:choice2.value,
+                                               choice3:choice3.value,
+                                               choice4:choice4.value,
+                                               correct:correct,
+                                               status:'active'}})
+            Router.go('/teacher/home')
+        }
+    })
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
-            event.preventDefault();	
-			var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-			if (question.status == 'active'){
-				var choice = template.find("input[name='choice']:checked");
-				if (choice == null) {
-					console.log('ERROR: nothing chosen. Please choose an answer.')
-					$('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
-				}
-				else {
-					//var user_answer = choice.html();
-					var user_answer = choice.value;
-					var id = question._id;
+            event.preventDefault();
+            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
+            if (question.status == 'active'){
+                var choice = template.find("input[name='choice']:checked");
+                if (choice == null) {
+                    console.log('ERROR: nothing chosen. Please choose an answer.')
+                    $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
+                }
+                else {
+                    //var user_answer = choice.html();
+                    var user_answer = choice.value;
+                    var id = question._id;
 
-					switch (user_answer) { /* add E, T, F */
-						case 'A':
-							Questions.update(id, {$inc: {A: 1}});
-							break;
-						case 'B':
-							Questions.update(id, {$inc: {B: 1}});
-							break;
-						case 'C':
-							Questions.update(id, {$inc: {C: 1}});
-							break;
-						case 'D':
-							Questions.update(id, {$inc: {D: 1}});
-							break;
-						case 'E':
-							Questions.update(id, {$inc: {E: 1}});
-							break;
-						case 'F':
-							Questions.update(id, {$inc: {F: 1}});
-							break;
-					}
-					$('#submitFeedback').html('Your submission is ' + user_answer);
-				}
-			} else {
-				$('#submitFeedback').html('Question submission is closed')
-			}
-		}
-	});
+                    switch (user_answer) { /* add E, T, F */
+                        case 'A':
+                            Questions.update(id, {$inc: {A: 1}});
+                            break;
+                        case 'B':
+                            Questions.update(id, {$inc: {B: 1}});
+                            break;
+                        case 'C':
+                            Questions.update(id, {$inc: {C: 1}});
+                            break;
+                        case 'D':
+                            Questions.update(id, {$inc: {D: 1}});
+                            break;
+                        case 'E':
+                            Questions.update(id, {$inc: {E: 1}});
+                            break;
+                        case 'F':
+                            Questions.update(id, {$inc: {F: 1}});
+                            break;
+                    }
+                    $('#submitFeedback').html('Your submission is ' + user_answer);
+                }
+            } else {
+                $('#submitFeedback').html('Question submission is closed')
+            }
+        }
+    });
 
     Template.teacher_question_view.rendered = function(){
         var percentages = [];
@@ -330,7 +344,7 @@ if (Meteor.isClient) {
         var total = 0;
         var optionsLen = this.data.options.length;
         for (var kk=0; kk<optionsLen; kk++){
-        	choicesList.push(this.data.options[kk].choice);
+            choicesList.push(this.data.options[kk].choice);
         }
         console.log(this);
         console.log(choicesList);
@@ -347,17 +361,17 @@ if (Meteor.isClient) {
                 counts = counts.slice(0,optionsLen);
                 console.log(counts);
 
-                total = 0;   
+                total = 0;
                 for (var jj=0; jj<counts.length; jj++){
-                	total = total + counts[jj];
+                    total = total + counts[jj];
                 }
                 console.log(total);
 
                 percentages = [];
                 for (var ii=0; ii<counts.length; ii++){
-                	percentages.push((counts[ii] * 100 / total).toFixed(0));
-                	tempOb.push({thing:choicesList[ii], percent: 1*(counts[ii] * 100 / total).toFixed(0)})
-                	// tempOb[(choicesList[ii])] = (counts[ii] * 100 / total).toFixed(0)
+                    percentages.push((counts[ii] * 100 / total).toFixed(0));
+                    tempOb.push({thing:choicesList[ii], percent: 1*(counts[ii] * 100 / total).toFixed(0)})
+                    // tempOb[(choicesList[ii])] = (counts[ii] * 100 / total).toFixed(0)
                 }
 
                 console.log(tempOb)
@@ -388,12 +402,12 @@ if (Meteor.isClient) {
                     .attr("dy", ".35em")
 
                     .text(function(d) { return d.percent + "%"; });
-         		bar.append("text")
-         			.attr("x", 0)
-         			.attr("y", barHeight / 2)
-         			.attr("dy", ".35em")
-         			.text(function(d) {return d.thing;})
-         			.attr("fill","grey")
+                 bar.append("text")
+                     .attr("x", 0)
+                     .attr("y", barHeight / 2)
+                     .attr("dy", ".35em")
+                     .text(function(d) {return d.thing;})
+                     .attr("fill","grey")
 
             }
         })
@@ -410,62 +424,62 @@ if (Meteor.isServer) {
 }
 
 var calcPercentages = function(question) {
-	normalizedList = [];
-	var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
-	var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
-	var total = 0;
-	for ( var i =0; i< choices.length; i++){
-		if (question[choices[i]] != ''){
-			normalizedList.push( (question[letters[i]]))
-			total +=question[letters[i]];
-		}else{
-			normalizedList.push(0);
-		}
-	}
-	if (total != 0){
-		console.log('dividing');
-		normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
-	}
-	normalizedList.push(total);
-	return normalizedList;
+    normalizedList = [];
+    var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
+    var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    var total = 0;
+    for ( var i =0; i< choices.length; i++){
+        if (question[choices[i]] != ''){
+            normalizedList.push( (question[letters[i]]))
+            total +=question[letters[i]];
+        }else{
+            normalizedList.push(0);
+        }
+    }
+    if (total != 0){
+        console.log('dividing');
+        normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
+    }
+    normalizedList.push(total);
+    return normalizedList;
 }
 
 var passData = function() {
-	var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-	if (question != undefined) {
-		if (question.status == 'active') {
-			var status_control = 'to freeze';	
-		} else {
-			var status_control = 'to activate';	
-		}
-		
-		var question_id = question._id;
-		var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
-		var options = [];
-		var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
-		var letters = ['A', 'B', 'C', 'D', 'E', 'F']
-		for (i in choices) {
-			if (question[choices[i]] != ''){
-				options.push(
-				{
-					option: '',
-					choice: question[choices[i]],
-					voters: question[letters[i]],
-					percent: stats[i],
-					letter: letters[i]
-				})
-			}
-		}
-		
-		return {
-			question_id: question_id,
-			status_control: status_control,
-			options: options,
-			title: question.title,
-			correct: question.correct,
-			total: stats[stats.length-1]
-		}
-	}
+    var question = Questions.findOne({status:{$in:['active', 'frozen']}});
+    if (question != undefined) {
+        if (question.status == 'active') {
+            var status_control = 'to freeze';
+        } else {
+            var status_control = 'to activate';
+        }
+
+        var question_id = question._id;
+        var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
+        var options = [];
+        var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
+        var letters = ['A', 'B', 'C', 'D', 'E', 'F']
+        for (i in choices) {
+            if (question[choices[i]] != ''){
+                options.push(
+                {
+                    option: '',
+                    choice: question[choices[i]],
+                    voters: question[letters[i]],
+                    percent: stats[i],
+                    letter: letters[i]
+                })
+            }
+        }
+
+        return {
+            question_id: question_id,
+            status_control: status_control,
+            options: options,
+            title: question.title,
+            correct: question.correct,
+            total: stats[stats.length-1]
+        }
+    }
 
 }
 
@@ -475,18 +489,29 @@ Router.map(function () {
         path: '/',
     });
 
+    this.route('login', {
+        path: '/login',
+    });
+
+    this.route('account', {
+        path: '/account/:_username',
+        data: function() {
+            return Accounts.findOne(this.params.username);
+        },
+    });
+
     this.route('teacher_home', {
         path: 'teacher/home',
-		template: function() {
-			if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
-				return 'new'
-			}else{
-				return 'teacher_question_view'}
-			},
-		waitOn: function() {
+        template: function() {
+            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
+                return 'new'
+            }else{
+                return 'teacher_question_view'}
+            },
+        waitOn: function() {
             return Meteor.subscribe("questions")
         },
-		data: function() { return passData(); },
+        data: function() { return passData(); },
 
     });
 
@@ -507,14 +532,15 @@ Router.map(function () {
         path: '/teacher/new',
         template: 'new',
     });
-	
-	this.route('teacher_edit',{
-		path:'/teacher/edit',
-		data: function() {
-			var question = Session.get('editing');
-			return Questions.findOne(question);
-		}
-	})
+
+    this.route('teacher_edit',{
+        path:'/teacher/edit',
+        data: function() {
+            var question = Session.get('editing');
+            return Questions.findOne(question);
+        }
+    });
+
     this.route('teacher_question_view', {
         path: '/teacher/:_id',
         waitOn: function() {
@@ -522,7 +548,7 @@ Router.map(function () {
         }
         ,
         template: 'teacher_question_view',
-		data: function() { return passData(); },
+        data: function() { return passData(); },
         action: function(){
             if (this.ready()){
                 this.render()
