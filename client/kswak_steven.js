@@ -42,8 +42,12 @@ if (Meteor.isClient) {
 				choice5: '',
 				choice6: '',
 				status: 'active',
-				A: 0,
-				B: 0
+				A: 0, 
+				B: 0,
+				C: 0,
+				D: 0,
+				E: 0,
+				F: 0
 			}
 			launchQuestion();
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
@@ -60,8 +64,12 @@ if (Meteor.isClient) {
 				choice5: '',
 				choice6: '',
 				status: 'active',
-				A: 0,
-				B: 0
+				A: 0, 
+				B: 0,
+				C: 0,
+				D: 0,
+				E: 0,
+				F: 0
 			}
 			launchQuestion();
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
@@ -80,7 +88,10 @@ if (Meteor.isClient) {
 				status: 'active',
 				A: 0, 
 				B: 0,
-				C: 0
+				C: 0,
+				D: 0,
+				E: 0,
+				F: 0
 			}
 			launchQuestion();
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
@@ -100,7 +111,9 @@ if (Meteor.isClient) {
 				A: 0, 
 				B: 0,
 				C: 0,
-				D: 0
+				D: 0,
+				E: 0,
+				F: 0
 			}
 			launchQuestion();
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
@@ -121,7 +134,8 @@ if (Meteor.isClient) {
 				B: 0,
 				C: 0,
 				D: 0,
-				E: 0
+				E: 0,
+				F: 0
 			}
 			launchQuestion();
 			var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
@@ -169,12 +183,16 @@ if (Meteor.isClient) {
                 choice2: choice2.value,
                 choice3: choice3.value,
                 choice4: choice4.value,
+				choice5: '',
+				choice6: '',
                 correct: correct,
                 status: 'active', //active, frozen, inactive - not being launched
-				A: 0,
+				A: 0, 
 				B: 0,
 				C: 0,
 				D: 0,
+				E: 0,
+				F: 0
 			}
 			
 
@@ -399,7 +417,6 @@ var calcPercentages = function(question) {
 	for ( var i =0; i< choices.length; i++){
 		if (question[choices[i]] != ''){
 			normalizedList.push( (question[letters[i]]))
-			console.log( "here", letters[i], question[letters[i]], total)
 			total +=question[letters[i]];
 		}else{
 			normalizedList.push(0);
