@@ -4,7 +4,8 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
     <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
-	
+    <script src="packages/slowaes/js/aes_fast.js"></script>
+    <script src="packages/slowaes/js/cryptoHelpers.js"></script>
 
 </head>
 
@@ -55,17 +56,17 @@
     <title>KSWAK Teacher | Add New Question</title>
     <div id="container_new">
     <h1>Create a question</h1>
-		
-	<h4>Quick Launch:</h4>
-		<button id='tf'>True/False</button>
-		<button id='mc2'>MC (2 choices)</button>
-		<button id='mc3'>MC (3 choices)</button>
-		<button id='mc4'>MC (4 choices)</button>
-		<button id='mc5'>MC (5 choices)</button>
-		<button id='mc6'>MC (6 choices)</button>
+
+    <h4>Quick Launch:</h4>
+        <button id='tf'>True/False</button>
+        <button id='mc2'>MC (2 choices)</button>
+        <button id='mc3'>MC (3 choices)</button>
+        <button id='mc4'>MC (4 choices)</button>
+        <button id='mc5'>MC (5 choices)</button>
+        <button id='mc6'>MC (6 choices)</button>
 
     <br>
-	<h4>Custom:</h4>
+    <h4>Custom:</h4>
     <div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title"> <br>
@@ -108,7 +109,8 @@
 		<table>
 		{{#each options}}
 		<tr>	
-        <input type="radio" name="choice" value={{letter}}>{{choice}}
+        <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
+            <label for="choice{{letter}}">{{choice}}</label>
 		</tr>
 		{{/each}}
 		</table>
@@ -194,8 +196,8 @@
       </div>
       <div class="modal-footer">
         <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="modal">Yes</button>
-		<button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
-		  
+        <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+
       </div>
     </div>
   </div>
@@ -203,7 +205,7 @@
 </template>
 
 <template name='teacher_edit'>
-	<div class='form_container'>
+    <div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title" value={{title}}> <br>
             Choices: <br>
@@ -229,9 +231,9 @@
                     <td align='left'><input type="radio" value=D name="correct"></td>
                 </tr>
             </table>
-			 <div id="publishFeedback"></div>
+             <div id="publishFeedback"></div>
         </form>
-		<button id="cancel" class="btn btn-primary">Cancel</button>
-		<button id="save" class="btn btn-primary">Save changes</button>
+        <button id="cancel" class="btn btn-primary">Cancel</button>
+        <button id="save" class="btn btn-primary">Save changes</button>
     </div>
 </template>

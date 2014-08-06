@@ -71,6 +71,7 @@ input[type=radio][name=choice] {
     display:none; 
     margin:10px;
 }
+ 
 /*
   Change the look'n'feel of labels (which are adjacent to radiobuttons).
   Add some margin, padding to label
@@ -79,14 +80,14 @@ input[type=radio][name=choice]  + label {
     display:inline-block;
     margin:-2px;
     padding: 4px 12px;
-    background-color: #e7e7e7 !important;
-    border-color: #ddd !important;
+    background-color: #e7e7e7 ;
+    border-color: #ddd;
 }
 /*
  Change background color for label next to checked radio button
  to make it look like highlighted button
 */
-input[type=radio][name=choice] :checked + label { 
+input[type=radio][name=choice]:checked + label { 
    background-image: none;
-    background-color:#d0d0d0 !important;
+    background-color:#d0d0d0;
 }
