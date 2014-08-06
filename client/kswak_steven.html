@@ -108,7 +108,8 @@
 		<table>
 		{{#each options}}
 		<tr>	
-        <input type="radio" name="choice" value={{letter}}>{{choice}}
+        <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
+            <label for="choice{{letter}}">{{choice}}</label>
 		</tr>
 		{{/each}}
 		</table>
