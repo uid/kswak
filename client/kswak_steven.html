@@ -107,15 +107,15 @@
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
-		<table>
-		{{#each options}}
-		<tr>	
+        <table>
+        {{#each options}}
+        <tr>
         <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
             <label for="choice{{letter}}">{{choice}}</label>
-		</tr>
-		{{/each}}
-		</table>
-        <input type="submit" name="submit" value="Submit"> 
+        </tr>
+        {{/each}}
+        </table>
+        <input type="submit" name="submit" value="Submit">
         <div id="submitFeedback"></div>
     </form>
     </div>
@@ -203,6 +203,10 @@
     </div>
   </div>
 </div>
+</template>
+
+<template name='login'>
+    <div class='container'>LOGGING IN</div>
 </template>
 
 <template name='teacher_edit'>

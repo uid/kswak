@@ -15,18 +15,29 @@ function launchQuestion(id){
     Router.go('/teacher/home');
 }
 
-function getUsernameFromBase64(base64String) {
-    //decode base64 from url
-    //decode that result using decryptAES
-    //return username
+function getUsernameFromBase64(urlBase64String) {
+    var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
+    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
+    return username;
 }
 
+//Creates an account and returns the id of that account.
 function createAccount(username){
     var account_data = {
         username: username,
         user_email: username+'@mit.edu',
     }
     var account_id = Accounts.insert(account_data, function(err) { /**/ });
+    console.log('making account');
+    return account_id;
+}
+
+function login() {
+    var sneakysneaky = IronLocation.path().split('/')[2];
+//    var username = getUsernameFromBase64(sneakysneaky);
+    var username = 'plzzz';
+    var account_id = createAccount(username);
+    return username;
 }
 
 if (Meteor.isClient) {
@@ -490,7 +501,11 @@ Router.map(function () {
     });
 
     this.route('login', {
-        path: '/login',
+        path: '/login/[A-Za-z0-9._-]+/',
+        data: function() {
+            var username = login();
+            this.redirect('account/' + username);
+        },
     });
 
     this.route('account', {
