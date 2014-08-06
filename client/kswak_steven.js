@@ -308,37 +308,44 @@ if (Meteor.isClient) {
     Template.teacher_question_view.rendered = function(){
         var percentages = [];
         var choicesList = [];
-        var optionsLen = 7;
-        var qs = Questions.find();
+        var tempOb = []
         var total = 0;
+        var optionsLen = this.data.options.length;
+        for (var kk=0; kk<optionsLen; kk++){
+        	choicesList.push(this.data.options[kk].choice);
+        }
+        console.log(this);
+        console.log(choicesList);
+
+        var qs = Questions.find();
         qs.observe({
 
             changed: function(newQuestion, oldQuestion){
-                console.log("new relply")
+                console.log(newQuestion);
                 $('#bar').empty();
-				
-                percentages = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.F];
-                choicesList = ["A", "B", "C", "D", "E", "F"];
-                // for (var jj=0; jj < optionsLen; jj++){
-                //     percentages.push(1*tThis.data.options[jj].percent);
-                //     choicesList.push(tThis.data.options[jj].choice);
-                // }
-                choicesList = ["A", "B", "C", "D", "E", "T", "F"];
+
+
+                counts = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.F];
+                counts = counts.slice(0,optionsLen);
+                console.log(counts);
+
                 total = 0;   
                 for (var jj=0; jj<counts.length; jj++){
-                    total = total + counts[jj];
+                	total = total + counts[jj];
                 }
                 console.log(total);
 
                 percentages = [];
                 for (var ii=0; ii<counts.length; ii++){
-                    percentages.push((counts[ii] * 100 / total).toFixed(0))
+                	percentages.push((counts[ii] * 100 / total).toFixed(0));
+                	tempOb.push({thing:choicesList[ii], percent: 1*(counts[ii] * 100 / total).toFixed(0)})
+                	// tempOb[(choicesList[ii])] = (counts[ii] * 100 / total).toFixed(0)
                 }
 
+                console.log(tempOb)
                 console.log(percentages);
                 console.log(choicesList);
 
-                //percentages = [29, 39]
                 //Bar Chart
                 var width = 420;
                 var barHeight = 20;
@@ -349,18 +356,27 @@ if (Meteor.isClient) {
                     .attr("width", width+80)
                     .attr("height", barHeight * optionsLen);
                 var bar = chart.selectAll("g")
-                    .data(percentages)
+                    // .data(percentages)
+                    .data(tempOb, function(d){return d.thing;})
                     .enter().append("g")
                     .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
                 bar.append("rect")
-                    .attr("width", x)
+                    // .attr("width", x)
+                    .attr("width", function(d){return x(d.percent);})
                     .attr("height", barHeight - 1);
                 bar.append("text")
-                    .attr("x", function(d) { return x(d) + 10; })
+                    .attr("x", function(d) { return x(d.percent) + 10; })
                     .attr("y", barHeight / 2)
                     .attr("dy", ".35em")
 
-                    .text(function(d) { return d + "%"; });
+                    .text(function(d) { return d.percent + "%"; });
+         		bar.append("text")
+         			.attr("x", 0)
+         			.attr("y", barHeight / 2)
+         			.attr("dy", ".35em")
+         			.text(function(d) {return d.thing;})
+         			.attr("fill","grey")
+
             }
         })
     }
