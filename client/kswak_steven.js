@@ -367,7 +367,9 @@ if (Meteor.isClient) {
 
             changed: function(newQuestion, oldQuestion){
                 console.log(newQuestion);
+                optionsLen = newQuestion.type[2];
                 $('#bar').empty();
+                tempOb = [];
 
 
                 counts = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.F];
