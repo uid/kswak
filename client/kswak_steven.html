@@ -107,14 +107,15 @@
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <form id="student_question">
-        <table>
-        {{#each options}}
-        <tr>
-        <input type="radio" name="choice" value={{letter}}>{{choice}}
-        </tr>
-        {{/each}}
-        </table>
-        <input type="submit" name="submit" value="Submit">
+		<table>
+		{{#each options}}
+		<tr>	
+        <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
+            <label for="choice{{letter}}">{{choice}}</label>
+		</tr>
+		{{/each}}
+		</table>
+        <input type="submit" name="submit" value="Submit"> 
         <div id="submitFeedback"></div>
     </form>
     </div>
@@ -212,22 +213,22 @@
             <table id='input_choices'>
                 <tr>
                     <td align='right'>A </td>
-                    <td align='left'><input type="text" name="choice_1" value={{choice1}}></td>
+                    <td align='left'><input type="text" name="choice1" value={{choice1}}></td>
                     <td align='left'><input type="radio" value=A name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>B </td>
-                    <td align='left'><input type="text" name="choice_2" value={{choice2}}></td>
+                    <td align='left'><input type="text" name="choice2" value={{choice2}}></td>
                     <td align='left'><input type="radio" value=B name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>C </td>
-                    <td align='left'><input type="text" name="choice_3" value={{choice3}}></td>
+                    <td align='left'><input type="text" name="choice3" value={{choice3}}></td>
                     <td align='left'><input type="radio" value=C name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>D </td>
-                    <td align='left'><input type="text" name="choice_4" value={{choice4}}></td>
+                    <td align='left'><input type="text" name="choice4" value={{choice4}}></td>
                     <td align='left'><input type="radio" value=D name="correct"></td>
                 </tr>
             </table>

@@ -180,10 +180,10 @@ if (Meteor.isClient) {
         'submit form': function (event, template) {
             event.preventDefault();
             var title = template.find("input[name=title]");
-            var choice1 = template.find("input[name=choice_1]");
-            var choice2 = template.find("input[name=choice_2]");
-            var choice3 = template.find("input[name=choice_3]");
-            var choice4 = template.find("input[name=choice_4]");
+            var choice1 = template.find("input[name=choice1]");
+            var choice2 = template.find("input[name=choice2]");
+            var choice3 = template.find("input[name=choice3]");
+            var choice4 = template.find("input[name=choice4]");
             var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
@@ -236,6 +236,8 @@ if (Meteor.isClient) {
                 Questions.update( this.question_id, {$set:{status:'active'}})
             }
         },
+
+        //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
             Router.go('/teacher/edit')
@@ -274,10 +276,10 @@ if (Meteor.isClient) {
             launchQuestion();
             //create new question and launch it
             var title = template.find("input[name=title]");
-            var choice1 = template.find("input[name=choice_1]");
-            var choice2 = template.find("input[name=choice_2]");
-            var choice3 = template.find("input[name=choice_3]");
-            var choice4 = template.find("input[name=choice_4]");
+            var choice1 = template.find("input[name=choice1]");
+            var choice2 = template.find("input[name=choice2]");
+            var choice3 = template.find("input[name=choice3]");
+            var choice4 = template.find("input[name=choice4]");
             var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
@@ -437,15 +439,13 @@ var calcPercentages = function(question) {
         }
     }
     if (total != 0){
-        console.log('dividing');
         normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
     }
-    normalizedList.push(total);
+    normalizedList.push(total)
     return normalizedList;
 }
 
-var passData = function() {
-    var question = Questions.findOne({status:{$in:['active', 'frozen']}});
+var passData = function(question) {
     if (question != undefined) {
         if (question.status == 'active') {
             var status_control = 'to freeze';
@@ -511,7 +511,9 @@ Router.map(function () {
         waitOn: function() {
             return Meteor.subscribe("questions")
         },
-        data: function() { return passData(); },
+        data: function() {
+            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
+            return passData(question); },
 
     });
 
@@ -525,7 +527,9 @@ Router.map(function () {
     this.route('question_view', {
         path: '/student',  //overrides the default '/home'
         template: 'question_view',
-        data: function() { return passData(); }
+        data: function() {
+            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
+            return passData(question);}
     });
 
     this.route('teacher_new', {
@@ -548,7 +552,9 @@ Router.map(function () {
         }
         ,
         template: 'teacher_question_view',
-        data: function() { return passData(); },
+        data: function() {
+            var question = Questions.findOne(this.params._id);
+            return passData(question);},
         action: function(){
             if (this.ready()){
                 this.render()
