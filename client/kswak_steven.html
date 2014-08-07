@@ -1,12 +1,6 @@
 <head>
     <title>KSWAK</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
-    <script src="packages/slowaes/js/aes_fast.js"></script>
-    <script src="packages/slowaes/js/cryptoHelpers.js"></script>
-    <script src='server/encrypt.js'></script>
 
 </head>
 
@@ -133,7 +127,7 @@
             {{#each options}}
                 <tr>
                     <td align='right'>{{option}} |&nbsp;</td>
-                    <td align='left'>{{choice}}</td>
+                    <td align='left' class="teacherOptions">{{choice}}</td>
                     <td class='blank'></td>
                     <td class='statistics' align='right'>{{voters}}  ({{percent}}% of responders)</td>
                 </tr>
@@ -207,6 +201,10 @@
 
 <template name='login'>
     <div class='container'>LOGGING IN</div>
+</template>
+
+<template name='account'>
+    <div class='container'>ACCOUNT ON</div>
 </template>
 
 <template name='teacher_edit'>
