@@ -15,6 +15,7 @@ function getUsernameFromBase64(urlBase64String) {
 
 //Creates an account and returns the id of that account.
 function createAccount(username){
+    var loginFlag = false;
     var account_data = {
         username: username,
         user_email: username + '@mit.edu',
@@ -23,10 +24,10 @@ function createAccount(username){
     if (user == null) {
         var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {}});
     } else { //user does exist
-        Meteor.loginWithPassword(user.username, MASTER);
+        loginFlag = true;
+        //Meteor.loginWithPassword(user.username, MASTER); can't do this on the server...
     }
-    console.log('making account');
-    return account_id;
+    return loginFlag;
 }
 
 Meteor.methods({
@@ -35,8 +36,12 @@ Meteor.methods({
         var encrypted_string = encrypted_username['encrypted_username'];
         console.log('str: ' + encrypted_string);
         var username = getUsernameFromBase64(encrypted_string);
-        var account_id = createAccount(username);
-        return username;
+        var loginFlag = createAccount(username);
+        return [username, loginFlag];
+        //BUGS:
+        //This method, when called, returns nothing and I need login flag
+        //Can't log in on server, need to do in client
+        //
     }
 
 });

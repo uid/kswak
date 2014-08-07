@@ -24,7 +24,7 @@ cryptoHelpers = {
     {
         try{
             console.log('in try');
-            console.log('s: ' + s);
+            console.log('escape s: ' + escape(s));
             var returned = decodeURIComponent(escape(s));
             console.log('returned ' + returned);
             return returned;
