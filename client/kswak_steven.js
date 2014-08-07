@@ -314,7 +314,6 @@ if (Meteor.isClient) {
             if (question.status == 'active'){
                 var choice = template.find("input[name='choice']:checked");
                 if (choice == null) {
-                    console.log('ERROR: nothing chosen. Please choose an answer.')
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
                 else {
@@ -409,10 +408,10 @@ if (Meteor.isClient) {
                     .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
                 bar.append("rect")
                     // .attr("width", x)
-                    .attr("width", function(d){return x(d.percent);})
+                    .attr("width", function(d){return x(d.percent)*.9;})
                     .attr("height", barHeight - 1);
                 bar.append("text")
-                    .attr("x", function(d) { return x(d.percent) + 10; })
+                    .attr("x", function(d) { return x(d.percent)*.9 + 10; })
                     .attr("y", barHeight / 2)
                     .attr("dy", ".35em")
 
