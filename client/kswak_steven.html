@@ -1,12 +1,6 @@
 <head>
     <title>KSWAK</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
-    <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
-    <script src="packages/slowaes/js/aes_fast.js"></script>
-    <script src="packages/slowaes/js/cryptoHelpers.js"></script>
-    <script src='server/encrypt.js'></script>
 
 </head>
 
@@ -94,7 +88,7 @@
                     <td align='left'><input type="radio" value=D name="correct"></td>
                 </tr>
             </table>
-            <input type="submit" value="Publish" id='publish_button'/>
+            <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
         </form>
     </div>
@@ -124,8 +118,8 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-
-    <button style="margin-left:300px" id='change_mode' class="btn btn-primary">{{status_control}}</button><button id='edit' style="margin-left:10px" class="btn btn-primary">Edit</button>
+		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+		<button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -207,6 +201,10 @@
 
 <template name='login'>
     <div class='container'>LOGGING IN</div>
+</template>
+
+<template name='account'>
+    <div class='container'>ACCOUNT ON</div>
 </template>
 
 <template name='teacher_edit'>
