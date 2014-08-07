@@ -111,7 +111,7 @@
         {{#each options}}
         <tr>
         <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
-            <label for="choice{{letter}}"><b>{{letter}}.</b> {{choice}}</label>
+            <label for="choice{{letter}}">{{choice}}</label>
         </tr>
         {{/each}}
         </table>
@@ -124,7 +124,8 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-		<button style="margin-left:300px" id='change_mode' class="btn btn-primary">{{status_control}}</button><button id='edit' style="margin-left:10px" class="btn btn-primary">Edit</button>
+		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+		<button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>

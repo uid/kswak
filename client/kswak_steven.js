@@ -498,10 +498,15 @@ var calcPercentages = function(question) {
 var passData = function(question) {
     if (question != undefined) {
         if (question.status == 'active') {
+			var status_comment = 'This question is live'
             var status_control = 'to freeze';
-        } else {
+        }else if(question.status == 'frozen') {
             var status_control = 'to activate';
-        }
+			var status_comment = 'This question is shown and FROZEN'
+        }else{
+			var status_control = 'to activate';
+			var status_comment = 'This question is not presented'
+		}
 
         var question_id = question._id;
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
@@ -521,6 +526,7 @@ var passData = function(question) {
 
         return {
             question_id: question_id,
+			status_comment: status_comment,
             status_control: status_control,
             options: options,
             title: question.title,
