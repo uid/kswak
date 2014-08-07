@@ -74,7 +74,13 @@ input[type=submit][value=Submit]{
 
 }
 
-
+.teacherOptions{
+    background-color:#e7e7e7 ;
+}
+#input_choices{
+    border-collapse: separate;
+    border-spacing:5px 10px;
+}
 
 
 /*

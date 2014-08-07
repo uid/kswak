@@ -386,6 +386,7 @@ if (Meteor.isClient) {
             } else {
                 $('#submitFeedback').html('Question submission is closed')
             }
+            // $('#submitFeedback').effect("shake", {times:1});
         }
     });
 
