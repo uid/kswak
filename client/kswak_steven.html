@@ -69,26 +69,26 @@
             <table id='input_choices'>
                 <tr>
                     <td align='right'>A </td>
-                    <td align='left'><input type="text" name="choice_1"></td>
+                    <td align='left'><input type="text" name="choice1"></td>
                     <td align='left'><input type="radio" value=A name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>B </td>
-                    <td align='left'><input type="text" name="choice_2"></td>
+                    <td align='left'><input type="text" name="choice2"></td>
                     <td align='left'><input type="radio" value=B name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>C </td>
-                    <td align='left'><input type="text" name="choice_3"></td>
+                    <td align='left'><input type="text" name="choice3"></td>
                     <td align='left'><input type="radio" value=C name="correct"></td>
                 </tr>
                 <tr>
                     <td align='right'>D </td>
-                    <td align='left'><input type="text" name="choice_4"></td>
+                    <td align='left'><input type="text" name="choice4"></td>
                     <td align='left'><input type="radio" value=D name="correct"></td>
                 </tr>
             </table>
-            <input type="submit" value="Publish" id='publish_button'/>
+            <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
         </form>
     </div>
@@ -118,8 +118,8 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-
-    <button style="margin-left:300px" id='change_mode'>{{status_control}}</button><button id='edit'>Edit</button>
+		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+		<button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -168,7 +168,7 @@
     <tr class="gridRow {{status}}">
     <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
     <td>{{status}}&nbsp;</td>
-    <td><button class="delete">X</button></td>
+    <td><button style='margin:4px' class="delete btn btn-danger">X</button></td>
     </tr>
     {{/each}}
     </table><br/>
@@ -208,35 +208,23 @@
 </template>
 
 <template name='teacher_edit'>
-    <div class='form_container'>
+	<div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title" value={{title}}> <br>
             Choices: <br>
             <table id='input_choices'>
+				{{#each options}}
                 <tr>
-                    <td align='right'>A </td>
-                    <td align='left'><input type="text" name="choice1" value={{choice1}}></td>
-                    <td align='left'><input type="radio" value=A name="correct"></td>
+                    <td align='right'>{{letter}} </td>
+                    <td align='left'><input type="text" name={{choice}} value={{option}}></td>
+                    <td align='left'><input type="radio" value={{letter}} name="correct"></td>
                 </tr>
-                <tr>
-                    <td align='right'>B </td>
-                    <td align='left'><input type="text" name="choice2" value={{choice2}}></td>
-                    <td align='left'><input type="radio" value=B name="correct"></td>
-                </tr>
-                <tr>
-                    <td align='right'>C </td>
-                    <td align='left'><input type="text" name="choice3" value={{choice3}}></td>
-                    <td align='left'><input type="radio" value=C name="correct"></td>
-                </tr>
-                <tr>
-                    <td align='right'>D </td>
-                    <td align='left'><input type="text" name="choice4" value={{choice4}}></td>
-                    <td align='left'><input type="radio" value=D name="correct"></td>
-                </tr>
+				{{/each}}
             </table>
-             <div id="publishFeedback"></div>
+			 <div id="publishFeedback"></div>
         </form>
-        <button id="cancel" class="btn btn-primary">Cancel</button>
-        <button id="save" class="btn btn-primary">Save changes</button>
+		<button id="cancel" class="btn btn-primary">Cancel</button>
+		<button id="save" class="btn btn-primary">Save changes</button>
+		<button id="save_launch" class="btn btn-primary">Save and launch</button>
     </div>
 </template>

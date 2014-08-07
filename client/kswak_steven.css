@@ -62,6 +62,20 @@ input[name="choice"]{
 
 
 
+input[type=submit][value=Submit]{
+    display:inline-block;
+    padding: 4px 12px;
+    margin:1%;
+    background-color: lightBlue ;
+    border-color: #ddd;
+    min-width: 100px;
+    text-align:center;
+    border-style:none;
+
+}
+
+
+
 
 /*
   Hide radio button (the round disc)
@@ -78,10 +92,11 @@ input[type=radio][name=choice] {
 */
 input[type=radio][name=choice]  + label {
     display:inline-block;
-    margin:-2px;
     padding: 4px 12px;
     background-color: #e7e7e7 ;
     border-color: #ddd;
+    min-width: 100px;
+    text-align:center;
 }
 /*
  Change background color for label next to checked radio button
@@ -89,5 +104,6 @@ input[type=radio][name=choice]  + label {
 */
 input[type=radio][name=choice]:checked + label { 
    background-image: none;
-    background-color:#d0d0d0;
+    /*background-color:#d0d0d0;*/
+    background-color:#aaaaaa;
 }
