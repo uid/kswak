@@ -94,7 +94,7 @@
                     <td align='left'><input type="radio" value=D name="correct"></td>
                 </tr>
             </table>
-            <input type="submit" value="Publish" id='publish_button'/>
+            <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
         </form>
     </div>
@@ -111,7 +111,7 @@
         {{#each options}}
         <tr>
         <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
-            <label for="choice{{letter}}">{{choice}}</label>
+            <label for="choice{{letter}}"><b>{{letter}}.</b> {{choice}}</label>
         </tr>
         {{/each}}
         </table>
@@ -124,8 +124,7 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-
-    <button style="margin-left:300px" id='change_mode' class="btn btn-primary">{{status_control}}</button><button id='edit' style="margin-left:10px" class="btn btn-primary">Edit</button>
+		<button style="margin-left:300px" id='change_mode' class="btn btn-primary">{{status_control}}</button><button id='edit' style="margin-left:10px" class="btn btn-primary">Edit</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
