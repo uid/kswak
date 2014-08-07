@@ -3,6 +3,10 @@ questionsHandle = Meteor.subscribe("questions");
 //Responses = new Meteor.Collection("responses");
 Accounts = new Meteor.Collection("accounts");
 
+//GLOBAL VARIABLES
+var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
+var letters = ['A', 'B', 'C', 'D', 'E', 'F']
+
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
@@ -281,30 +285,66 @@ if (Meteor.isClient) {
             Router.go('/teacher/home')
 
         },
-        'click #save': function(event, template){
-            var question = Session.get('editing');
-            //disable current launched question
-            launchQuestion();
-            //create new question and launch it
+		'click #save': function(event, template){
+			var question = Session.get('editing');
+			//create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
             var choice2 = template.find("input[name=choice2]");
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
+			var choice5 = template.find("input[name=choice5]");
+			var choice6 = template.find("input[name=choice6]");
             var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
-            Questions.update(question, {$set:{title:title.value,
-                                               choice1:choice1.value,
-                                               choice2:choice2.value,
-                                               choice3:choice3.value,
-                                               choice4:choice4.value,
-                                               correct:correct,
-                                               status:'active'}})
-            Router.go('/teacher/home')
-        }
+			Questions.update(question, {$set:{title:title.value,
+											  choice1:choice1.value,
+											  choice2:choice2.value,
+											  choice3:choice3.value,
+											  choice4:choice4.value,
+											  choice5:choice5.value,
+											  choice6:choice6.value,
+											  correct:correct,
+											  }})
+			if (question.status == 'active'){
+				Router.go('/teacher/home')
+			}else{
+				Router.go('/teacher/summary')
+			}
+		},
+		
+		'click #save_launch': function(event, template){
+			var question = Session.get('editing');
+			//disable current launched question
+			launchQuestion();
+			//create new question and launch it
+            var title = template.find("input[name=title]");
+            var choice1 = template.find("input[name=choice1]");
+            var choice2 = template.find("input[name=choice2]");
+            var choice3 = template.find("input[name=choice3]");
+            var choice4 = template.find("input[name=choice4]");
+			var choice5 = template.find("input[name=choice5]");
+			var choice6 = template.find("input[name=choice6]");
+            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
+            if (correct == null){
+                console.log('ERROR: nothing chosen. Please choose a correct answer.')
+                $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
+            }
+			Questions.update(question, {$set:{title:title.value,
+											  choice1:choice1.value,
+											  choice2:choice2.value,
+											  choice3:choice3.value,
+											  choice4:choice4.value,
+											  choice5:choice5.value,
+											  choice6:choice6.value,
+											  correct:correct,
+											  status:'active'
+											  }})
+			Router.go('/teacher/home')
+		}
     })
 
     Template.question_view.events({
@@ -439,8 +479,6 @@ if (Meteor.isServer) {
 
 var calcPercentages = function(question) {
     normalizedList = [];
-    var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
-    var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
@@ -468,8 +506,6 @@ var passData = function(question) {
         var question_id = question._id;
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
-        var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
-        var letters = ['A', 'B', 'C', 'D', 'E', 'F']
         for (i in choices) {
             if (question[choices[i]] != ''){
                 options.push(
@@ -553,13 +589,22 @@ Router.map(function () {
         template: 'new',
     });
 
-    this.route('teacher_edit',{
-        path:'/teacher/edit',
-        data: function() {
-            var question = Session.get('editing');
-            return Questions.findOne(question);
-        }
-    });
+	this.route('teacher_edit',{
+		path:'/teacher/edit',
+		data: function() {
+			var question = Questions.findOne(Session.get('editing'));
+			//console.log('q', question);
+			var options =[];
+			for (var i=0; i<choices.length; i++){
+				options.push({letter:letters[i],choice:choices[i], option:question[choices[i]]});
+				//console.log('hereCont', i);
+			}
+			return {
+				options: options,
+				title: question.title
+			}
+		}
+	})
 
     this.route('teacher_question_view', {
         path: '/teacher/:_id',
