@@ -3,6 +3,12 @@ Meteor.publish("questions", function () {
     return Questions.find();
 });
 
+
+Responses = new Meteor.Collection("responses");
+Meteor.publish("responses", function () {
+    return Responses.find();
+});
+
 var MASTER = 'asd651c8138'
 var ENCRYPTION_KEY = "26bc!@!$@$^W64vc"
 
@@ -43,6 +49,5 @@ Meteor.methods({
         //Can't log in on server, need to do in client
         //
     }
-
 });
 

@@ -1,7 +1,19 @@
 Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
-//Responses = new Meteor.Collection("responses");
+Responses = new Meteor.Collection("responses");
 //AccountsTest = new Meteor.Collection("accountstest");
+
+
+Responses.allow({
+  insert: function (userId, doc) {
+    // the user must be logged in, and the document must be owned by the user
+    return (userId && doc.owner === userId);
+  },
+  update: function (userId, doc, fields, modifier) {
+    // can only change your own documents
+    return doc.owner === userId;
+  }
+});
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
@@ -325,6 +337,7 @@ if (Meteor.isClient) {
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
+            console.log('user', Meteor.user()._id);
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             if (question.status == 'active'){
                 var choice = template.find("input[name='choice']:checked");
@@ -335,6 +348,15 @@ if (Meteor.isClient) {
                     //var user_answer = choice.html();
                     var user_answer = choice.value;
                     var id = question._id;
+                    var user = Meteor.user()._id;
+                    var response = Responses.findOne({user:user, question:id})
+                    if (response != undefined){
+                        console.log('updating');
+                        Responses.update(response._id, {$set: {answer: user_answer}})
+                    }else{
+                        console.log('inserting', user, id, user_answer);
+                        Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')})
+                    }
 
                     switch (user_answer) { /* add E, T, F */
                         case 'A':
@@ -361,6 +383,7 @@ if (Meteor.isClient) {
             } else {
                 $('#submitFeedback').html('Question submission is closed')
             }
+            // $('#submitFeedback').effect("shake", {times:1});
         }
     });
 
@@ -452,13 +475,33 @@ if (Meteor.isServer) {
     });
 }
 
-var calcPercentages = function(question) {
+//var calcPercentages = function(question) {
+//    normalizedList = [];
+//    var total = 0;
+//    for ( var i =0; i< choices.length; i++){
+//        if (question[choices[i]] != ''){
+//            normalizedList.push( (question[letters[i]]))
+//            total +=question[letters[i]];
+//        }else{
+//            normalizedList.push(0);
+//        }
+//    }
+//    if (total != 0){
+//        normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
+//    }
+//    normalizedList.push(total)
+//    return normalizedList;
+//}
+
+var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
-            normalizedList.push( (question[letters[i]]))
-            total +=question[letters[i]];
+            var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
+            console.log("num",numResponses);
+            normalizedList.push(numResponses);
+            total +=numResponses;
         }else{
             normalizedList.push(0);
         }
@@ -492,7 +535,7 @@ var passData = function(question) {
                 {
                     option: '',
                     choice: question[choices[i]],
-                    voters: question[letters[i]],
+                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),//question[letters[i]],
                     percent: stats[i],
                     letter: letters[i]
                 })
