@@ -1,7 +1,15 @@
 <head>
     <title>KSWAK</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
+    <script>
+        var changeList;
 
+        function ChangeClass(obj){
+            if (changeList) changeList.className='studentChoice unclicked';
+            obj.className='studentChoice clicked';
+            changeList=obj;
+        }
+    </script>
 </head>
 
 <body>
@@ -104,16 +112,18 @@
         <table>
         {{#each options}}
         <tr>
-        <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
-            <label for="choice{{letter}}">{{choice}}</label>
+        <!-- <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
+            <label for="choice{{letter}}">{{choice}}</label> -->
+        <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)">
         </tr>
         {{/each}}
         </table>
-        <input type="submit" name="submit" value="Submit">
+        <!-- <input type="submit" name="submit" value="Submit"> -->
         <div id="submitFeedback"></div>
     </form>
     </div>
 </template>
+
 
 
 <template name='teacher_question_view'>
