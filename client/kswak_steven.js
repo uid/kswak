@@ -3,7 +3,6 @@ questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 
-
 Responses.allow({
   insert: function (userId, doc) {
     // the user must be logged in, and the document must be owned by the user
@@ -64,6 +63,36 @@ function login() {
     var account_id = createAccount(username);
     return username;
 }
+
+//Draw chart for submissions
+function drawChart(data) {
+	console.log('drawing update');
+	//Bar Chart
+	var width = 420;
+	var barHeight = 20;
+	var scale = d3.scale.linear()
+		.domain([0, 100])
+		.range([0, width]);
+
+	var bars = d3.select("#bar")
+	.selectAll("div")
+	.attr("id","bar")
+	.data(data);
+
+	// enter selection
+	bars
+		.enter().append("div");
+
+	// update selection
+	bars
+		.style("width", function (d) { return scale(d.percent) + "px";})
+		.attr("height", barHeight - 1)
+		.text(function (d,i) {return letters[i];});
+
+	// exit selection
+	bars
+		.exit().remove();
+};
 
 if (Meteor.isClient) {
     Template.home.helpers({
@@ -437,84 +466,47 @@ if (Meteor.isClient) {
     });
 
     Template.teacher_question_view.rendered = function(){
-        var percentages = [];
-        var choicesList = [];
-        var tempOb = []
-        var total = 0;
-        var optionsLen = this.data.options.length;
-        for (var kk=0; kk<optionsLen; kk++){
-            choicesList.push(this.data.options[kk].choice);
+		console.log('RENDER CALLED!!')
+        var barData = []
+        var optionsLen = this.data.options.length;		
+		var currentQ =this;
+		for (var kk=0; kk<optionsLen; kk++){
+			barData.push({choice:currentQ.data.options[kk].choice, percent:currentQ.data.options[kk].percent});
         }
-        console.log(this);
-        console.log(choicesList);
+		drawChart(barData);
+		//Whenever response summary changes, chart updates
+        var responseSummary = Responses.find();
+        responseSummary.observe({
+            changed: function(newResponse, oldResponse){
+				var updatedData = passData(Questions.findOne(currentQ.data.question_id));
+				var barData = [];
+				for (var kk=0; kk<optionsLen; kk++){
+					barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
+				}
+				drawChart(barData);
+			}
+		});
+		//Whenever questions(edition) change, chart updates
+		var questions = Questions.find()
+		questions.observe({
+			changed: function(newQuestion, oldQuestion){
+				var updatedData = passData(Questions.findOne(currentQ.data.question_id));
+				var barData = [];
+				for (var kk=0; kk<optionsLen; kk++){
+					barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
+				}
+				drawChart(barData);
+				
+			}
+				
 
-        var qs = Questions.find();
-        qs.observe({
+		})
 
-            changed: function(newQuestion, oldQuestion){
-                console.log(newQuestion);
-                optionsLen = newQuestion.type[2];
-                $('#bar').empty();
-                tempOb = [];
-
-
-                counts = [newQuestion.A, newQuestion.B, newQuestion.C, newQuestion.D, newQuestion.E, newQuestion.F];
-                counts = counts.slice(0,optionsLen);
-                console.log(counts);
-
-                total = 0;
-                for (var jj=0; jj<counts.length; jj++){
-                    total = total + counts[jj];
-                }
-                console.log(total);
-
-                percentages = [];
-                for (var ii=0; ii<counts.length; ii++){
-                    percentages.push((counts[ii] * 100 / total).toFixed(0));
-                    tempOb.push({thing:choicesList[ii], percent: 1*(counts[ii] * 100 / total).toFixed(0)})
-                    // tempOb[(choicesList[ii])] = (counts[ii] * 100 / total).toFixed(0)
-                }
-
-                console.log(tempOb)
-                console.log(percentages);
-                console.log(choicesList);
-
-                //Bar Chart
-                var width = 420;
-                var barHeight = 20;
-                var x = d3.scale.linear()
-                    .domain([0, d3.max(percentages)])
-                    .range([0, width]);
-                var chart = d3.select("#bar")
-                    .attr("width", width+80)
-                    .attr("height", barHeight * optionsLen);
-                var bar = chart.selectAll("g")
-                    // .data(percentages)
-                    .data(tempOb, function(d){return d.thing;})
-                    .enter().append("g")
-                    .attr("transform", function(d, i) { return "translate(0," + i * barHeight + ")"; });
-                bar.append("rect")
-                    // .attr("width", x)
-                    .attr("width", function(d){return x(d.percent)*.9;})
-                    .attr("height", barHeight - 1);
-                bar.append("text")
-                    .attr("x", function(d) { return x(d.percent)*.9 + 10; })
-                    .attr("y", barHeight / 2)
-                    .attr("dy", ".35em")
-
-                    .text(function(d) { return d.percent + "%"; });
-                 bar.append("text")
-                     .attr("x", 0)
-                     .attr("y", barHeight / 2)
-                     .attr("dy", ".35em")
-                     .text(function(d) {return d.thing;})
-                     .attr("fill","grey")
-
-            }
-        })
-    }
-
+	
+	}
 }
+
+	
 
 
 if (Meteor.isServer) {
@@ -524,31 +516,13 @@ if (Meteor.isServer) {
     });
 }
 
-//var calcPercentages = function(question) {
-//    normalizedList = [];
-//    var total = 0;
-//    for ( var i =0; i< choices.length; i++){
-//        if (question[choices[i]] != ''){
-//            normalizedList.push( (question[letters[i]]))
-//            total +=question[letters[i]];
-//        }else{
-//            normalizedList.push(0);
-//        }
-//    }
-//    if (total != 0){
-//        normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
-//    }
-//    normalizedList.push(total)
-//    return normalizedList;
-//}
 
 var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
-            var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
-            console.log("num",numResponses);
+			var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
             normalizedList.push(numResponses);
             total +=numResponses;
         }else{
@@ -618,31 +592,33 @@ function createAccount(username){
         username: username,
         user_email: username + '@mit.edu',
     };
-//    var user = Meteor.call('checkUser', username, function(err, data){ return data; });
-    var user = AccountsTest.findOne({username: username});
-    console.log(user);
-    if (user == null) {
-        var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {}});
-        var hack_data = {
-            username: username,
-            email: account_data['user_email'],
+
+    function callback(data) {
+        if (!data) {
+            var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {}});
+            var id = AccountsTest.insert(account_data, function(err) {});
+            console.log('at id: ' + id);
+
+        } else { //user does exist
+            loginFlag = true;
+            Meteor.loginWithPassword(username, MASTER);
         }
-
-        var id = AccountsTest.insert(hack_data, function(err) {});
-        console.log('at id: ' + id);
-
-    } else { //user does exist
-        loginFlag = true;
-        Meteor.loginWithPassword(user.username, MASTER);
     }
-    return loginFlag;
+    Meteor.call('checkUser',
+               username,
+               function(err, data){
+                   console.log('checkUser callback')
+                   console.log(data)
+                   callback(data);
+               });
+
 }
 
 function kswak_login(encrypted_username) {
     console.log('in kswak_login');
     console.log('str: ' + encrypted_username);
     var username = getUsernameFromBase64(encrypted_username);
-    console.log(username);
+    console.log('finished base64: '+username);
     var loginFlag = createAccount(username);
     console.log('lf: ' + loginFlag);
     return [username, loginFlag];
@@ -659,6 +635,9 @@ Router.map(function () {
 
     this.route('login', {
         path: '/login/:encrypted_username',
+        waitOn: function() {
+            return Meteor.subscribe("accountstest")
+        },
         data: function() {
             var sneakysneaky = this.params.encrypted_username;
             var usernameAndLogin = kswak_login(sneakysneaky);
@@ -667,7 +646,7 @@ Router.map(function () {
             console.log('behind if: ' + username);
             console.log(loginFlag);
             if (loginFlag) { Meteor.loginWithPassword(username, MASTER); }
-            Router.go('account', {username: username});
+            //Router.go('account', {username: username});
         },
     });
 

@@ -11,6 +11,19 @@ body {
     padding-left: 30px;
 }
 
+.navbar-text:link {
+    color: #0088cc;
+}
+
+.navbar-text:link {
+    color: #005580;
+}
+
+.navbar-text {
+    line-height: 20px;
+
+}
+
 #new_question_form {
     line-height: 30px;
 }
@@ -104,10 +117,10 @@ input[type=submit].clicked{
   we will use just the label to create pushbutton effect
 */
 input[type=radio][name=choice] {
-    display:none; 
+    display:none;
     margin:10px;
 }
- 
+
 /*
   Change the look'n'feel of labels (which are adjacent to radiobuttons).
   Add some margin, padding to label
@@ -124,8 +137,19 @@ input[type=radio][name=choice]  + label {
  Change background color for label next to checked radio button
  to make it look like highlighted button
 */
-input[type=radio][name=choice]:checked + label { 
+input[type=radio][name=choice]:checked + label {
    background-image: none;
     /*background-color:#d0d0d0;*/
     background-color:#aaaaaa;
 }
+
+#bar div {
+    font-size: 0.5em;
+    font-family: sans-serif;
+    color: white;
+    background-color: steelblue;
+    text-align: right;
+    padding: 0.5em;
+    margin: 0.2em;
+}
+
