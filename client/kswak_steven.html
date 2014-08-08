@@ -108,8 +108,8 @@
     <h1>Question view</h1>
     <div id="container_question_view">
     <h1>{{title}}</h1>
-	<p>Time posted: {{time}}</p>
-	<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+    <p>Time posted: {{time}}</p>
+    <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
     <form id="student_question">
         <table>
         {{#each options}}
@@ -130,8 +130,8 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
-		<button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
+        <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
+        <button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
         {{title}}<br>
         Choices: <br>
@@ -218,6 +218,17 @@
 
 <template name='account'>
     <div class='container'>ACCOUNT ON</div>
+</template>
+
+<template name='restricted'>
+</template>
+
+<template name='please_login'>
+    <div class='container'>
+        <span>
+            Oh no! To continue, you must log in. Please click 'Sign in' in the navbar or <a href="https://sarivera.scripts.mit.edu:444/auth.php">here</a> to log in.
+        </span>
+    </div>
 </template>
 
 <template name='teacher_edit'>
