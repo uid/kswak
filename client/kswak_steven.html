@@ -106,6 +106,8 @@
     <h1>Question view</h1>
     <div id="container_question_view">
     <h1>{{title}}</h1>
+	<p>Time posted: {{time}}</p>
+	<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
     <form id="student_question">
         <table>
         {{#each options}}
@@ -124,10 +126,10 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
 		<button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
-        Question: {{title}}<br>
+        {{title}}<br>
         Choices: <br>
         <table id='input_choices'>
             {{#each options}}
@@ -172,7 +174,7 @@
     </tr>
     {{#each questions}}
     <tr class="gridRow {{status}}">
-    <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}}</a></td>
+    <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}} ({{time}})</a></td>
     <td>{{status}}&nbsp;</td>
     <td><button style='margin:4px' class="delete btn btn-danger">X</button></td>
     </tr>

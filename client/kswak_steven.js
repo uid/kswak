@@ -19,6 +19,11 @@ function launchQuestion(id){
     Router.go('/teacher/home');
 }
 
+function setTime() {
+	var _time = (new Date).toTimeString().substring(0,5);
+	return _time;
+}
+
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
     var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
@@ -57,12 +62,12 @@ if (Meteor.isClient) {
             return Questions.find();
         }
     });
-
-
-    Template.new.events({
+	
+	Template.new.events({
         'click #tf': function(event, template) {
+			var time = setTime();
             var question_data = {
-                title: 'True/False',
+                title: '',
                 type: 'tf',
                 choice1: 'True',
                 choice2: 'False',
@@ -71,6 +76,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -78,13 +84,15 @@ if (Meteor.isClient) {
                 E: 0,
                 F: 0
             }
+			console.log('time data: ' + question_data.time)
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         },
 
         'click #mc2': function() {
+			var time = setTime();
             var question_data = {
-                title: 'MC (2 choice)',
+                title: '',
                 type: 'mc2',
                 choice1: 'A',
                 choice2: 'B',
@@ -93,6 +101,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -105,8 +114,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc3': function() {
+			var time = setTime();
             var question_data = {
-                title: 'MC (3 choice)',
+                title: '',
                 type: 'mc3',
                 choice1: 'A',
                 choice2: 'B',
@@ -115,6 +125,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -127,8 +138,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc4': function() {
+			var time = setTime();
             var question_data = {
-                title: 'MC (4 choice)',
+                title: '',
                 type: 'mc4',
                 choice1: 'A',
                 choice2: 'B',
@@ -137,6 +149,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -149,8 +162,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc5': function() {
+			var time = setTime();
             var question_data = {
-                title: 'MC (5 choice)',
+                title: '',
                 type: 'mc5',
                 choice1: 'A',
                 choice2: 'B',
@@ -159,6 +173,7 @@ if (Meteor.isClient) {
                 choice5: 'E',
                 choice6: '',
                 status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -171,8 +186,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc6': function() {
+			var time = setTime();
             var question_data = {
-                title: 'MC (6 choice)',
+                title: '',
                 type: 'mc6',
                 choice1: 'A',
                 choice2: 'B',
@@ -181,6 +197,7 @@ if (Meteor.isClient) {
                 choice5: 'E',
                 choice6: 'F',
                 status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -205,7 +222,8 @@ if (Meteor.isClient) {
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
 
-            var question_data = {
+            var time = setTime();
+			var question_data = {
                 title: title.value,
                 type: 'custom',
                 choice1: choice1.value,
@@ -215,7 +233,8 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 correct: correct,
-                status: 'active', //active, frozen, inactive - not being launched
+                status: 'active',
+				time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -234,9 +253,9 @@ if (Meteor.isClient) {
             $('input[name="correct"]').each(function() {
                 this.checked = false;
             });
-
+			
+			launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
-            launchQuestion();
         }
   });
 
@@ -502,10 +521,10 @@ var passData = function(question) {
             var status_control = 'to freeze';
         }else if(question.status == 'frozen') {
             var status_control = 'to activate';
-			var status_comment = 'This question is shown and FROZEN'
+			var status_comment = 'This question is FROZEN'
         }else{
 			var status_control = 'to activate';
-			var status_comment = 'This question is not presented'
+			var status_comment = 'This question is inactive'
 		}
 
         var question_id = question._id;
@@ -530,11 +549,11 @@ var passData = function(question) {
             status_control: status_control,
             options: options,
             title: question.title,
+			time: question.time,
             correct: question.correct,
             total: stats[stats.length-1]
         }
     }
-
 }
 
 //Templates needed: teacher, home, question, teacher_question_view
