@@ -33,7 +33,7 @@ body {
 }
 
 div[id^='container']{
-    padding:1%;
+    padding:2%;
 }
 
 
@@ -74,6 +74,10 @@ input[name="choice"]{
 
 
 
+/*#studentTable{
+    margin-right:auto;
+    margin-left:auto;
+}*/
 /*The submit button on the */
 input[type=submit].unclicked{
     display:inline-block;
@@ -81,7 +85,8 @@ input[type=submit].unclicked{
     margin:5%;
     background-color: lightBlue ;
     border-color: #ddd;
-    min-width: 100px;
+    min-width: 200px;
+    min-height:50px;
     text-align:center;
     border-style:none;
 
@@ -91,12 +96,15 @@ input[type=submit].clicked{
     display:inline-block;
     padding: 4px 12px;
     margin:5%;
-    background-color: grey ;
+    background-color: gray ;
     border-color: #ddd;
-    min-width: 100px;
+    min-width: 200px;
+    min-height: 50px;
     text-align:center;
     border-style:none;
 }
+
+
 
 
 .teacherOptions{

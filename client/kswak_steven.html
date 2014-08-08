@@ -104,22 +104,19 @@
 
 <template name='question_view'>
     <title>KSWAK | {{title}}</title>
-    <h1>Question view</h1>
     <div id="container_question_view">
+    <h2>Question view</h2>
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
     <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
     <form id="student_question">
-        <table>
+        <table id="studentTable">
         {{#each options}}
         <tr>
-        <!-- <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
-            <label for="choice{{letter}}">{{choice}}</label> -->
         <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)">
         </tr>
         {{/each}}
         </table>
-        <!-- <input type="submit" name="submit" value="Submit"> -->
         <div id="submitFeedback"></div>
     </form>
     </div>
