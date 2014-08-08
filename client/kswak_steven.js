@@ -1,7 +1,7 @@
 Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
-//AccountsTest = new Meteor.Collection("accountstest");
+AccountsTest = new Meteor.Collection("accountstest");
 
 
 Responses.allow({
@@ -18,6 +18,8 @@ Responses.allow({
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
 var letters = ['A', 'B', 'C', 'D', 'E', 'F']
+var MASTER = 'asd651c8138';
+var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 //set all questions inactive
 //If an id is passed, launch its question
@@ -555,6 +557,53 @@ var passData = function(question) {
 
 }
 
+function getUsernameFromBase64(urlBase64String) {
+    var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
+    console.log('lets go deeper');
+    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
+    return username;
+}
+
+//Creates an account and returns the id of that account.
+function createAccount(username){
+    var loginFlag = false;
+    var account_data = {
+        username: username,
+        user_email: username + '@mit.edu',
+    };
+//    var user = Meteor.call('checkUser', username, function(err, data){ return data; });
+    var user = AccountsTest.findOne({username: username});
+    console.log(user);
+    if (user == null) {
+        var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {}});
+        var hack_data = {
+            username: username,
+            email: account_data['user_email'],
+        }
+
+        var id = AccountsTest.insert(hack_data, function(err) {});
+        console.log('at id: ' + id);
+
+    } else { //user does exist
+        loginFlag = true;
+        Meteor.loginWithPassword(user.username, MASTER);
+    }
+    return loginFlag;
+}
+
+function kswak_login(encrypted_username) {
+    console.log('in kswak_login');
+    console.log('str: ' + encrypted_username);
+    var username = getUsernameFromBase64(encrypted_username);
+    console.log(username);
+    var loginFlag = createAccount(username);
+    console.log('lf: ' + loginFlag);
+    return [username, loginFlag];
+    //BUGS:
+    //This method, when called, returns nothing and I need login flag
+    //Can't log in on server, need to do in client
+}
+
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
@@ -565,7 +614,12 @@ Router.map(function () {
         path: '/login/:encrypted_username',
         data: function() {
             var sneakysneaky = this.params.encrypted_username;
-            var username = Meteor.call('kswak_login', {encrypted_username: sneakysneaky});
+            var usernameAndLogin = kswak_login(sneakysneaky);
+            var username = usernameAndLogin[0];
+            var loginFlag = usernameAndLogin[1];
+            console.log('behind if: ' + username);
+            console.log(loginFlag);
+            if (loginFlag) { Meteor.loginWithPassword(username, MASTER); }
             Router.go('account', {username: username});
         },
     });
@@ -576,7 +630,7 @@ Router.map(function () {
             return Meteor.subscribe("accountstest")
         },
         data: function() {
-            return Meteor.user()['username'];
+            return this.params.username;
         },
     });
 
