@@ -35,8 +35,8 @@ function launchQuestion(id){
 }
 
 function setTime() {
-	var _time = (new Date).toTimeString().substring(0,5);
-	return _time;
+    var _time = (new Date).toTimeString().substring(0,5);
+    return _time;
 }
 
 function getUsernameFromBase64(urlBase64String) {
@@ -66,32 +66,32 @@ function login() {
 
 //Draw chart for submissions
 function drawChart(data) {
-	console.log('drawing update');
-	//Bar Chart
-	var width = 420;
-	var barHeight = 20;
-	var scale = d3.scale.linear()
-		.domain([0, 100])
-		.range([0, width]);
+    console.log('drawing update');
+    //Bar Chart
+    var width = 420;
+    var barHeight = 20;
+    var scale = d3.scale.linear()
+        .domain([0, 100])
+        .range([0, width]);
 
-	var bars = d3.select("#bar")
-	.selectAll("div")
-	.attr("id","bar")
-	.data(data);
+    var bars = d3.select("#bar")
+    .selectAll("div")
+    .attr("id","bar")
+    .data(data);
 
-	// enter selection
-	bars
-		.enter().append("div");
+    // enter selection
+    bars
+        .enter().append("div");
 
-	// update selection
-	bars
-		.style("width", function (d) { return scale(d.percent) + "px";})
-		.attr("height", barHeight - 1)
-		.text(function (d,i) {return letters[i];});
+    // update selection
+    bars
+        .style("width", function (d) { return scale(d.percent) + "px";})
+        .attr("height", barHeight - 1)
+        .text(function (d,i) {return letters[i];});
 
-	// exit selection
-	bars
-		.exit().remove();
+    // exit selection
+    bars
+        .exit().remove();
 };
 
 if (Meteor.isClient) {
@@ -107,10 +107,10 @@ if (Meteor.isClient) {
             return Questions.find();
         }
     });
-	
-	Template.new.events({
+
+    Template.new.events({
         'click #tf': function(event, template) {
-			var time = setTime();
+            var time = setTime();
             var question_data = {
                 title: '',
                 type: 'tf',
@@ -121,7 +121,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -129,13 +129,13 @@ if (Meteor.isClient) {
                 E: 0,
                 F: 0
             }
-			console.log('time data: ' + question_data.time)
+            console.log('time data: ' + question_data.time)
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         },
 
         'click #mc2': function() {
-			var time = setTime();
+            var time = setTime();
             var question_data = {
                 title: '',
                 type: 'mc2',
@@ -146,7 +146,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -159,7 +159,7 @@ if (Meteor.isClient) {
         },
 
         'click #mc3': function() {
-			var time = setTime();
+            var time = setTime();
             var question_data = {
                 title: '',
                 type: 'mc3',
@@ -170,7 +170,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -183,7 +183,7 @@ if (Meteor.isClient) {
         },
 
         'click #mc4': function() {
-			var time = setTime();
+            var time = setTime();
             var question_data = {
                 title: '',
                 type: 'mc4',
@@ -194,7 +194,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 choice6: '',
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -207,7 +207,7 @@ if (Meteor.isClient) {
         },
 
         'click #mc5': function() {
-			var time = setTime();
+            var time = setTime();
             var question_data = {
                 title: '',
                 type: 'mc5',
@@ -218,7 +218,7 @@ if (Meteor.isClient) {
                 choice5: 'E',
                 choice6: '',
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -231,7 +231,7 @@ if (Meteor.isClient) {
         },
 
         'click #mc6': function() {
-			var time = setTime();
+            var time = setTime();
             var question_data = {
                 title: '',
                 type: 'mc6',
@@ -242,7 +242,7 @@ if (Meteor.isClient) {
                 choice5: 'E',
                 choice6: 'F',
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -261,14 +261,9 @@ if (Meteor.isClient) {
             var choice2 = template.find("input[name=choice2]");
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
-            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
-            if (correct == null){
-                console.log('ERROR: nothing chosen. Please choose a correct answer.')
-                $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
-            }
 
             var time = setTime();
-			var question_data = {
+            var question_data = {
                 title: title.value,
                 type: 'custom',
                 choice1: choice1.value,
@@ -277,9 +272,8 @@ if (Meteor.isClient) {
                 choice4: choice4.value,
                 choice5: '',
                 choice6: '',
-                correct: correct,
                 status: 'active',
-				time: time,
+                time: time,
                 A: 0,
                 B: 0,
                 C: 0,
@@ -295,11 +289,7 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
-            $('input[name="correct"]').each(function() {
-                this.checked = false;
-            });
-			
-			launchQuestion();
+            launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
   });
@@ -359,11 +349,6 @@ if (Meteor.isClient) {
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
             var choice6 = template.find("input[name=choice6]");
-            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
-            if (correct == null){
-                console.log('ERROR: nothing chosen. Please choose a correct answer.')
-                $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
-            }
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -371,7 +356,6 @@ if (Meteor.isClient) {
                                               choice4:choice4.value,
                                               choice5:choice5.value,
                                               choice6:choice6.value,
-                                              correct:correct,
                                               }})
             if (question.status == 'active'){
                 Router.go('/teacher/home')
@@ -392,11 +376,7 @@ if (Meteor.isClient) {
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
             var choice6 = template.find("input[name=choice6]");
-            var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
-            if (correct == null){
-                console.log('ERROR: nothing chosen. Please choose a correct answer.')
-                $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
-            }
+
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -404,7 +384,6 @@ if (Meteor.isClient) {
                                               choice4:choice4.value,
                                               choice5:choice5.value,
                                               choice6:choice6.value,
-                                              correct:correct,
                                               status:'active'
                                               }})
             Router.go('/teacher/home')
@@ -466,47 +445,47 @@ if (Meteor.isClient) {
     });
 
     Template.teacher_question_view.rendered = function(){
-		console.log('RENDER CALLED!!')
+        console.log('RENDER CALLED!!')
         var barData = []
-        var optionsLen = this.data.options.length;		
-		var currentQ =this;
-		for (var kk=0; kk<optionsLen; kk++){
-			barData.push({choice:currentQ.data.options[kk].choice, percent:currentQ.data.options[kk].percent});
+        var optionsLen = this.data.options.length;
+        var currentQ =this;
+        for (var kk=0; kk<optionsLen; kk++){
+            barData.push({choice:currentQ.data.options[kk].choice, percent:currentQ.data.options[kk].percent});
         }
-		drawChart(barData);
-		//Whenever response summary changes, chart updates
+        drawChart(barData);
+        //Whenever response summary changes, chart updates
         var responseSummary = Responses.find();
         responseSummary.observe({
             changed: function(newResponse, oldResponse){
-				var updatedData = passData(Questions.findOne(currentQ.data.question_id));
-				var barData = [];
-				for (var kk=0; kk<optionsLen; kk++){
-					barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
-				}
-				drawChart(barData);
-			}
-		});
-		//Whenever questions(edition) change, chart updates
-		var questions = Questions.find()
-		questions.observe({
-			changed: function(newQuestion, oldQuestion){
-				var updatedData = passData(Questions.findOne(currentQ.data.question_id));
-				var barData = [];
-				for (var kk=0; kk<optionsLen; kk++){
-					barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
-				}
-				drawChart(barData);
-				
-			}
-				
+                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
+                var barData = [];
+                for (var kk=0; kk<optionsLen; kk++){
+                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
+                }
+                drawChart(barData);
+            }
+        });
+        //Whenever questions(edition) change, chart updates
+        var questions = Questions.find()
+        questions.observe({
+            changed: function(newQuestion, oldQuestion){
+                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
+                var barData = [];
+                for (var kk=0; kk<optionsLen; kk++){
+                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
+                }
+                drawChart(barData);
 
-		})
+            }
 
-	
-	}
+
+        })
+
+
+    }
 }
 
-	
+
 
 
 if (Meteor.isServer) {
@@ -522,7 +501,7 @@ var calcPercentages =function(question){
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
-			var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
+            var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
             normalizedList.push(numResponses);
             total +=numResponses;
         }else{
@@ -541,13 +520,13 @@ var passData = function(question) {
         if (question.status == 'active') {
             var status_comment = 'This question is live'
             var status_control = 'to freeze';
-        }else if(question.status == 'frozen') {
+        } else if(question.status == 'frozen') {
             var status_control = 'to activate';
-			var status_comment = 'This question is FROZEN'
-        }else{
-			var status_control = 'to activate';
-			var status_comment = 'This question is inactive'
-		}
+            var status_comment = 'This question is live and FROZEN'
+        } else{
+            var status_control = 'to activate';
+            var status_comment = 'This question is inactive'
+        }
 
         var question_id = question._id;
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
@@ -571,8 +550,7 @@ var passData = function(question) {
             status_control: status_control,
             options: options,
             title: question.title,
-			time: question.time,
-            correct: question.correct,
+            time: question.time,
             total: stats[stats.length-1]
         }
     }
@@ -646,7 +624,7 @@ Router.map(function () {
             console.log('behind if: ' + username);
             console.log(loginFlag);
             if (loginFlag) { Meteor.loginWithPassword(username, MASTER); }
-            //Router.go('account', {username: username});
+            Router.go('home');
         },
     });
 
