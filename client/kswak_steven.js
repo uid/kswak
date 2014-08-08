@@ -573,7 +573,7 @@ function createAccount(username){
 
     function callback(data) {
         if (!data) {
-            var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {}});
+            var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
             var id = AccountsTest.insert(account_data, function(err) {});
             console.log('at id: ' + id);
 
@@ -664,7 +664,14 @@ Router.map(function () {
 
     this.route('question_view', {
         path: '/student',  //overrides the default '/home'
-        template: 'question_view',
+        template: function() {
+            if (Meteor.user()) {
+                return 'question_view';
+            }
+            else {
+                return 'please_login';
+            }
+        },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             return passData(question);}
