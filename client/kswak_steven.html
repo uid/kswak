@@ -38,10 +38,15 @@
            <a class="brand" href="/">kswak</a>
            <div class="nav-collapse collapse">
              <ul class="nav">
-               <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
-               <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
-               <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
-               <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{#if isTeacher}}
+                    <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
+                    <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
+                    <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{else}}
+                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{/if}}
+
              </ul>
              <ul class="nav pull-right">
                  <li class="navbar-text">
@@ -92,7 +97,7 @@
                     <td align='right'>D </td>
                     <td align='left'><input type="text" name="choice4"></td>
                 </tr>
-				<tr>
+                <tr>
                     <td align='right'>E </td>
                     <td align='left'><input type="text" name="choice5"></td>
                 </tr>
@@ -101,6 +106,13 @@
             <div id="publishFeedback"></div>
         </form>
     </div>
+    </div>
+</template>
+
+<template name='no_launched_question'>
+    <div class='container'>
+        <h1>No question launched!</h1>
+        <span>sit tight and wait for the instructor to launch a question.</span>
     </div>
 </template>
 
@@ -139,14 +151,14 @@
                     <td align='left' class="teacherOptions">{{choice}}</td>
                     <td class='blank'></td>
                     <td class='statistics' align='right'>{{voters}}  ({{percent}}% of responders)</td>
-					<td width='200px'><span style="display:inline-block; height:50px; width:{{percent}}%"></span></td>
+                    <td width='200px'><span style="display:inline-block; height:50px; width:{{percent}}%"></span></td>
                 </tr>
             {{/each}}
-				<tr>
-					<td class='tableSummary'>Total number of responders:</td>
-					<td></td>
-					<td class='tableSummary'>{{total}}</td>
-				</tr>
+                <tr>
+                    <td class='tableSummary'>Total number of responders:</td>
+                    <td></td>
+                    <td class='tableSummary'>{{total}}</td>
+                </tr>
         </table><br>
 
         <br><br>
