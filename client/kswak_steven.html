@@ -46,7 +46,11 @@
              </ul>
              <ul class="nav pull-right">
                  <li class="navbar-text">
-                     {{> loginButtons}}
+                     {{#if currentUser}}
+                        <a>{{currentUser.username}}</a>
+                     {{else}}
+                        <a href='https://sarivera.scripts.mit.edu:444/auth.php'>Sign in</a>
+                     {{/if}}
                  </li>
              </ul>
            </div><!--/.nav-collapse -->
@@ -128,8 +132,8 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-		<span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
-		<button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
+        <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+        <button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
         Question: {{title}}<br>
         Choices: <br>
@@ -218,23 +222,23 @@
 </template>
 
 <template name='teacher_edit'>
-	<div class='form_container'>
+    <div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title" value={{title}}> <br>
             Choices: <br>
             <table id='input_choices'>
-				{{#each options}}
+                {{#each options}}
                 <tr>
                     <td align='right'>{{letter}} </td>
                     <td align='left'><input type="text" name={{choice}} value={{option}}></td>
                     <td align='left'><input type="radio" value={{letter}} name="correct"></td>
                 </tr>
-				{{/each}}
+                {{/each}}
             </table>
-			 <div id="publishFeedback"></div>
+             <div id="publishFeedback"></div>
         </form>
-		<button id="cancel" class="btn btn-primary">Cancel</button>
-		<button id="save" class="btn btn-primary">Save changes</button>
-		<button id="save_launch" class="btn btn-primary">Save and launch</button>
+        <button id="cancel" class="btn btn-primary">Cancel</button>
+        <button id="save" class="btn btn-primary">Save changes</button>
+        <button id="save_launch" class="btn btn-primary">Save and launch</button>
     </div>
 </template>
