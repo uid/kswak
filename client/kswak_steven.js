@@ -108,6 +108,19 @@ if (Meteor.isClient) {
         }
     });
 
+    Template.nav.events({
+        'click .cert_link': function() {
+            var query;
+            var current_url = document.URL;
+            var parts = current_url.split("/");
+            parts.splice(0, 2);
+            for (var i = 0; i < parts.length; i++) {
+                query += parts[i] + '/';
+            }
+            window.location = 'https://sarivera.scripts.mit.edu:444/auth.php?' + query;
+        }
+    });
+
     Template.new.events({
         'click #tf': function(event, template) {
             var time = setTime();
