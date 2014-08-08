@@ -21,6 +21,8 @@ var letters = ['A', 'B', 'C', 'D', 'E', 'F']
 
 //set all questions inactive
 //If an id is passed, launch its question
+
+
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
         Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
@@ -337,16 +339,17 @@ if (Meteor.isClient) {
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
-            console.log('user', Meteor.user()._id);
+            //console.log('user', Meteor.user()._id);
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             if (question.status == 'active'){
-                var choice = template.find("input[name='choice']:checked");
+                // var choice = template.find("input[name='choice']:checked");
+                var choice = template.find(".clicked");
+                console.log(template.find(".clicked"));
                 if (choice == null) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
                 else {
-                    //var user_answer = choice.html();
-                    var user_answer = choice.value;
+                    var user_answer = choice.name
                     var id = question._id;
                     var user = Meteor.user()._id;
                     var response = Responses.findOne({user:user, question:id})
