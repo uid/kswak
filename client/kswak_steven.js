@@ -270,11 +270,20 @@ if (Meteor.isClient) {
             Questions.update(this._id, {$set:{status:'active'}});
         },
         'click .delete': function (event, template){
-            Questions.remove(this._id)
+			//Remove responses of this question 
+			Responses.find({question:this._id}).forEach( function(response){
+				Responses.remove(response._id)
+			});
+			//Remove this question itself	
+            Questions.remove(this._id);
+			
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
                 Questions.remove(question._id);
+				Responses.find({question:question._id}).forEach( function(response){
+					Responses.remove(response._id)
+				});
             });
         },
         'click #inactivateAll': function(event, template){
@@ -289,6 +298,11 @@ if (Meteor.isClient) {
         },
         'click #save': function(event, template){
             var question = Session.get('editing');
+			//Remove responses which are already submitted for the question
+			Responses.find({question:question}).forEach( function(response){
+				Responses.remove(response._id)
+			});
+						
             //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
@@ -312,6 +326,10 @@ if (Meteor.isClient) {
 
         'click #save_launch': function(event, template){
             var question = Session.get('editing');
+			//Remove responses which are already submitted for the question
+			Responses.find({question:question}).forEach( function(response){
+				Responses.remove(response._id)
+			});
             //disable current launched question
             launchQuestion();
             //create new question and launch it
@@ -366,6 +384,8 @@ if (Meteor.isClient) {
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
+	
+	
 
     Template.teacher_question_view.rendered = function(){
         console.log('RENDER CALLED!!')
