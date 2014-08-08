@@ -36,6 +36,18 @@ function createAccount(username){
     return loginFlag;
 }
 
+//function kswak_login(encrypted_username) {
+//    console.log('in kswak_login');
+//    var encrypted_string = encrypted_username['encrypted_username'];
+//    console.log('str: ' + encrypted_string);
+//    var username = getUsernameFromBase64(encrypted_string);
+//    var loginFlag = createAccount(username);
+//    return [username, loginFlag];
+//    //BUGS:
+//    //This method, when called, returns nothing and I need login flag
+//    //Can't log in on server, need to do in client
+//}
+
 Meteor.methods({
     kswak_login: function(encrypted_username) {
         console.log('in kswak_login');
@@ -47,7 +59,6 @@ Meteor.methods({
         //BUGS:
         //This method, when called, returns nothing and I need login flag
         //Can't log in on server, need to do in client
-        //
     }
 });
 
