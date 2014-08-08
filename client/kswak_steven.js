@@ -1,14 +1,30 @@
 Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
-//Responses = new Meteor.Collection("responses");
-Accounts = new Meteor.Collection("accounts");
+Responses = new Meteor.Collection("responses");
+AccountsTest = new Meteor.Collection("accountstest");
+
+
+Responses.allow({
+  insert: function (userId, doc) {
+    // the user must be logged in, and the document must be owned by the user
+    return (userId && doc.owner === userId);
+  },
+  update: function (userId, doc, fields, modifier) {
+    // can only change your own documents
+    return doc.owner === userId;
+  }
+});
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
 var letters = ['A', 'B', 'C', 'D', 'E', 'F']
+var MASTER = 'asd651c8138';
+var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 //set all questions inactive
 //If an id is passed, launch its question
+
+
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
         Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
@@ -304,81 +320,92 @@ if (Meteor.isClient) {
             Router.go('/teacher/home')
 
         },
-		'click #save': function(event, template){
-			var question = Session.get('editing');
-			//create new question and launch it
+        'click #save': function(event, template){
+            var question = Session.get('editing');
+            //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
             var choice2 = template.find("input[name=choice2]");
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
-			var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
+            var choice5 = template.find("input[name=choice5]");
+            var choice6 = template.find("input[name=choice6]");
             var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
-			Questions.update(question, {$set:{title:title.value,
-											  choice1:choice1.value,
-											  choice2:choice2.value,
-											  choice3:choice3.value,
-											  choice4:choice4.value,
-											  choice5:choice5.value,
-											  choice6:choice6.value,
-											  correct:correct,
-											  }})
-			if (question.status == 'active'){
-				Router.go('/teacher/home')
-			}else{
-				Router.go('/teacher/summary')
-			}
-		},
-		
-		'click #save_launch': function(event, template){
-			var question = Session.get('editing');
-			//disable current launched question
-			launchQuestion();
-			//create new question and launch it
+            Questions.update(question, {$set:{title:title.value,
+                                              choice1:choice1.value,
+                                              choice2:choice2.value,
+                                              choice3:choice3.value,
+                                              choice4:choice4.value,
+                                              choice5:choice5.value,
+                                              choice6:choice6.value,
+                                              correct:correct,
+                                              }})
+            if (question.status == 'active'){
+                Router.go('/teacher/home')
+            }else{
+                Router.go('/teacher/summary')
+            }
+        },
+
+        'click #save_launch': function(event, template){
+            var question = Session.get('editing');
+            //disable current launched question
+            launchQuestion();
+            //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
             var choice2 = template.find("input[name=choice2]");
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
-			var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
+            var choice5 = template.find("input[name=choice5]");
+            var choice6 = template.find("input[name=choice6]");
             var correct = $('input[name="correct"]:checked').val(); //in form A, B, C, or D
             if (correct == null){
                 console.log('ERROR: nothing chosen. Please choose a correct answer.')
                 $('#publishFeedback').html('ERROR: nothing chosen. Please choose a correct answer.');
             }
-			Questions.update(question, {$set:{title:title.value,
-											  choice1:choice1.value,
-											  choice2:choice2.value,
-											  choice3:choice3.value,
-											  choice4:choice4.value,
-											  choice5:choice5.value,
-											  choice6:choice6.value,
-											  correct:correct,
-											  status:'active'
-											  }})
-			Router.go('/teacher/home')
-		}
+            Questions.update(question, {$set:{title:title.value,
+                                              choice1:choice1.value,
+                                              choice2:choice2.value,
+                                              choice3:choice3.value,
+                                              choice4:choice4.value,
+                                              choice5:choice5.value,
+                                              choice6:choice6.value,
+                                              correct:correct,
+                                              status:'active'
+                                              }})
+            Router.go('/teacher/home')
+        }
     })
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
+            //console.log('user', Meteor.user()._id);
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             if (question.status == 'active'){
-                var choice = template.find("input[name='choice']:checked");
+                // var choice = template.find("input[name='choice']:checked");
+                var choice = template.find(".clicked");
+                console.log(template.find(".clicked"));
                 if (choice == null) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
                 else {
-                    //var user_answer = choice.html();
-                    var user_answer = choice.value;
+                    var user_answer = choice.name
                     var id = question._id;
+                    var user = Meteor.user()._id;
+                    var response = Responses.findOne({user:user, question:id})
+                    if (response != undefined){
+                        console.log('updating');
+                        Responses.update(response._id, {$set: {answer: user_answer}})
+                    }else{
+                        console.log('inserting', user, id, user_answer);
+                        Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')})
+                    }
 
                     switch (user_answer) { /* add E, T, F */
                         case 'A':
@@ -405,6 +432,7 @@ if (Meteor.isClient) {
             } else {
                 $('#submitFeedback').html('Question submission is closed')
             }
+            // $('#submitFeedback').effect("shake", {times:1});
         }
     });
 
@@ -496,13 +524,33 @@ if (Meteor.isServer) {
     });
 }
 
-var calcPercentages = function(question) {
+//var calcPercentages = function(question) {
+//    normalizedList = [];
+//    var total = 0;
+//    for ( var i =0; i< choices.length; i++){
+//        if (question[choices[i]] != ''){
+//            normalizedList.push( (question[letters[i]]))
+//            total +=question[letters[i]];
+//        }else{
+//            normalizedList.push(0);
+//        }
+//    }
+//    if (total != 0){
+//        normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
+//    }
+//    normalizedList.push(total)
+//    return normalizedList;
+//}
+
+var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
-            normalizedList.push( (question[letters[i]]))
-            total +=question[letters[i]];
+            var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
+            console.log("num",numResponses);
+            normalizedList.push(numResponses);
+            total +=numResponses;
         }else{
             normalizedList.push(0);
         }
@@ -517,7 +565,7 @@ var calcPercentages = function(question) {
 var passData = function(question) {
     if (question != undefined) {
         if (question.status == 'active') {
-			var status_comment = 'This question is live'
+            var status_comment = 'This question is live'
             var status_control = 'to freeze';
         }else if(question.status == 'frozen') {
             var status_control = 'to activate';
@@ -536,7 +584,7 @@ var passData = function(question) {
                 {
                     option: '',
                     choice: question[choices[i]],
-                    voters: question[letters[i]],
+                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),//question[letters[i]],
                     percent: stats[i],
                     letter: letters[i]
                 })
@@ -545,7 +593,7 @@ var passData = function(question) {
 
         return {
             question_id: question_id,
-			status_comment: status_comment,
+            status_comment: status_comment,
             status_control: status_control,
             options: options,
             title: question.title,
@@ -556,6 +604,53 @@ var passData = function(question) {
     }
 }
 
+function getUsernameFromBase64(urlBase64String) {
+    var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
+    console.log('lets go deeper');
+    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
+    return username;
+}
+
+//Creates an account and returns the id of that account.
+function createAccount(username){
+    var loginFlag = false;
+    var account_data = {
+        username: username,
+        user_email: username + '@mit.edu',
+    };
+//    var user = Meteor.call('checkUser', username, function(err, data){ return data; });
+    var user = AccountsTest.findOne({username: username});
+    console.log(user);
+    if (user == null) {
+        var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {}});
+        var hack_data = {
+            username: username,
+            email: account_data['user_email'],
+        }
+
+        var id = AccountsTest.insert(hack_data, function(err) {});
+        console.log('at id: ' + id);
+
+    } else { //user does exist
+        loginFlag = true;
+        Meteor.loginWithPassword(user.username, MASTER);
+    }
+    return loginFlag;
+}
+
+function kswak_login(encrypted_username) {
+    console.log('in kswak_login');
+    console.log('str: ' + encrypted_username);
+    var username = getUsernameFromBase64(encrypted_username);
+    console.log(username);
+    var loginFlag = createAccount(username);
+    console.log('lf: ' + loginFlag);
+    return [username, loginFlag];
+    //BUGS:
+    //This method, when called, returns nothing and I need login flag
+    //Can't log in on server, need to do in client
+}
+
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
@@ -563,17 +658,26 @@ Router.map(function () {
     });
 
     this.route('login', {
-        path: '/login/[A-Za-z0-9._-]+/',
+        path: '/login/:encrypted_username',
         data: function() {
-            var username = login();
-            this.redirect('account/' + username);
+            var sneakysneaky = this.params.encrypted_username;
+            var usernameAndLogin = kswak_login(sneakysneaky);
+            var username = usernameAndLogin[0];
+            var loginFlag = usernameAndLogin[1];
+            console.log('behind if: ' + username);
+            console.log(loginFlag);
+            if (loginFlag) { Meteor.loginWithPassword(username, MASTER); }
+            Router.go('account', {username: username});
         },
     });
 
     this.route('account', {
-        path: '/account/:_username',
+        path: '/account/:username',
+        waitOn: function() {
+            return Meteor.subscribe("accountstest")
+        },
         data: function() {
-            return Accounts.findOne(this.params.username);
+            return this.params.username;
         },
     });
 
@@ -614,22 +718,22 @@ Router.map(function () {
         template: 'new',
     });
 
-	this.route('teacher_edit',{
-		path:'/teacher/edit',
-		data: function() {
-			var question = Questions.findOne(Session.get('editing'));
-			//console.log('q', question);
-			var options =[];
-			for (var i=0; i<choices.length; i++){
-				options.push({letter:letters[i],choice:choices[i], option:question[choices[i]]});
-				//console.log('hereCont', i);
-			}
-			return {
-				options: options,
-				title: question.title
-			}
-		}
-	})
+    this.route('teacher_edit',{
+        path:'/teacher/edit',
+        data: function() {
+            var question = Questions.findOne(Session.get('editing'));
+            //console.log('q', question);
+            var options =[];
+            for (var i=0; i<choices.length; i++){
+                options.push({letter:letters[i],choice:choices[i], option:question[choices[i]]});
+                //console.log('hereCont', i);
+            }
+            return {
+                options: options,
+                title: question.title
+            }
+        }
+    })
 
     this.route('teacher_question_view', {
         path: '/teacher/:_id',
