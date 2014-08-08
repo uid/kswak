@@ -87,7 +87,7 @@ function drawChart(data) {
     bars
         .style("width", function (d) { return scale(d.percent) + "px";})
         .attr("height", barHeight - 1)
-        .text(function (d,i) {return letters[i];});
+    
 
     // exit selection
     bars
@@ -387,45 +387,43 @@ if (Meteor.isClient) {
 	
 	
 
-    Template.teacher_question_view.rendered = function(){
-        console.log('RENDER CALLED!!')
-        var barData = []
-        var optionsLen = this.data.options.length;
-        var currentQ =this;
-        for (var kk=0; kk<optionsLen; kk++){
-            barData.push({choice:currentQ.data.options[kk].choice, percent:currentQ.data.options[kk].percent});
-        }
-        drawChart(barData);
-        //Whenever response summary changes, chart updates
-        var responseSummary = Responses.find();
-        responseSummary.observe({
-            changed: function(newResponse, oldResponse){
-                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
-                var barData = [];
-                for (var kk=0; kk<optionsLen; kk++){
-                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
-                }
-                drawChart(barData);
-            }
-        });
-        //Whenever questions(edition) change, chart updates
-        var questions = Questions.find()
-        questions.observe({
-            changed: function(newQuestion, oldQuestion){
-                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
-                var barData = [];
-                for (var kk=0; kk<optionsLen; kk++){
-                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
-                }
-                drawChart(barData);
-
-            }
-
-
-        })
-
-
-    }
+//    Template.teacher_question_view.rendered = function(){
+//        console.log('RENDER CALLED!!')
+//        var barData = []
+//        var optionsLen = this.data.options.length;
+//        var currentQ =this;
+//        for (var kk=0; kk<optionsLen; kk++){
+//            barData.push({choice:currentQ.data.options[kk].choice, percent:currentQ.data.options[kk].percent});
+//        }
+//        drawChart(barData);
+//        //Whenever response summary changes, chart updates
+//        var responseSummary = Responses.find();
+//        responseSummary.observe({
+//            changed: function(newResponse, oldResponse){
+//                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
+//                var barData = [];
+//                for (var kk=0; kk<optionsLen; kk++){
+//                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
+//                }
+//                drawChart(barData);
+//            }
+//        });
+//        //Whenever questions(edition) change, chart updates
+//        var questions = Questions.find()
+//        questions.observe({
+//            changed: function(newQuestion, oldQuestion){
+//                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
+//                var barData = [];
+//                for (var kk=0; kk<optionsLen; kk++){
+//                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
+//                }
+//                drawChart(barData);
+//
+//            }
+//
+//
+//        })
+//    }
 }
 
 
@@ -478,7 +476,6 @@ var passData = function(question) {
             if (question[choices[i]] != ''){
                 options.push(
                 {
-                    option: '',
                     choice: question[choices[i]],
                     voters: Responses.find({question:question_id, answer:letters[i]}).count(),//question[letters[i]],
                     percent: stats[i],

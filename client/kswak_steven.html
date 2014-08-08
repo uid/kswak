@@ -140,15 +140,20 @@
         <table id='input_choices'>
             {{#each options}}
                 <tr>
-                    <td align='right'>{{option}} |&nbsp;</td>
+                    <td align='right'>|&nbsp;</td>
                     <td align='left' class="teacherOptions">{{choice}}</td>
                     <td class='blank'></td>
                     <td class='statistics' align='right'>{{voters}}  ({{percent}}% of responders)</td>
+					<td width='200px'><span style="display:inline-block; height:50px; width:{{percent}}%"></span></td>
                 </tr>
             {{/each}}
+				<tr>
+					<td></td>
+					<td class='tableSummary'>Total number of responders:</td>
+					<td></td>
+					<td class='tableSummary'>{{total}}</td>
+				</tr>
         </table><br>
-        Correct: {{correct}}<br>
-        Total number of responders: {{total}}
 
         <br><br>
         <div class='questionCopy'></div>

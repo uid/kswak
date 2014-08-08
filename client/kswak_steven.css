@@ -29,7 +29,7 @@ body {
 }
 
 .blank {
-    width: 100px;
+    width: 50px;
 }
 
 div[id^='container']{
@@ -91,7 +91,7 @@ input[type=submit].clicked{
     display:inline-block;
     padding: 4px 12px;
     margin:5%;
-    background-color: grey ;
+    background-color: #569ed9 ;
     border-color: #ddd;
     min-width: 100px;
     text-align:center;
@@ -101,6 +101,11 @@ input[type=submit].clicked{
 
 .teacherOptions{
     background-color:#e7e7e7 ;
+    min-width: 100px;
+    text-align: center;
+}
+.tableSummary{
+	background-color:lightBlue ;
     min-width: 100px;
     text-align: center;
 }
@@ -153,3 +158,12 @@ input[type=radio][name=choice]:checked + label {
     margin: 0.2em;
 }
 
+td span {
+    font-size: 0.5em;
+    font-family: sans-serif;
+    color: white;
+    background-color: steelblue;
+    text-align: right;
+    padding: 0.5em;
+    margin: 0.2em;
+}
