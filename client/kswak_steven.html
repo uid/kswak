@@ -105,7 +105,7 @@
         {{#each options}}
         <tr>
         <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
-            <label for="choice{{letter}}">{{choice}}</label>
+            <label for="choice{{letter}}">{{letter}}{{choice}}</label>
         </tr>
         {{/each}}
         </table>
@@ -138,7 +138,8 @@
 
         <br><br>
         <div class='questionCopy'></div>
-        <svg class='chart' id='bar'></svg>
+		<div id="work_queues_chart"></div>
+        <div class='chart' id='bar'></div>
         <div class='chart' id='pie'></div>
 
     </div>
