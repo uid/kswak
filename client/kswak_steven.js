@@ -6,6 +6,7 @@ AccountsTest = new Meteor.Collection("accountstest");
 //if true, homepage immediately directs user to script to log in.
 var automatic_signin = false; //TODO: true is currently broken, leave this false.
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
+var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -43,14 +44,9 @@ function setTime() {
 }
 
 function send_to_scripts() {
-    var query = '';
     var current_url = document.URL;
     var parts = current_url.split("/");
-    parts.splice(0, 2);
-    console.log(parts);
-    for (var i = 0; i < parts.length; i++) {
-        (i == parts.length - 1 ) ? query += parts[i] : query += parts[i] + '/';
-    }
+    var query = '?' + parts[2] + '/';
     return query;
 }
 
@@ -75,7 +71,7 @@ function createAccount(username){
 function drawChart(data) {
     console.log('drawing update');
     //Bar Chart
-    var width = 420;
+    var width = 420; //interdasting...
     var barHeight = 20;
     var scale = d3.scale.linear()
         .domain([0, 100])
@@ -131,7 +127,15 @@ if (Meteor.isClient) {
     Template.nav.events({
         'click .cert_link': function() {
             var query = send_to_scripts();
-            window.location = 'https://sarivera.scripts.mit.edu:444/auth.php?' + query;
+            window.location = scriptURL + query;
+        }
+    });
+
+    Template.please_login.events({
+        'click .cert_link': function() {
+            var query = send_to_scripts();
+            console.log(query);
+            window.location = scriptURL + query;
         }
     });
 

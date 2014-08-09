@@ -21,6 +21,9 @@ body {
 
 .navbar-text {
     line-height: 20px;
+}
+
+.cert_link {
     cursor: pointer;
     cursor: hand;
 }
