@@ -355,8 +355,6 @@ if (Meteor.isClient) {
                 }
                 else { 
                     var user_answer = choice.name;
-					//console.log('.text() ' + choice.text());
-					//console.log('.html() ' + choice.html());
 					if (question.type == 'custom') { user_answer = choice.value; }
                     var id = question._id;
                     var user = Meteor.user()._id;
