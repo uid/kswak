@@ -269,6 +269,10 @@ if (Meteor.isClient) {
         //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
+			/*var question = Session.get('editing');
+			if (question.status == 'active') {
+				question.status = 'frozen';
+			}*/
             Router.go('/teacher/edit')
         }
     })
@@ -322,6 +326,8 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
+			var choice6 = template.find("input[name=choice6]");
+			
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -351,6 +357,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
+			var choice6 = template.find("input[name=choice6]");
 
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
