@@ -67,36 +67,6 @@ function createAccount(username){
     return account_id;
 }
 
-//Draw chart for submissions
-function drawChart(data) {
-    console.log('drawing update');
-    //Bar Chart
-    var width = 420; //interdasting...
-    var barHeight = 20;
-    var scale = d3.scale.linear()
-        .domain([0, 100])
-        .range([0, width]);
-
-    var bars = d3.select("#bar")
-    .selectAll("div")
-    .attr("id","bar")
-    .data(data);
-
-    // enter selection
-    bars
-        .enter().append("div");
-
-    // update selection
-    bars
-        .style("width", function (d) { return scale(d.percent) + "px";})
-        .attr("height", barHeight - 1)
-
-
-    // exit selection
-    bars
-        .exit().remove();
-};
-
 if (Meteor.isClient) {
     Template.nav.helpers({
         isTeacher: function() {
@@ -394,54 +364,14 @@ if (Meteor.isClient) {
                         console.log('inserting', user, id, user_answer);
                         Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')})
                     }
-                    $('#submitFeedback').html('Your submission is ' + user_answer);
+                    //$('#submitFeedback').html('Your submission is ' + user_answer);
                 }
             } else {
-                $('#submitFeedback').html('Question submission is closed')
+                //$('#submitFeedback').html('Question submission is closed')
             }
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
-
-
-
-//    Template.teacher_question_view.rendered = function(){
-//        console.log('RENDER CALLED!!')
-//        var barData = []
-//        var optionsLen = this.data.options.length;
-//        var currentQ =this;
-//        for (var kk=0; kk<optionsLen; kk++){
-//            barData.push({choice:currentQ.data.options[kk].choice, percent:currentQ.data.options[kk].percent});
-//        }
-//        drawChart(barData);
-//        //Whenever response summary changes, chart updates
-//        var responseSummary = Responses.find();
-//        responseSummary.observe({
-//            changed: function(newResponse, oldResponse){
-//                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
-//                var barData = [];
-//                for (var kk=0; kk<optionsLen; kk++){
-//                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
-//                }
-//                drawChart(barData);
-//            }
-//        });
-//        //Whenever questions(edition) change, chart updates
-//        var questions = Questions.find()
-//        questions.observe({
-//            changed: function(newQuestion, oldQuestion){
-//                var updatedData = passData(Questions.findOne(currentQ.data.question_id));
-//                var barData = [];
-//                for (var kk=0; kk<optionsLen; kk++){
-//                    barData.push({choice:updatedData.options[kk].choice, percent:updatedData.options[kk].percent});
-//                }
-//                drawChart(barData);
-//
-//            }
-//
-//
-//        })
-//    }
 }
 
 
@@ -474,8 +404,58 @@ var calcPercentages =function(question){
     return normalizedList;
 }
 
-var passData = function(question) {
+
+var passData_student = function(question, user) {
     if (question != undefined) {
+		var question_id = question._id;
+        if (question.status == 'active') {
+            var status_comment = 'This question is live'
+        } else if(question.status == 'frozen') {
+            var status_comment = 'Submission is closed'
+        } else{
+            var status_comment = 'This question is inactive'
+        }
+		var student_response =  Responses.findOne({question:question_id, user:user._id});
+		if (student_response != undefined){
+			var feedback = 'Your submission is '+student_response.answer;
+		}else{
+			var feedback = "Please submit your response, you don't have any submission!";
+		}
+		
+        var options = [];
+        for (i in choices) {
+			var color = '#e5e2e2'
+			//for use of identifing chosen answer
+			if (student_response != undefined){
+				if (student_response.answer == [letters[i]]){ 
+					color = 'steelblue';
+				}
+			}	
+            if (question[choices[i]] != ''){
+                options.push(
+                {
+                    choice: question[choices[i]],
+                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),
+                    letter: letters[i],
+					color: color
+				})
+            }
+		}
+        return {
+            question_id: question_id,
+            status_comment: status_comment,
+            options: options,
+            title: question.title,
+            time: question.time,
+			student_response: student_response,
+			feedback:feedback
+        }
+    }
+}
+	
+var passData = function(question, user) {
+    if (question != undefined) {
+		var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live'
             var status_control = 'to freeze';
@@ -486,8 +466,6 @@ var passData = function(question) {
             var status_control = 'to activate';
             var status_comment = 'This question is inactive'
         }
-
-        var question_id = question._id;
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
         for (i in choices) {
@@ -495,13 +473,11 @@ var passData = function(question) {
                 options.push(
                 {
                     choice: question[choices[i]],
-                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),//question[letters[i]],
+                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),
                     percent: stats[i],
-                    letter: letters[i]
                 })
             }
         }
-
         return {
             question_id: question_id,
             status_comment: status_comment,
@@ -509,7 +485,7 @@ var passData = function(question) {
             options: options,
             title: question.title,
             time: question.time,
-            total: stats[stats.length-1]
+            total: stats[stats.length-1],
         }
     }
 }
@@ -637,7 +613,7 @@ Router.map(function () {
         path: '/student',  //overrides the default '/home'
         template: function() {
             if (Meteor.user()) {
-                if (Questions.findOne({status: 'active'})) {
+                if (Questions.findOne({status:{$in:['active', 'frozen']}})) {
                     return 'question_view';
                 } else {
                     return 'no_launched_question';
@@ -649,7 +625,8 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            return passData(question);}
+			console.log('user', Meteor.user())
+            return passData_student(question, Meteor.user());}
     });
 
     this.route('teacher_new', {
