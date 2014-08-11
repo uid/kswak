@@ -1,3 +1,5 @@
+var teacherList = ['rcm','sarivera']
+
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
     return Questions.find();
@@ -37,7 +39,13 @@ function createAccount(username){
 
     var exists = checkUser(username);
     if (!exists) {
-        var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
+    	var account_id;
+    	if (teacherList.indexOf(username) == -1){
+        	var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
+        }
+        else{
+        	var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'teacher'}});
+        }
         user_signed_in = true;
         var id = AccountsTest.insert(account_data, function(err) {});
         console.log('at id:' + id);
