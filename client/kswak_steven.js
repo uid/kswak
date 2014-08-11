@@ -7,8 +7,8 @@ AccountsTest = new Meteor.Collection("accountstest");
 var automatic_signin = false; //TODO: true is currently broken, leave this false.
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
-var MASTER = 'asd651c8138';
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
+
+var MASTER = 'asd651c8138'; //SHOULD NOT BE ON THE CLIENT.
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -51,14 +51,6 @@ function send_to_scripts() {
     var query = '?' + parts[2] + '/';
     return query;
 }
-
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
-    console.log('in the weird getUsername');
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
 
 //Draw chart for submissions
 function drawChart(data) {
@@ -232,7 +224,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
+            var choice6 = template.find("input[name=choice6]");
 
             var time = setTime();
             var question_data = {
@@ -380,10 +372,10 @@ if (Meteor.isClient) {
     })
 
     Template.question_view.rendered = function() {
-		$('#newQuestionAlert').play(); //play alert tone
-	}
-	
-	Template.question_view.events({
+        $('#newQuestionAlert').play(); //play alert tone
+    }
+
+    Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
             //console.log('user', Meteor.user()._id);
@@ -527,57 +519,7 @@ var passData = function(question) {
     }
 }
 
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
-    console.log('lets go deeper');
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
 var teacherList = ['rcm','sarivera']
-
-//Creates an account and returns the id of that account.
-function createAccount(username){
-    var loginFlag = false;
-    var account_data = {
-        username: username,
-        user_email: username + '@mit.edu',
-    };
-
-    function callback(data) {
-        if (!data) {
-            var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
-            user_signed_in = true;
-            var id = AccountsTest.insert(account_data, function(err) {});
-            console.log('at id: ' + id);
-
-        } else { //user does exist
-            loginFlag = true;
-            Meteor.loginWithPassword(username, MASTER);
-        }
-    }
-    Meteor.call('checkUser',
-               username,
-               function(err, data){
-                   console.log('checkUser callback')
-                   console.log(data)
-                   callback(data);
-               });
-
-}
-
-//function kswak_login(encrypted_username) {
-//    console.log('in kswak_login');
-//    console.log('str: ' + encrypted_username);
-//    var username = getUsernameFromBase64(encrypted_username);
-//    console.log('finished base64: '+username);
-//    var loginFlag = createAccount(username);
-//    console.log('lf: ' + loginFlag);
-//    return [username, loginFlag];
-//    //BUGS:
-//    //This method, when called, returns nothing and I need login flag
-//    //Can't log in on server, need to do in client
-//}
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
@@ -600,17 +542,18 @@ Router.map(function () {
             return Meteor.subscribe("accountstest")
         },
         data: function() {
-            var sneakysneaky = this.params.encrypted_username;
-            var usernameAndLogin = Meteor.call(kswak_login, sneakysneaky);
-            var username = usernameAndLogin[0];
-            var loginFlag = usernameAndLogin[1];
-            console.log('behind if: ' + username);
-            console.log(loginFlag);
-            if (loginFlag) {
+            function callback(dataz) {
+                var username = dataz;
                 Meteor.loginWithPassword(username, MASTER);
                 user_signed_in = true;
+                Router.go('home');
             }
-            Router.go('home');
+
+            var sneakysneaky = this.params.encrypted_username;
+            var usernameAndLogin = Meteor.call('kswak_login', sneakysneaky,
+                                               function(err, data) {
+                                                   callback(data);
+                                               });
         },
     });
 
