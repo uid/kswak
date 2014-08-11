@@ -127,11 +127,11 @@
         <table id="studentTable">
         {{#each options}}
         <tr>
-        <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)">
+        <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}">
         </tr>
         {{/each}}
         </table>
-        <div id="submitFeedback"></div>
+        <div id="submitFeedback">{{feedback}}</div>
     </form>
     </div>
 </template>
