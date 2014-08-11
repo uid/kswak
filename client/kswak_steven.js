@@ -5,8 +5,11 @@ AccountsTest = new Meteor.Collection("accountstest");
 
 //if true, homepage immediately directs user to script to log in.
 var automatic_signin = false; //TODO: true is currently broken, leave this false.
+//TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
+
+var MASTER = 'asd651c8138'; //SHOULD NOT BE ON THE CLIENT.
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -20,14 +23,13 @@ Responses.allow({
 });
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5']
-var letters = ['A', 'B', 'C', 'D', 'E']
+var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
+var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+var alert = new Audio('/sfx/alert_tone_01.mp3');
 var MASTER = 'asd651c8138';
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 //set all questions inactive
 //If an id is passed, launch its question
-
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
         Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
@@ -49,6 +51,7 @@ function send_to_scripts() {
     var query = '?' + parts[2] + '/';
     return query;
 }
+
 
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
@@ -120,6 +123,7 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -138,6 +142,7 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -155,6 +160,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: '',
                 choice5: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -172,6 +178,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -189,6 +196,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: 'E',
+                choice6: '',
                 status: 'active',
                 time: time,
             }
@@ -204,6 +212,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
+            var choice6 = template.find("input[name=choice6]");
 
             var time = setTime();
             var question_data = {
@@ -214,6 +223,7 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 choice5: choice5.value,
+                choice6: choice6.value,
                 status: 'active',
                 time: time
             }
@@ -225,6 +235,8 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
+            choice5.value = "";
+            choice6.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
@@ -245,6 +257,10 @@ if (Meteor.isClient) {
         //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
+            /*var question = Session.get('editing');
+            if (question.status == 'active') {
+                question.status = 'frozen';
+            }*/
             Router.go('/teacher/edit')
         }
     })
@@ -298,6 +314,8 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
+            var choice6 = template.find("input[name=choice6]");
+
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -327,6 +345,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
+            var choice6 = template.find("input[name=choice6]");
 
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
@@ -339,6 +358,10 @@ if (Meteor.isClient) {
             Router.go('/teacher/home')
         }
     })
+
+    Template.question_view.rendered = function() {
+        $('#newQuestionAlert').play(); //play alert tone
+    }
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
@@ -490,55 +513,7 @@ var passData = function(question, user) {
     }
 }
 
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
-    console.log('lets go deeper');
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
-//Creates an account and returns the id of that account.
-function createAccount(username){
-    var loginFlag = false;
-    var account_data = {
-        username: username,
-        user_email: username + '@mit.edu',
-    };
-
-    function callback(data) {
-        if (!data) {
-            var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
-            user_signed_in = true;
-            var id = AccountsTest.insert(account_data, function(err) {});
-            console.log('at id: ' + id);
-
-        } else { //user does exist
-            loginFlag = true;
-            Meteor.loginWithPassword(username, MASTER);
-        }
-    }
-    Meteor.call('checkUser',
-               username,
-               function(err, data){
-                   console.log('checkUser callback')
-                   console.log(data)
-                   callback(data);
-               });
-
-}
-
-function kswak_login(encrypted_username) {
-    console.log('in kswak_login');
-    console.log('str: ' + encrypted_username);
-    var username = getUsernameFromBase64(encrypted_username);
-    console.log('finished base64: '+username);
-    var loginFlag = createAccount(username);
-    console.log('lf: ' + loginFlag);
-    return [username, loginFlag];
-    //BUGS:
-    //This method, when called, returns nothing and I need login flag
-    //Can't log in on server, need to do in client
-}
+var teacherList = ['rcm','sarivera']
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
@@ -561,17 +536,18 @@ Router.map(function () {
             return Meteor.subscribe("accountstest")
         },
         data: function() {
-            var sneakysneaky = this.params.encrypted_username;
-            var usernameAndLogin = kswak_login(sneakysneaky);
-            var username = usernameAndLogin[0];
-            var loginFlag = usernameAndLogin[1];
-            console.log('behind if: ' + username);
-            console.log(loginFlag);
-            if (loginFlag) {
+            function callback(dataz) {
+                var username = dataz;
                 Meteor.loginWithPassword(username, MASTER);
                 user_signed_in = true;
+                Router.go('home');
             }
-            Router.go('home');
+
+            var sneakysneaky = this.params.encrypted_username;
+            var usernameAndLogin = Meteor.call('kswak_login', sneakysneaky,
+                                               function(err, data) {
+                                                   callback(data);
+                                               });
         },
     });
 
