@@ -5,6 +5,7 @@ AccountsTest = new Meteor.Collection("accountstest");
 
 //if true, homepage immediately directs user to script to log in.
 var automatic_signin = false; //TODO: true is currently broken, leave this false.
+//TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 
