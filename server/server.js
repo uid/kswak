@@ -1,3 +1,5 @@
+var teacherList = ['rcm','sarivera']
+
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
     return Questions.find();
@@ -38,12 +40,13 @@ function createAccount(username, password) {
     var exists = checkUser(username);
     if (!exists) { //TODO: what if url is wrong? check if password formation is okay
         if (password == CryptoJS.MD5(username+MASTER).toString()) {
-            console.log('password is correct');
+            var role;
+            (teacherList.indexOf(username) == -1) ? role = 'student' : role = 'teacher';
             var account_id = Accounts.createUser({
                 username: username,
                 email: account_data['user_email'],
                 password: password,
-                profile: {role: 'student'}});
+                profile: {role: role}});
             user_signed_in = true;
             var id = AccountsTest.insert(account_data, function(err) {});
             console.log('at id:' + id);
@@ -52,7 +55,6 @@ function createAccount(username, password) {
             console.log('ERROR: GENERATED PASSWORD IN URL DOESN\'T MATCH GENERATED PASSWORD ON SERVER');
             throw Error();
         }
-
     }
 
 //    function callback(data) {

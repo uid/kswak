@@ -97,14 +97,10 @@
                     <td align='right'>D </td>
                     <td align='left'><input type="text" name="choice4"></td>
                 </tr>
-                <!--<tr>
+                <tr>
                     <td align='right'>E </td>
                     <td align='left'><input type="text" name="choice5"></td>
                 </tr>
-				<tr>
-                    <td align='right'>F </td>
-                    <td align='left'><input type="text" name="choice6"></td>
-                </tr>-->
             </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
@@ -116,7 +112,7 @@
 <template name='no_launched_question'>
     <div class='container'>
         <h1>No question launched!</h1>
-        <span>sit tight and wait for the instructor to launch a question.</span>
+        <span>Sit tight and wait for the instructor to launch a question.</span>
     </div>
 </template>
 
@@ -131,14 +127,13 @@
         <table id="studentTable">
         {{#each options}}
         <tr>
-        <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)">
+        <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}">
         </tr>
         {{/each}}
         </table>
-        <div id="submitFeedback"></div>
+        <div id="submitFeedback">{{feedback}}</div>
     </form>
     </div>
-	<audio src='/sfx/alert_tone_01.mp3' id='newQuestionAlert' preload='auto'></audio>
 </template>
 
 
@@ -148,7 +143,7 @@
         <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
         <button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
     <div class='form_container'>
-        {{title}}<br>
+        <div class="tableSummary" style="padding:10; margin:10px">{{title}}</div>
         Choices: <br>
         <table id='input_choices'>
             {{#each options}}
@@ -249,7 +244,7 @@
 </template>
 
 <template name='teacher_edit'>
-    <div class='form_container'>
+    <div class='form_container container_form'>
         <form id='question_form'>
             Question: <input type="text" name="title" value={{title}}> <br>
             Choices: <br>
@@ -267,5 +262,19 @@
         <button id="cancel" class="btn btn-primary">Cancel</button>
         <button id="save" class="btn btn-primary">Save changes</button>
         <button id="save_launch" class="btn btn-primary">Save and launch</button>
+    </div>
+</template>
+
+<template name='teacher_control'>
+    <div id='container_teacher_control'>
+        <button id="add_teacher" class="btn ">Add Teacher</button>
+        <table id="people_all">
+            {{#each people}}
+                <tr>
+                    <td>{{role}} </td>
+                    <td>{{username}}</td>
+                </tr>
+            {{/each}}
+        </table>
     </div>
 </template>
