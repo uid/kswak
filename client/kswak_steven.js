@@ -52,24 +52,6 @@ function send_to_scripts() {
     return query;
 }
 
-
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
-//Creates an account and returns the id of that account.
-function createAccount(username){
-    var account_data = {
-        username: username,
-        user_email: username+'@mit.edu',
-    }
-    var account_id = Accounts.insert(account_data, function(err) { /**/ });
-    console.log('making account');
-    return account_id;
-}
-
 if (Meteor.isClient) {
     Template.nav.helpers({
         isTeacher: function() {
@@ -96,6 +78,12 @@ if (Meteor.isClient) {
             return Questions.find();
         }
     });
+
+    Template.teacher_control.helpers({
+    	questions:function(){
+    		console.log(Meteor.user.find());
+    	}
+	});
 
     Template.nav.events({
         'click .cert_link': function() {
@@ -425,12 +413,11 @@ var passData_student = function(question, user) {
     if (question != undefined) {
 		var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'This question is live'
-        } else if(question.status == 'frozen') {
+            var status_comment = 'Submission is open'
+        } else {
             var status_comment = 'Submission is closed'
-        } else{
-            var status_comment = 'This question is inactive'
-        }
+		}
+     
 		var student_response =  Responses.findOne({question:question_id, user:user._id});
 		if (student_response != undefined){
 			var feedback = 'Your submission is: ' + student_response.answer;
@@ -507,6 +494,7 @@ var passData = function(question, user) {
 }
 
 var teacherList = ['rcm','sarivera']
+
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
@@ -635,5 +623,30 @@ Router.map(function () {
                 this.render()
             }
         }
+    })
+
+
+    //temporary trying to make a teacher page so they can see the students and what not
+    this.route('teacher_control',{
+    	path:'/control',
+    	waitOn: function(){
+    		return Meteor.subscribe("userData");
+    	},
+    	template: 'teacher_control',
+    	data: function(){
+    		var people = [];
+    		for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
+    			if (Meteor.users.find().fetch()[ll].profile != undefined){
+    				people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
+    			}
+    			else{
+    				people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
+    			}
+    		}
+    		return{
+    			people: people
+    		}
+
+    	}
     });
 });
