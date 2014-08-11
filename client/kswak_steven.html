@@ -83,7 +83,7 @@
             <table id='input_choices'>
                 <tr>
                     <td align='right'>A </td>
-                    <td align='left'><input type="text" name="choice1"></td>
+                    <td align='left'><input type="text" name="choice1" class='answerField'></td>
                 </tr>
                 <tr>
                     <td align='right'>B </td>
@@ -127,7 +127,8 @@
         <table id="studentTable">
         {{#each options}}
         <tr>
-        <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}">
+			<td>{{letter}}.</td>
+			<td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}"></td>
         </tr>
         {{/each}}
         </table>
@@ -267,7 +268,7 @@
 
 <template name='teacher_control'>
     <div id='container_teacher_control'>
-        <button id="add_teacher" class="btn ">Add Teacher</button>
+        <input type="text" name="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
         <table id="people_all">
             {{#each people}}
                 <tr>

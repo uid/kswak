@@ -220,6 +220,16 @@ if (Meteor.isClient) {
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
   });
+	
+//	Template.new.rendered = function() {
+//		//Auto complete for creating question
+//		var availableTags = [
+//			"None of the above",
+//			"All of the above"
+//		];
+//		console.log('selected', $( ".answerField" ));
+//		$( ".answerField" ).autocomplete(availableTags);
+//	}
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
@@ -369,6 +379,14 @@ if (Meteor.isClient) {
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
+
+	Template.teacher_control.events({
+		'click #add_teacher_submit': function(event, template){
+			var nameString = template.find('input[name=addingTeacher]').value;
+			var tempNameList = nameString.split(","); //return an array
+			Meteor.call('update_teacher_list',tempNameList)
+		}
+	})
 }
 
 
@@ -486,6 +504,7 @@ var passData = function(question, user) {
     }
 }
 
+
 var teacherList = ['rcm','sarivera']
 
 
@@ -525,11 +544,11 @@ Router.map(function () {
             var encrypted_username = vals[0];
             password = vals[1];
             var usernameAndLogin = Meteor.call('kswak_login', encrypted_username, password,
-                                               function(err, data) {
-                                                   console.log('data');
-                                                   console.log(data);
-                                                   callback(data);
-                                               });
+                                                                   function(err, data) {
+                                                                       console.log('data');
+                                                                       console.log(data);
+                                                                       callback(data);
+                                                                   });
         },
     });
 
@@ -596,11 +615,9 @@ Router.map(function () {
         path:'/teacher/edit',
         data: function() {
             var question = Questions.findOne(Session.get('editing'));
-            //console.log('q', question);
             var options =[];
             for (var i=0; i<choices.length; i++){
                 options.push({letter:letters[i],choice:choices[i], option:question[choices[i]]});
-                //console.log('hereCont', i);
             }
             return {
                 options: options,
