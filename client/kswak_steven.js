@@ -7,6 +7,8 @@ AccountsTest = new Meteor.Collection("accountstest");
 var automatic_signin = false; //TODO: true is currently broken, leave this false.
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
+var MASTER = 'asd651c8138';
+var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -22,8 +24,6 @@ Responses.allow({
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5']
 var letters = ['A', 'B', 'C', 'D', 'E']
-var MASTER = 'asd651c8138';
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 //set all questions inactive
 //If an id is passed, launch its question
@@ -52,6 +52,7 @@ function send_to_scripts() {
 
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
+    console.log('in the weird getUsername');
     var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
     return username;
 }
@@ -551,18 +552,18 @@ function createAccount(username){
 
 }
 
-function kswak_login(encrypted_username) {
-    console.log('in kswak_login');
-    console.log('str: ' + encrypted_username);
-    var username = getUsernameFromBase64(encrypted_username);
-    console.log('finished base64: '+username);
-    var loginFlag = createAccount(username);
-    console.log('lf: ' + loginFlag);
-    return [username, loginFlag];
-    //BUGS:
-    //This method, when called, returns nothing and I need login flag
-    //Can't log in on server, need to do in client
-}
+//function kswak_login(encrypted_username) {
+//    console.log('in kswak_login');
+//    console.log('str: ' + encrypted_username);
+//    var username = getUsernameFromBase64(encrypted_username);
+//    console.log('finished base64: '+username);
+//    var loginFlag = createAccount(username);
+//    console.log('lf: ' + loginFlag);
+//    return [username, loginFlag];
+//    //BUGS:
+//    //This method, when called, returns nothing and I need login flag
+//    //Can't log in on server, need to do in client
+//}
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
@@ -586,7 +587,7 @@ Router.map(function () {
         },
         data: function() {
             var sneakysneaky = this.params.encrypted_username;
-            var usernameAndLogin = kswak_login(sneakysneaky);
+            var usernameAndLogin = Meteor.call(kswak_login, sneakysneaky);
             var username = usernameAndLogin[0];
             var loginFlag = usernameAndLogin[1];
             console.log('behind if: ' + username);
