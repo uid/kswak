@@ -38,10 +38,15 @@
            <a class="brand" href="/">kswak</a>
            <div class="nav-collapse collapse">
              <ul class="nav">
-               <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
-               <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
-               <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
-               <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{#if isTeacher}}
+                    <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
+                    <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
+                    <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{else}}
+                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{/if}}
+
              </ul>
              <ul class="nav pull-right">
                  <li class="navbar-text">
@@ -92,7 +97,7 @@
                     <td align='right'>D </td>
                     <td align='left'><input type="text" name="choice4"></td>
                 </tr>
-				<tr>
+                <tr>
                     <td align='right'>E </td>
                     <td align='left'><input type="text" name="choice5"></td>
                 </tr>
@@ -101,6 +106,13 @@
             <div id="publishFeedback"></div>
         </form>
     </div>
+    </div>
+</template>
+
+<template name='no_launched_question'>
+    <div class='container'>
+        <h1>No question launched!</h1>
+        <span>sit tight and wait for the instructor to launch a question.</span>
     </div>
 </template>
 
@@ -226,7 +238,7 @@
 <template name='please_login'>
     <div class='container'>
         <span>
-            Oh no! To continue, you must log in. Please click 'Sign in' in the navbar or <a class='cert_link' href="https://sarivera.scripts.mit.edu:444/auth.php">here</a> to log in.
+            Oh no! To continue, you must log in. Please click 'Sign in' in the navbar or <a class='cert_link'>here</a> to log in.
         </span>
     </div>
 </template>

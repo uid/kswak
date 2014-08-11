@@ -24,7 +24,11 @@ body {
 
 .navbar-text {
     line-height: 20px;
+}
 
+.cert_link {
+    cursor: pointer;
+    cursor: hand;
 }
 
 #new_question_form {
@@ -117,7 +121,7 @@ input[type=submit].clicked{
     text-align: center;
 }
 .tableSummary{
-	background-color:lightBlue ;
+    background-color:lightBlue ;
     min-width: 100px;
     text-align: center;
 }

@@ -3,6 +3,11 @@ questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 
+//if true, homepage immediately directs user to script to log in.
+var automatic_signin = false; //TODO: true is currently broken, leave this false.
+var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
+var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
+
 Responses.allow({
   insert: function (userId, doc) {
     // the user must be logged in, and the document must be owned by the user
@@ -23,7 +28,6 @@ var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 //set all questions inactive
 //If an id is passed, launch its question
 
-
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
         Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
@@ -37,6 +41,13 @@ function launchQuestion(id){
 function setTime() {
     var _time = (new Date).toTimeString().substring(0,5);
     return _time;
+}
+
+function send_to_scripts() {
+    var current_url = document.URL;
+    var parts = current_url.split("/");
+    var query = '?' + parts[2] + '/';
+    return query;
 }
 
 function getUsernameFromBase64(urlBase64String) {
@@ -56,19 +67,11 @@ function createAccount(username){
     return account_id;
 }
 
-function login() {
-    var sneakysneaky = IronLocation.path().split('/')[2];
-//    var username = getUsernameFromBase64(sneakysneaky);
-    var username = 'plzzz';
-    var account_id = createAccount(username);
-    return username;
-}
-
 //Draw chart for submissions
 function drawChart(data) {
     console.log('drawing update');
     //Bar Chart
-    var width = 420;
+    var width = 420; //interdasting...
     var barHeight = 20;
     var scale = d3.scale.linear()
         .domain([0, 100])
@@ -87,7 +90,7 @@ function drawChart(data) {
     bars
         .style("width", function (d) { return scale(d.percent) + "px";})
         .attr("height", barHeight - 1)
-    
+
 
     // exit selection
     bars
@@ -95,6 +98,19 @@ function drawChart(data) {
 };
 
 if (Meteor.isClient) {
+    Template.nav.helpers({
+        isTeacher: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile['role'] == 'teacher') {
+                    return true;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+    });
+
     Template.home.helpers({
         questions: function() {
             return Questions.find();
@@ -110,14 +126,16 @@ if (Meteor.isClient) {
 
     Template.nav.events({
         'click .cert_link': function() {
-            var query;
-            var current_url = document.URL;
-            var parts = current_url.split("/");
-            parts.splice(0, 2);
-            for (var i = 0; i < parts.length; i++) {
-                query += parts[i] + '/';
-            }
-            window.location = 'https://sarivera.scripts.mit.edu:444/auth.php?' + query;
+            var query = send_to_scripts();
+            window.location = scriptURL + query;
+        }
+    });
+
+    Template.please_login.events({
+        'click .cert_link': function() {
+            var query = send_to_scripts();
+            console.log(query);
+            window.location = scriptURL + query;
         }
     });
 
@@ -215,7 +233,7 @@ if (Meteor.isClient) {
             var choice2 = template.find("input[name=choice2]");
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
-			var choice5 = template.find("input[name=choice5]");
+            var choice5 = template.find("input[name=choice5]");
 
             var time = setTime();
             var question_data = {
@@ -270,20 +288,20 @@ if (Meteor.isClient) {
             Questions.update(this._id, {$set:{status:'active'}});
         },
         'click .delete': function (event, template){
-			//Remove responses of this question 
-			Responses.find({question:this._id}).forEach( function(response){
-				Responses.remove(response._id)
-			});
-			//Remove this question itself	
+            //Remove responses of this question
+            Responses.find({question:this._id}).forEach( function(response){
+                Responses.remove(response._id)
+            });
+            //Remove this question itself
             Questions.remove(this._id);
-			
+
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
                 Questions.remove(question._id);
-				Responses.find({question:question._id}).forEach( function(response){
-					Responses.remove(response._id)
-				});
+                Responses.find({question:question._id}).forEach( function(response){
+                    Responses.remove(response._id)
+                });
             });
         },
         'click #inactivateAll': function(event, template){
@@ -298,11 +316,11 @@ if (Meteor.isClient) {
         },
         'click #save': function(event, template){
             var question = Session.get('editing');
-			//Remove responses which are already submitted for the question
-			Responses.find({question:question}).forEach( function(response){
-				Responses.remove(response._id)
-			});
-						
+            //Remove responses which are already submitted for the question
+            Responses.find({question:question}).forEach( function(response){
+                Responses.remove(response._id)
+            });
+
             //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
@@ -326,10 +344,10 @@ if (Meteor.isClient) {
 
         'click #save_launch': function(event, template){
             var question = Session.get('editing');
-			//Remove responses which are already submitted for the question
-			Responses.find({question:question}).forEach( function(response){
-				Responses.remove(response._id)
-			});
+            //Remove responses which are already submitted for the question
+            Responses.find({question:question}).forEach( function(response){
+                Responses.remove(response._id)
+            });
             //disable current launched question
             launchQuestion();
             //create new question and launch it
@@ -384,8 +402,8 @@ if (Meteor.isClient) {
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
-	
-	
+
+
 
 //    Template.teacher_question_view.rendered = function(){
 //        console.log('RENDER CALLED!!')
@@ -514,6 +532,7 @@ function createAccount(username){
     function callback(data) {
         if (!data) {
             var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
+            user_signed_in = true;
             var id = AccountsTest.insert(account_data, function(err) {});
             console.log('at id: ' + id);
 
@@ -549,6 +568,15 @@ function kswak_login(encrypted_username) {
 Router.map(function () {
     this.route('home', {
         path: '/',
+        template: function() {
+            if (automatic_signin && !user_signed_in) {
+                var query = send_to_scripts();
+                window.location = 'https://sarivera.scripts.mit.edu:444/auth.php?' + query;
+            }
+            else {
+                return 'home';
+            }
+        }
     });
 
     this.route('login', {
@@ -563,7 +591,10 @@ Router.map(function () {
             var loginFlag = usernameAndLogin[1];
             console.log('behind if: ' + username);
             console.log(loginFlag);
-            if (loginFlag) { Meteor.loginWithPassword(username, MASTER); }
+            if (loginFlag) {
+                Meteor.loginWithPassword(username, MASTER);
+                user_signed_in = true;
+            }
             Router.go('home');
         },
     });
@@ -606,7 +637,11 @@ Router.map(function () {
         path: '/student',  //overrides the default '/home'
         template: function() {
             if (Meteor.user()) {
-                return 'question_view';
+                if (Questions.findOne({status: 'active'})) {
+                    return 'question_view';
+                } else {
+                    return 'no_launched_question';
+                }
             }
             else {
                 return 'please_login';
