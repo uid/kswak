@@ -27,7 +27,6 @@ var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
 var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
 var alert = new Audio('/sfx/alert_tone_01.mp3');
 var MASTER = 'asd651c8138';
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 //set all questions inactive
 //If an id is passed, launch its question
@@ -136,7 +135,7 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
-				choice6: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -155,7 +154,7 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
-				choice6: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -173,7 +172,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: '',
                 choice5: '',
-				choice6: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -191,7 +190,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: '',
-				choice6: '',
+                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -209,7 +208,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: 'E',
-				choice6: '',
+                choice6: '',
                 status: 'active',
                 time: time,
             }
@@ -236,7 +235,7 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 choice5: choice5.value,
-				choice6: choice6.value,
+                choice6: choice6.value,
                 status: 'active',
                 time: time
             }
@@ -248,8 +247,8 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
-			choice5.value = "";
-			choice6.value = "";
+            choice5.value = "";
+            choice6.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
@@ -270,10 +269,10 @@ if (Meteor.isClient) {
         //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
-			/*var question = Session.get('editing');
-			if (question.status == 'active') {
-				question.status = 'frozen';
-			}*/
+            /*var question = Session.get('editing');
+            if (question.status == 'active') {
+                question.status = 'frozen';
+            }*/
             Router.go('/teacher/edit')
         }
     })
@@ -327,8 +326,8 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
-			
+            var choice6 = template.find("input[name=choice6]");
+
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -358,7 +357,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
+            var choice6 = template.find("input[name=choice6]");
 
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
