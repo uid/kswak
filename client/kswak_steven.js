@@ -80,10 +80,10 @@ if (Meteor.isClient) {
     });
 
     Template.teacher_control.helpers({
-    	questions:function(){
-    		console.log(Meteor.user.find());
-    	}
-	});
+        questions:function(){
+            console.log(Meteor.user.find());
+        }
+    });
 
     Template.nav.events({
         'click .cert_link': function() {
@@ -216,7 +216,7 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
-			choice5.value = "";
+            choice5.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
@@ -294,7 +294,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			
+
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -338,7 +338,7 @@ if (Meteor.isClient) {
     })
 
     Template.question_view.rendered = function() {
-        alert.play(); 
+        alert.play();
     }
 
     Template.question_view.events({
@@ -353,11 +353,11 @@ if (Meteor.isClient) {
                 if (choice == null) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
-                else { 
+                else {
                     var user_answer = choice.name;
-					//console.log('.text() ' + choice.text());
-					//console.log('.html() ' + choice.html());
-					if (question.type == 'custom') { user_answer = choice.value; }
+                    //console.log('.text() ' + choice.text());
+                    //console.log('.html() ' + choice.html());
+                    if (question.type == 'custom') { user_answer = choice.value; }
                     var id = question._id;
                     var user = Meteor.user()._id;
                     var response = Responses.findOne({user:user, question:id})
@@ -411,54 +411,54 @@ var calcPercentages =function(question){
 
 var passData_student = function(question, user) {
     if (question != undefined) {
-		var question_id = question._id;
+        var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open'
         } else {
             var status_comment = 'Submission is closed'
-		}
-     
-		var student_response =  Responses.findOne({question:question_id, user:user._id});
-		if (student_response != undefined){
-			var feedback = 'Your submission is: ' + student_response.answer;
-		}else{
-			var feedback = "Please submit your response!";
-		}
-		
+        }
+
+        var student_response =  Responses.findOne({question:question_id, user:user._id});
+        if (student_response != undefined){
+            var feedback = 'Your submission is: ' + student_response.answer;
+        }else{
+            var feedback = "Please submit your response!";
+        }
+
         var options = [];
         for (i in choices) {
-			var color = '#e5e2e2'
-			//for use of identifing chosen answer
-			if (student_response != undefined){
-				if (student_response.answer == [letters[i]]){ 
-					color = 'steelblue';
-				}
-			}	
+            var color = '#e5e2e2'
+            //for use of identifing chosen answer
+            if (student_response != undefined){
+                if (student_response.answer == [letters[i]]){
+                    color = 'steelblue';
+                }
+            }
             if (question[choices[i]] != ''){
                 options.push(
                 {
                     choice: question[choices[i]],
                     voters: Responses.find({question:question_id, answer:letters[i]}).count(),
                     letter: letters[i],
-					color: color
-				})
+                    color: color
+                })
             }
-		}
+        }
         return {
             question_id: question_id,
             status_comment: status_comment,
             options: options,
             title: question.title,
             time: question.time,
-			student_response: student_response,
-			feedback:feedback
+            student_response: student_response,
+            feedback:feedback
         }
     }
 }
-	
+
 var passData = function(question, user) {
     if (question != undefined) {
-		var question_id = question._id;
+        var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live'
             var status_control = 'to freeze';
@@ -533,6 +533,8 @@ Router.map(function () {
             password = vals[1];
             var usernameAndLogin = Meteor.call('kswak_login', encrypted_username, password,
                                                function(err, data) {
+                                                   console.log('data');
+                                                   console.log(data);
                                                    callback(data);
                                                });
         },
@@ -588,7 +590,7 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-			console.log('user', Meteor.user())
+            console.log('user', Meteor.user())
             return passData_student(question, Meteor.user());}
     });
 
@@ -634,25 +636,25 @@ Router.map(function () {
 
     //temporary trying to make a teacher page so they can see the students and what not
     this.route('teacher_control',{
-    	path:'/control',
-    	waitOn: function(){
-    		return Meteor.subscribe("userData");
-    	},
-    	template: 'teacher_control',
-    	data: function(){
-    		var people = [];
-    		for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
-    			if (Meteor.users.find().fetch()[ll].profile != undefined){
-    				people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
-    			}
-    			else{
-    				people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
-    			}
-    		}
-    		return{
-    			people: people
-    		}
+        path:'/control',
+        waitOn: function(){
+            return Meteor.subscribe("userData");
+        },
+        template: 'teacher_control',
+        data: function(){
+            var people = [];
+            for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
+                if (Meteor.users.find().fetch()[ll].profile != undefined){
+                    people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
+                }
+                else{
+                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
+                }
+            }
+            return{
+                people: people
+            }
 
-    	}
+        }
     });
 });

@@ -83,6 +83,7 @@ Meteor.methods({
     kswak_login: function(encrypted_username, password) {
         var username = getUsernameFromBase64(encrypted_username);
         createAccount(username, password);
+        console.log([username, password]);
         return [username, password];
     },
 });
