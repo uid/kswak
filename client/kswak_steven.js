@@ -372,7 +372,7 @@ if (Meteor.isClient) {
     })
 
     Template.question_view.rendered = function() {
-        $('#newQuestionAlert').play(); //play alert tone
+        alert.play(); 
     }
 
     Template.question_view.events({
