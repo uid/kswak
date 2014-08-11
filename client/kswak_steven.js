@@ -537,20 +537,26 @@ Router.map(function () {
     });
 
     this.route('login', {
-        path: '/login/:encrypted_username',
+        path: '/login/:encrypted_info',
         waitOn: function() {
             return Meteor.subscribe("accountstest")
         },
         data: function() {
+            var password = '';
+
             function callback(dataz) {
-                var username = dataz;
-                Meteor.loginWithPassword(username, MASTER);
+                var username = dataz[0];
+                var password = dataz[1];
+                Meteor.loginWithPassword(username, password);
                 user_signed_in = true;
                 Router.go('home');
             }
 
-            var sneakysneaky = this.params.encrypted_username;
-            var usernameAndLogin = Meteor.call('kswak_login', sneakysneaky,
+            var sneakysneaky = this.params.encrypted_info;
+            var vals = sneakysneaky.split('&');
+            var encrypted_username = vals[0];
+            password = vals[1];
+            var usernameAndLogin = Meteor.call('kswak_login', encrypted_username, password,
                                                function(err, data) {
                                                    callback(data);
                                                });
