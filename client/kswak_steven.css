@@ -35,6 +35,14 @@ body {
     line-height: 30px;
 }
 
+#tf {
+	height: 44px;
+}
+
+.quickLaunch {
+	margin: 2px;
+}
+
 .blank {
     width: 50px;
 }
