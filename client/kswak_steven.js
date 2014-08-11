@@ -22,8 +22,8 @@ Responses.allow({
 });
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
-var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+var choices = ['choice1','choice2','choice3','choice4','choice5'];
+var letters = ['A', 'B', 'C', 'D', 'E'];
 var alert = new Audio('/sfx/alert_tone_01.mp3');
 var MASTER = 'asd651c8138';
 var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
@@ -135,7 +135,6 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
-				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -154,7 +153,6 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
-				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -172,7 +170,6 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: '',
                 choice5: '',
-				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -190,7 +187,6 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: '',
-				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -208,7 +204,6 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: 'E',
-				choice6: '',
                 status: 'active',
                 time: time,
             }
@@ -224,7 +219,6 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-            var choice6 = template.find("input[name=choice6]");
 
             var time = setTime();
             var question_data = {
@@ -235,7 +229,6 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 choice5: choice5.value,
-				choice6: choice6.value,
                 status: 'active',
                 time: time
             }
@@ -248,7 +241,6 @@ if (Meteor.isClient) {
             choice3.value = "";
             choice4.value = "";
 			choice5.value = "";
-			choice6.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
@@ -326,7 +318,6 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
 			
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
@@ -357,7 +348,6 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			var choice6 = template.find("input[name=choice6]");
 
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
