@@ -272,7 +272,13 @@
 
 <template name='teacher_control'>
     <div class='teacher_control_container'>
-        {{#each people}}
-        {{/each}}
+        <table id="people_all">
+            {{#each people}}
+                <tr>
+                    <td align='right'>{{role}} </td>
+                    <td align='left'>{{username}}</td>
+                </tr>
+            {{/each}}
+        </table>
     </div>
 </template>

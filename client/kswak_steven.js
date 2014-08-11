@@ -526,7 +526,7 @@ var passData = function(question) {
     }
 }
 
-<<<<<<< HEAD
+
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
     console.log('lets go deeper');
@@ -576,9 +576,9 @@ function kswak_login(encrypted_username) {
     //This method, when called, returns nothing and I need login flag
     //Can't log in on server, need to do in client
 }
-=======
+
 var teacherList = ['rcm','sarivera']
->>>>>>> c8db1a350643667b2375d2b09a7076d66132b577
+
 
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
