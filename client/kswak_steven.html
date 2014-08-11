@@ -137,14 +137,13 @@
             {{#each options}}
                 <tr>
                     <td align='left' class="teacherOptions">{{choice}}</td>
-                    <td class='blank'></td>
-                    <td class='statistics' align='right'>{{voters}}  ({{percent}}% of responders)</td>
-					<td width='200px'><span style="display:inline-block; height:50px; width:{{percent}}%"></span></td>
+                    <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}% of responders)</td>
+					<td style="width:200px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
                 </tr>
             {{/each}}
 				<tr>
 					<td class='tableSummary'>Total number of responders:</td>
-					<td></td>
+					
 					<td class='tableSummary'>{{total}}</td>
 				</tr>
         </table><br>
