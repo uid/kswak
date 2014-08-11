@@ -324,7 +324,7 @@ if (Meteor.isClient) {
         'click #save_launch': function(event, template){
             var question = Session.get('editing');
             //Remove responses which are already submitted for the question
-            Responses.find({question:question}).forEach( function(response){
+            Responses.find({question:question}).forEach(function(response){
                 Responses.remove(response._id)
             });
             //disable current launched question
@@ -365,8 +365,11 @@ if (Meteor.isClient) {
                 if (choice == null) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
-                else {
-                    var user_answer = choice.name
+                else { 
+                    var user_answer = choice.name;
+					//console.log('.text() ' + choice.text());
+					//console.log('.html() ' + choice.html());
+					if (question.type == 'custom') { user_answer = choice.value; }
                     var id = question._id;
                     var user = Meteor.user()._id;
                     var response = Responses.findOne({user:user, question:id})
@@ -430,9 +433,9 @@ var passData_student = function(question, user) {
         }
 		var student_response =  Responses.findOne({question:question_id, user:user._id});
 		if (student_response != undefined){
-			var feedback = 'Your submission is '+student_response.answer;
+			var feedback = 'Your submission is: ' + student_response.answer;
 		}else{
-			var feedback = "Please submit your response, you don't have any submission!";
+			var feedback = "Please submit your response!";
 		}
 		
         var options = [];
