@@ -94,12 +94,11 @@ input[name="choice"]{
     margin-left:auto;
 }*/
 /*The submit button on the */
-input[type=submit].unclicked{
+input[type=submit]{
     display:inline-block;
     padding: 4px 12px;
     /*margin:5%;*/
     margin: 10px;
-    background-color: lightBlue ;
     border-color: #ddd;
     min-width: 200px;
     min-height:50px;
@@ -108,17 +107,6 @@ input[type=submit].unclicked{
 
 }
 
-input[type=submit].clicked{
-    display:inline-block;
-    padding: 4px 12px;
-    margin: 10px;
-    background-color: gray ;
-    border-color: #ddd;
-    min-width: 200px;
-    min-height: 50px;
-    text-align:center;
-    border-style:none;
-}
 
 
 
