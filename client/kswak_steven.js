@@ -56,16 +56,6 @@ function getUsernameFromBase64(urlBase64String) {
     return username;
 }
 
-//Creates an account and returns the id of that account.
-function createAccount(username){
-    var account_data = {
-        username: username,
-        user_email: username+'@mit.edu',
-    }
-    var account_id = Accounts.insert(account_data, function(err) { /**/ });
-    console.log('making account');
-    return account_id;
-}
 
 //Draw chart for submissions
 function drawChart(data) {
@@ -520,6 +510,8 @@ function getUsernameFromBase64(urlBase64String) {
     var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
     return username;
 }
+
+var teacherList = ['rcm','sarivera']
 
 //Creates an account and returns the id of that account.
 function createAccount(username){
