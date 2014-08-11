@@ -23,8 +23,8 @@ Responses.allow({
 });
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
-var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+var choices = ['choice1','choice2','choice3','choice4','choice5'];
+var letters = ['A', 'B', 'C', 'D', 'E'];
 var alert = new Audio('/sfx/alert_tone_01.mp3');
 var MASTER = 'asd651c8138';
 
@@ -111,7 +111,6 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
-                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -130,7 +129,6 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
-                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -148,7 +146,6 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: '',
                 choice5: '',
-                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -166,7 +163,6 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: '',
-                choice6: '',
                 status: 'active',
                 time: time
             }
@@ -184,7 +180,6 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: 'E',
-                choice6: '',
                 status: 'active',
                 time: time,
             }
@@ -200,7 +195,6 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-            var choice6 = template.find("input[name=choice6]");
 
             var time = setTime();
             var question_data = {
@@ -211,7 +205,6 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 choice5: choice5.value,
-                choice6: choice6.value,
                 status: 'active',
                 time: time
             }
@@ -223,8 +216,7 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
-            choice5.value = "";
-            choice6.value = "";
+			choice5.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
@@ -302,8 +294,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-            var choice6 = template.find("input[name=choice6]");
-
+			
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -333,7 +324,6 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-            var choice6 = template.find("input[name=choice6]");
 
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
@@ -348,7 +338,7 @@ if (Meteor.isClient) {
     })
 
     Template.question_view.rendered = function() {
-        $('#newQuestionAlert').play(); //play alert tone
+        alert.play(); 
     }
 
     Template.question_view.events({
@@ -420,12 +410,11 @@ var passData_student = function(question, user) {
     if (question != undefined) {
 		var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'This question is live'
-        } else if(question.status == 'frozen') {
+            var status_comment = 'Submission is open'
+        } else {
             var status_comment = 'Submission is closed'
-        } else{
-            var status_comment = 'This question is inactive'
-        }
+		}
+     
 		var student_response =  Responses.findOne({question:question_id, user:user._id});
 		if (student_response != undefined){
 			var feedback = 'Your submission is '+student_response.answer;
