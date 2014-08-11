@@ -15,15 +15,14 @@ Responses.allow({
 });
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5','choice6']
-var letters = ['A', 'B', 'C', 'D', 'E', 'F']
+var choices = ['choice1','choice2','choice3','choice4','choice5','choice6'];
+var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+var alert = new Audio('/sfx/alert_tone_01.mp3');
 var MASTER = 'asd651c8138';
 var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 //set all questions inactive
 //If an id is passed, launch its question
-
-
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
         Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
@@ -403,7 +402,11 @@ if (Meteor.isClient) {
         }
     })
 
-    Template.question_view.events({
+    Template.question_view.rendered = function() {
+		$('#newQuestionAlert').play(); //play alert tone
+	}
+	
+	Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
             //console.log('user', Meteor.user()._id);
