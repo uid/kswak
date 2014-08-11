@@ -1,6 +1,5 @@
 <head>
     <title>KSWAK</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.8/d3.min.js"></script>
     <script>
         var changeList;
 
@@ -39,10 +38,15 @@
            <a class="brand" href="/">kswak</a>
            <div class="nav-collapse collapse">
              <ul class="nav">
-               <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
-               <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
-               <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
-               <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{#if isTeacher}}
+                    <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
+                    <li><a href="{{ pathFor 'teacher_home' }}">teacher home page</a></li>
+                    <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{else}}
+                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                 {{/if}}
+
              </ul>
              <ul class="nav pull-right">
                  <li class="navbar-text">
@@ -70,8 +74,6 @@
         <button id='mc3'>MC (3 choices)</button>
         <button id='mc4'>MC (4 choices)</button>
         <button id='mc5'>MC (5 choices)</button>
-        <button id='mc6'>MC (6 choices)</button>
-
     <br>
     <h4>Custom:</h4>
     <div class='form_container'>
@@ -95,6 +97,14 @@
                     <td align='right'>D </td>
                     <td align='left'><input type="text" name="choice4"></td>
                 </tr>
+                <tr>
+                    <td align='right'>E </td>
+                    <td align='left'><input type="text" name="choice5"></td>
+                </tr>
+				<tr>
+                    <td align='right'>F </td>
+                    <td align='left'><input type="text" name="choice6"></td>
+                </tr>
             </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
@@ -103,24 +113,28 @@
     </div>
 </template>
 
+<template name='no_launched_question'>
+    <div class='container'>
+        <h1>No question launched!</h1>
+        <span>sit tight and wait for the instructor to launch a question.</span>
+    </div>
+</template>
+
 <template name='question_view'>
     <title>KSWAK | {{title}}</title>
-    <h1>Question view</h1>
     <div id="container_question_view">
+    <h2>Question view</h2>
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
     <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
     <form id="student_question">
-        <table>
+        <table id="studentTable">
         {{#each options}}
         <tr>
-        <!-- <input type="radio" name="choice" value={{letter}} id="choice{{letter}}">
-            <label for="choice{{letter}}">{{choice}}</label> -->
         <input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)">
         </tr>
         {{/each}}
         </table>
-        <!-- <input type="submit" name="submit" value="Submit"> -->
         <div id="submitFeedback"></div>
     </form>
     </div>
@@ -139,15 +153,17 @@
         <table id='input_choices'>
             {{#each options}}
                 <tr>
-                    <td align='right'>{{option}} |&nbsp;</td>
                     <td align='left' class="teacherOptions">{{choice}}</td>
-                    <td class='blank'></td>
-                    <td class='statistics' align='right'>{{voters}}  ({{percent}}% of responders)</td>
+                    <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}% of responders)</td>
+					<td style="width:200px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
                 </tr>
             {{/each}}
+				<tr>
+					<td class='tableSummary'>Total number of responders:</td>
+					
+					<td class='tableSummary'>{{total}}</td>
+				</tr>
         </table><br>
-        Correct: {{correct}}<br>
-        Total number of responders: {{total}}
 
         <br><br>
         <div class='questionCopy'></div>
@@ -227,7 +243,7 @@
 <template name='please_login'>
     <div class='container'>
         <span>
-            Oh no! To continue, you must log in. Please click 'Sign in' in the navbar or <a class='cert_link' href="https://sarivera.scripts.mit.edu:444/auth.php">here</a> to log in.
+            Oh no! To continue, you must log in. Please click 'Sign in' in the navbar or <a class='cert_link'>here</a> to log in.
         </span>
     </div>
 </template>
