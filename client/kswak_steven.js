@@ -532,11 +532,11 @@ Router.map(function () {
             var encrypted_username = vals[0];
             password = vals[1];
             var usernameAndLogin = Meteor.call('kswak_login', encrypted_username, password,
-                                               function(err, data) {
-                                                   console.log('data');
-                                                   console.log(data);
-                                                   callback(data);
-                                               });
+                                                                   function(err, data) {
+                                                                       console.log('data');
+                                                                       console.log(data);
+                                                                       callback(data);
+                                                                   });
         },
     });
 
