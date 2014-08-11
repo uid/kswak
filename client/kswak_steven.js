@@ -114,6 +114,12 @@ if (Meteor.isClient) {
         }
     });
 
+    Template.teacher_control.helpers({
+    	questions:function(){
+    		console.log(Meteor.user.find());
+    	}
+	});
+
     Template.nav.events({
         'click .cert_link': function() {
             var query = send_to_scripts();
@@ -511,8 +517,6 @@ function getUsernameFromBase64(urlBase64String) {
     return username;
 }
 
-var teacherList = ['rcm','sarivera']
-
 //Creates an account and returns the id of that account.
 function createAccount(username){
     var loginFlag = false;
@@ -681,5 +685,30 @@ Router.map(function () {
                 this.render()
             }
         }
+    })
+
+
+    //temporary trying to make a teacher page so they can see the students and what not
+    this.route('teacher_control',{
+    	path:'/control',
+    	waitOn: function(){
+    		return Meteor.subscribe("userData");
+    	},
+    	template: 'teacher_control',
+    	data: function(){
+    		var people = [];
+    		for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
+    			if (Meteor.users.find().fetch()[ll].profile != undefined){
+    				people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
+    			}
+    			else{
+    				people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
+    			}
+    		}
+    		return{
+    			people: people
+    		}
+
+    	}
     });
 });
