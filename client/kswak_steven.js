@@ -373,6 +373,14 @@ if (Meteor.isClient) {
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
+
+	Template.teacher_control.events({
+		'click #add_teacher_submit': function(event, template){
+			var nameString = template.find('input[name=addingTeacher]').value;
+			var tempNameList = nameString.split(","); //return an array
+			Meteor.call('update_teacher_list',tempNameList)
+		}
+	})
 }
 
 

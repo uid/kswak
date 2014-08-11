@@ -188,4 +188,12 @@ td span {
 
 #add_teacher{
     margin-bottom:20px;
+
 }
+
+input[name=addingTeacher]{
+    height:30px;
+}
+
+
+
