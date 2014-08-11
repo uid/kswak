@@ -8,7 +8,6 @@ var automatic_signin = false; //TODO: true is currently broken, leave this false
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var MASTER = 'asd651c8138';
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -49,14 +48,6 @@ function send_to_scripts() {
     var query = '?' + parts[2] + '/';
     return query;
 }
-
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
-    console.log('in the weird getUsername');
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
 
 //Draw chart for submissions
 function drawChart(data) {
@@ -505,6 +496,12 @@ var passData = function(question) {
     }
 }
 
+//login_existing_user = function(username) {
+//    //ASK ABOUT PRIVACY OF FUNCTION WITH MASTER
+//    Meteor.loginWithPassword(username, MASTER); //TODO: make master global, not able to get by client
+//    console.log('in login_existing_user: ' + Meteor.user());
+//}
+
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
     console.log('lets go deeper');
@@ -578,17 +575,39 @@ Router.map(function () {
             return Meteor.subscribe("accountstest")
         },
         data: function() {
-            var sneakysneaky = this.params.encrypted_username;
-            var usernameAndLogin = Meteor.call(kswak_login, sneakysneaky);
-            var username = usernameAndLogin[0];
-            var loginFlag = usernameAndLogin[1];
-            console.log('behind if: ' + username);
-            console.log(loginFlag);
-            if (loginFlag) {
+            function callback(dataz) {
+                var usernameAndLogin = dataz;
+                console.log('dataz');
+                console.log(usernameAndLogin);
+                var username = usernameAndLogin[0];
+                var loginFlag = usernameAndLogin[1];
+                console.log('behind if in callback: ' + username);
+                console.log(loginFlag);
                 Meteor.loginWithPassword(username, MASTER);
-                user_signed_in = true;
+                if (loginFlag) {
+                    Meteor.loginWithPassword(username, MASTER);
+                    user_signed_in = true;
+                }
+                Router.go('home');
             }
-            Router.go('home');
+
+            var sneakysneaky = this.params.encrypted_username;
+            var usernameAndLogin = Meteor.call('kswak_login', sneakysneaky,
+                                               function(err, data) {
+                                                   console.log(data);
+                                                   callback(data);
+                                               });
+
+//            var usernameAndLogin = kswak_login(sneakysneaky);
+//            var username = usernameAndLogin[0];
+//            var loginFlag = usernameAndLogin[1];
+//            console.log('behind if: ' + username);
+//            console.log(loginFlag);
+//            if (loginFlag) {
+//                Meteor.loginWithPassword(username, MASTER);
+//                user_signed_in = true;
+//            }
+//            Router.go('home');
         },
     });
 
