@@ -143,6 +143,7 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
+				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -161,6 +162,7 @@ if (Meteor.isClient) {
                 choice3: '',
                 choice4: '',
                 choice5: '',
+				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -178,6 +180,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: '',
                 choice5: '',
+				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -195,6 +198,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: '',
+				choice6: '',
                 status: 'active',
                 time: time
             }
@@ -212,6 +216,7 @@ if (Meteor.isClient) {
                 choice3: 'C',
                 choice4: 'D',
                 choice5: 'E',
+				choice6: '',
                 status: 'active',
                 time: time,
             }
@@ -238,6 +243,7 @@ if (Meteor.isClient) {
                 choice3: choice3.value,
                 choice4: choice4.value,
                 choice5: choice5.value,
+				choice6: choice6.value,
                 status: 'active',
                 time: time
             }
@@ -249,6 +255,8 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
+			choice5.value = "";
+			choice6.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
