@@ -1,6 +1,7 @@
 {
   "packages": {
     "iron-router": {},
-    "npm": {}
+    "npm": {},
+    "crypto-md5": {}
   }
 }

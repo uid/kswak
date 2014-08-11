@@ -31,24 +31,30 @@ function checkUser(username) {
 }
 
 //Creates an account and returns the id of that account.
-function createAccount(username){
+function createAccount(username, password) {
     var account_data = {
         username: username,
         user_email: username + '@mit.edu',
     };
 
     var exists = checkUser(username);
-    if (!exists) {
-    	var account_id;
-    	if (teacherList.indexOf(username) == -1){
-        	var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'student'}});
+    if (!exists) { //TODO: what if url is wrong? check if password formation is okay
+        if (password == CryptoJS.MD5(username+MASTER).toString()) {
+            var role;
+            (teacherList.indexOf(username) == -1) ? role = 'student' : role = 'teacher';
+            var account_id = Accounts.createUser({
+                username: username,
+                email: account_data['user_email'],
+                password: password,
+                profile: {role: role}});
+            user_signed_in = true;
+            var id = AccountsTest.insert(account_data, function(err) {});
+            console.log('at id:' + id);
         }
-        else{
-        	var account_id = Accounts.createUser({username: username, email: account_data['user_email'], password: MASTER, profile: {role: 'teacher'}});
+        else {
+            console.log('ERROR: GENERATED PASSWORD IN URL DOESN\'T MATCH GENERATED PASSWORD ON SERVER');
+            throw Error();
         }
-        user_signed_in = true;
-        var id = AccountsTest.insert(account_data, function(err) {});
-        console.log('at id:' + id);
     }
 
 //    function callback(data) {
@@ -74,9 +80,9 @@ function createAccount(username){
 }
 
 Meteor.methods({
-    kswak_login: function(encrypted_username) {
+    kswak_login: function(encrypted_username, password) {
         var username = getUsernameFromBase64(encrypted_username);
-        createAccount(username);
-        return username;
+        createAccount(username, password);
+        return [username, password];
     },
 });

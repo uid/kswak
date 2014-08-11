@@ -3,7 +3,8 @@
   "dependencies": {
     "basePackages": {
       "iron-router": {},
-      "npm": {}
+      "npm": {},
+      "crypto-md5": {}
     },
     "packages": {
       "iron-router": {
@@ -16,10 +17,20 @@
         "tag": "v0.2.6",
         "commit": "177ab6118de5bf8cffb19481343d5762ff7a2aaf"
       },
+      "crypto-md5": {
+        "git": "https://github.com/oortcloud/meteor-crypto-md5.git",
+        "tag": "v3.1.2.2",
+        "commit": "75bbb3eeace302122d3554a6212a6fe92553fa18"
+      },
       "iron-layout": {
         "git": "https://github.com/EventedMind/iron-layout.git",
         "tag": "v0.2.0",
         "commit": "4a2d53e35ba036b0c189c7ceca34be494d4c6c97"
+      },
+      "crypto-base": {
+        "git": "https://github.com/oortcloud/meteor-crypto-base.git",
+        "tag": "v3.1.2.1",
+        "commit": "5df8d82a0595553415bbfae2930c6ecbeece5794"
       },
       "blaze-layout": {
         "git": "https://github.com/EventedMind/blaze-layout.git",
