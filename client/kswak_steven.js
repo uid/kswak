@@ -422,12 +422,11 @@ var passData_student = function(question, user) {
     if (question != undefined) {
 		var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'This question is live'
-        } else if(question.status == 'frozen') {
+            var status_comment = 'Submission is open'
+        } else {
             var status_comment = 'Submission is closed'
-        } else{
-            var status_comment = 'This question is inactive'
-        }
+		}
+     
 		var student_response =  Responses.findOne({question:question_id, user:user._id});
 		if (student_response != undefined){
 			var feedback = 'Your submission is '+student_response.answer;
