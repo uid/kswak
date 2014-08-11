@@ -52,24 +52,6 @@ function send_to_scripts() {
     return query;
 }
 
-
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '=');
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
-//Creates an account and returns the id of that account.
-function createAccount(username){
-    var account_data = {
-        username: username,
-        user_email: username+'@mit.edu',
-    }
-    var account_id = Accounts.insert(account_data, function(err) { /**/ });
-    console.log('making account');
-    return account_id;
-}
-
 if (Meteor.isClient) {
     Template.nav.helpers({
         isTeacher: function() {
@@ -94,6 +76,12 @@ if (Meteor.isClient) {
         questions: function() {
             console.log( Questions.find() );
             return Questions.find();
+        }
+    });
+
+    Template.teacher_control.helpers({
+        questions:function(){
+            console.log(Meteor.user.find());
         }
     });
 
@@ -228,7 +216,7 @@ if (Meteor.isClient) {
             choice2.value = "";
             choice3.value = "";
             choice4.value = "";
-			choice5.value = "";
+            choice5.value = "";
             launchQuestion();
             var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
         }
@@ -316,7 +304,7 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			
+
             Questions.update(question, {$set:{title:title.value,
                                               choice1:choice1.value,
                                               choice2:choice2.value,
@@ -334,7 +322,7 @@ if (Meteor.isClient) {
         'click #save_launch': function(event, template){
             var question = Session.get('editing');
             //Remove responses which are already submitted for the question
-            Responses.find({question:question}).forEach( function(response){
+            Responses.find({question:question}).forEach(function(response){
                 Responses.remove(response._id)
             });
             //disable current launched question
@@ -360,7 +348,7 @@ if (Meteor.isClient) {
     })
 
     Template.question_view.rendered = function() {
-        alert.play(); 
+        alert.play();
     }
 
     Template.question_view.events({
@@ -376,7 +364,10 @@ if (Meteor.isClient) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
                 else {
-                    var user_answer = choice.name
+                    var user_answer = choice.name;
+                    //console.log('.text() ' + choice.text());
+                    //console.log('.html() ' + choice.html());
+                    if (question.type == 'custom') { user_answer = choice.value; }
                     var id = question._id;
                     var user = Meteor.user()._id;
                     var response = Responses.findOne({user:user, question:id})
@@ -396,6 +387,14 @@ if (Meteor.isClient) {
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
+
+	Template.teacher_control.events({
+		'click #add_teacher_submit': function(event, template){
+			var nameString = template.find('input[name=addingTeacher]').value;
+			var tempNameList = nameString.split(","); //return an array
+			Meteor.call('update_teacher_list',tempNameList)
+		}
+	})
 }
 
 
@@ -431,54 +430,54 @@ var calcPercentages =function(question){
 
 var passData_student = function(question, user) {
     if (question != undefined) {
-		var question_id = question._id;
+        var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open'
         } else {
             var status_comment = 'Submission is closed'
-		}
-     
-		var student_response =  Responses.findOne({question:question_id, user:user._id});
-		if (student_response != undefined){
-			var feedback = 'Your submission is '+student_response.answer;
-		}else{
-			var feedback = "Please submit your response, you don't have any submission!";
-		}
-		
+        }
+
+        var student_response =  Responses.findOne({question:question_id, user:user._id});
+        if (student_response != undefined){
+            var feedback = 'Your submission is: ' + student_response.answer;
+        }else{
+            var feedback = "Please submit your response!";
+        }
+
         var options = [];
         for (i in choices) {
-			var color = '#e5e2e2'
-			//for use of identifing chosen answer
-			if (student_response != undefined){
-				if (student_response.answer == [letters[i]]){ 
-					color = 'steelblue';
-				}
-			}	
+            var color = '#e5e2e2'
+            //for use of identifing chosen answer
+            if (student_response != undefined){
+                if (student_response.answer == [letters[i]]){
+                    color = 'steelblue';
+                }
+            }
             if (question[choices[i]] != ''){
                 options.push(
                 {
                     choice: question[choices[i]],
                     voters: Responses.find({question:question_id, answer:letters[i]}).count(),
                     letter: letters[i],
-					color: color
-				})
+                    color: color
+                })
             }
-		}
+        }
         return {
             question_id: question_id,
             status_comment: status_comment,
             options: options,
             title: question.title,
             time: question.time,
-			student_response: student_response,
-			feedback:feedback
+            student_response: student_response,
+            feedback:feedback
         }
     }
 }
-	
+
 var passData = function(question, user) {
     if (question != undefined) {
-		var question_id = question._id;
+        var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live'
             var status_control = 'to freeze';
@@ -516,6 +515,7 @@ var passData = function(question, user) {
 
 var teacherList = ['rcm','sarivera']
 
+
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
@@ -532,23 +532,31 @@ Router.map(function () {
     });
 
     this.route('login', {
-        path: '/login/:encrypted_username',
+        path: '/login/:encrypted_info',
         waitOn: function() {
             return Meteor.subscribe("accountstest")
         },
         data: function() {
+            var password = '';
+
             function callback(dataz) {
-                var username = dataz;
-                Meteor.loginWithPassword(username, MASTER);
+                var username = dataz[0];
+                var password = dataz[1];
+                Meteor.loginWithPassword(username, password);
                 user_signed_in = true;
                 Router.go('home');
             }
 
-            var sneakysneaky = this.params.encrypted_username;
-            var usernameAndLogin = Meteor.call('kswak_login', sneakysneaky,
-                                               function(err, data) {
-                                                   callback(data);
-                                               });
+            var sneakysneaky = this.params.encrypted_info;
+            var vals = sneakysneaky.split('&');
+            var encrypted_username = vals[0];
+            password = vals[1];
+            var usernameAndLogin = Meteor.call('kswak_login', encrypted_username, password,
+                                                                   function(err, data) {
+                                                                       console.log('data');
+                                                                       console.log(data);
+                                                                       callback(data);
+                                                                   });
         },
     });
 
@@ -602,7 +610,7 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-			console.log('user', Meteor.user())
+            console.log('user', Meteor.user())
             return passData_student(question, Meteor.user());}
     });
 
@@ -640,6 +648,31 @@ Router.map(function () {
             if (this.ready()){
                 this.render()
             }
+        }
+    })
+
+
+    //temporary trying to make a teacher page so they can see the students and what not
+    this.route('teacher_control',{
+        path:'/control',
+        waitOn: function(){
+            return Meteor.subscribe("userData");
+        },
+        template: 'teacher_control',
+        data: function(){
+            var people = [];
+            for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
+                if (Meteor.users.find().fetch()[ll].profile != undefined){
+                    people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
+                }
+                else{
+                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
+                }
+            }
+            return{
+                people: people
+            }
+
         }
     });
 });

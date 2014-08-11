@@ -179,3 +179,21 @@ td span {
     padding: 0.5em;
     margin: 0.2em;
 }
+
+/*/////////////////////////*/
+
+#people_all td{
+    padding:10px;
+}
+
+#add_teacher{
+    margin-bottom:20px;
+
+}
+
+input[name=addingTeacher]{
+    height:30px;
+}
+
+
+
