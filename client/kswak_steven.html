@@ -69,11 +69,11 @@
     <h1>Create a question</h1>
 
     <h4>Quick Launch:</h4>
-        <button id='tf'>True/False</button>
-        <button id='mc2'>MC (2 choices)</button>
-        <button id='mc3'>MC (3 choices)</button>
-        <button id='mc4'>MC (4 choices)</button>
-        <button id='mc5'>MC (5 choices)</button>
+        <button class='quickLaunch' id='tf'>True/False</button>
+        <button class='quickLaunch' id='mc2'>Multiple Choice<br>(2 choices)</button>
+        <button class='quickLaunch' id='mc3'>Multiple Choice<br>(3 choices)</button>
+        <button class='quickLaunch' id='mc4'>Multiple Choice<br>(4 choices)</button>
+        <button class='quickLaunch' id='mc5'>Multiple Choice<br>(5 choices)</button>
     <br>
     <h4>Custom:</h4>
     <div class='form_container'>
@@ -258,7 +258,7 @@
                 <tr>
                     <td align='right'>{{letter}} </td>
                     <td align='left'><input type="text" name={{choice}} value={{option}}></td>
-                    <td align='left'><input type="radio" value={{letter}} name="correct"></td>
+                    <!--<td align='left'><input type="radio" value={{letter}} name="correct"></td>-->
                 </tr>
                 {{/each}}
             </table>
