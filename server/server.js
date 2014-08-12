@@ -1,4 +1,3 @@
-
 Teachers = new Meteor.Collection("teachers");
 Teachers.insert({username:"rcm"});
 Teachers.insert({username:"maxg"});
@@ -6,17 +5,18 @@ Teachers.insert({username:"robsoto"});
 Teachers.insert({username:"sarivera"});
 
 Questions = new Meteor.Collection("questions");
-//Meteor.publish("questions", function () {
-//    var userID = this.userId;
-//    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-//        console.log('teacher access to Questions', userID);
-//        return Questions.find();
-//    }else{
-//        console.log('student access to Questions', userID);
-//        return Questions.find({}, {fields:{title:0}});
-//    }
-//
-//});
+Meteor.publish("questions", function () {
+    var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+        console.log('teacher access to Questions', userID);
+        return Questions.find();
+    }else{
+        console.log('student access to Questions', userID);
+        return Questions.find({}, {fields:{title:0}});
+    }
+
+//    return Questions.find();
+});
 
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
@@ -43,8 +43,9 @@ function checkUser(username) {
     return exists;
 }
 
-//Creates an account and returns the id of that account.
-function createAccount(username){
+//Creates an account if the user doesn't already exist in the db.
+//Be sure to be mindful of the password checking in the nested if statement below. Master password must be shared between script and here, or else no one will be able to successfully log in.
+function createAccount(username, password) {
     var account_data = {
         username: username,
         user_email: username + '@mit.edu',
@@ -89,10 +90,10 @@ var isTeacher = function(userID) {
 
 
 Meteor.methods({
-    kswak_login: function(encrypted_username) {
+    kswak_login: function(encrypted_username, password) {
         var username = getUsernameFromBase64(encrypted_username);
-        createAccount(username);
-        return username;
+        createAccount(username, password);
+        return [username, password];
     },
 
     submit_response : function (question, user_answer) {
