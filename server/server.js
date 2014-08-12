@@ -1,5 +1,4 @@
 Teachers = new Meteor.Collection("teachers");
-Teachers.insert({username:"sarivera"});
 Teachers.insert({username:"rcm"});
 Teachers.insert({username:"robsoto"});
 
@@ -46,11 +45,16 @@ function createAccount(username, password) {
     console.log('in create accont');
 
     var exists = checkUser(username);
-    console.log(exists);
+    var role;
+    if (Teachers.findOne({username: username}) == null) {
+        role = 'student'
+    }
+    else {
+        role = 'teacher';
+    }
+
     if (!exists) { //TODO: what if url is wrong? check if password formation is okay
         if (password == CryptoJS.MD5(username+MASTER).toString()) { //IMPORTANT
-            var role;
-            (teacherList.indexOf(username) == -1) ? role = 'student' : role = 'teacher';
             var account_id = Accounts.createUser({
                 username: username,
                 email: account_data['user_email'],
@@ -65,12 +69,11 @@ function createAccount(username, password) {
         }
     }
     else {
-        (teacherList.indexOf(username) == -1) ? role = 'student' : role = 'teacher';
         if (role == 'teacher') {
             console.log('updating db');
             var userID = Meteor.users.findOne({username: username});
-            Meteor.users.update( {_id: userID}, { $set: { role : 'teacher'} } );
-            console.log(Meteor.users.findOne({username: username}).profile.role); //WHY NOT TEACHER FGGGGGGGGGGGGRRRRR
+            Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
+            console.log(Meteor.users.findOne({username: username}).profile.role);
         }
     }
 }
@@ -82,13 +85,16 @@ Meteor.methods({
         createAccount(username, password);
         return [username, password];
     },
-    update_teacher_list: function(newTeacherList){
-
-    	for (var nn=0;nn<newTeacherList.length;nn++){
-    		teacherList.push(newTeacherList[nn]);
-    	}
-    	console.log(teacherList); //prints into terminal
-    	return teacherList
+    update_teacher_list: function(newTeacherList) {
+        for (var nn=0;nn<newTeacherList.length;nn++) {
+            var username = newTeacherList[nn];
+            Teachers.insert({username: username});
+            var userID = Meteor.users.findOne({username: username});
+            if (userID != null) {
+                Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
+                console.log(Meteor.users.findOne({username: username}).profile.role);
+            }
+        }
     }
 });
 

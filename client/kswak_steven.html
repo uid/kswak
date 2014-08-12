@@ -141,8 +141,9 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-        <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
-        <button style="margin-left:150px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
+        <span style='width:360px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
+        <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
+		<button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
     <div class='form_container'>
         <div class="tableSummary" style="padding:10; margin:10px">{{title}}</div>
         Choices: <br>
@@ -198,12 +199,13 @@
     </tr>
     {{/each}}
     </table><br/>
-    <button id="inactivateAll" class="btn btn-primary">inactivate all</button>
+    <button id="inactivateAll" class="btn btn-primary">Inactivate All</button>
 
 <!-- Bootstrap delete all warning -->
 <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
   Delete all
 </button>
+<button id="summary_go_to_new" class="btn btn-primary">New Question</button>
 </div>
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:-100px">
   <div class="modal-dialog">
