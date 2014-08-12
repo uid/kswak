@@ -1,7 +1,7 @@
+
 Teachers = new Meteor.Collection("teachers");
 Teachers.insert({username:"rcm"});
 Teachers.insert({username:"robsoto"});
-
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
@@ -18,26 +18,23 @@ Meteor.publish("accountstest", function () {
     return AccountsTest.find();
 });
 
-var MASTER = 'asd651c8138'; //used to generate the users password. concat. to end of username and run md5 algorithm on that for user password.
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc"; //used for AES encryption, which is ultimately used to decrypt the encrypted username in the url.
+var MASTER = 'asd651c8138';
+var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
-//Returns a username from the base64 string in the login/:encrypted_info path.
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
     var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
     return username;
 }
 
-//Checks if a user exists. If they do, returns true.
 function checkUser(username) {
     var exists = false;
     Meteor.users.findOne({username: username}) ? exists = true : exists = false;
     return exists;
 }
 
-//Creates an account if the user doesn't already exist in the db.
-//Be sure to be mindful of the password checking in the nested if statement below. Master password must be shared between script and here, or else no one will be able to successfully log in.
-function createAccount(username, password) {
+//Creates an account and returns the id of that account.
+function createAccount(username){
     var account_data = {
         username: username,
         user_email: username + '@mit.edu',
@@ -75,13 +72,67 @@ function createAccount(username, password) {
     }
 }
 
-//Gets the username of a user and creates an account for them if they don't have one already. Returns a list in the form
+Future = Npm.require('fibers/future');
+
 Meteor.methods({
-    kswak_login: function(encrypted_username, password) {
+    kswak_login: function(encrypted_username) {
         var username = getUsernameFromBase64(encrypted_username);
-        createAccount(username, password);
-        return [username, password];
+        createAccount(username);
+        return username;
     },
+	
+	submit_response : function (question, user_answer) {
+		var user_id = Meteor.user()._id;
+		if (question.status == 'active'){
+			var question_id = question._id;
+			var response = Responses.findOne({user:user_id, question:question_id});		
+			if (response != undefined){
+				console.log('updating')
+				Responses.update(response._id, {$set: {answer: user_answer}})
+			}else{
+				console.log('inserting');
+				Responses.insert({user:user_id, question:question_id, answer: user_answer}, function(err){console.log('failed to insert')})
+			}	
+		}
+	},
+	
+	remove_responses: function ( question_id){
+		 Responses.find({question:question_id}).forEach( function(response){
+                Responses.remove(response._id)
+            });
+	},
+	
+	insert_question: function( question_data){
+		Questions.insert(question_data)
+	},
+	
+	remove_question: function (question_id) {
+		Questions.remove(question_id);
+	},
+	
+	
+	inactivate_question: function (){
+		Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+	},
+	
+	activate_question: function(question_id){
+		 Questions.update( question_id, {$set:{status:'active'}})
+	},
+	
+	freeze_question: function(question_id){
+		Questions.update(question_id, {$set:{status:'frozen'}});
+	},
+	
+	update_question: function(question, title, c1,c2,c3,c4,c5){
+		            Questions.update(question, {$set:{title:title,
+                                              choice1:c1,
+                                              choice2:c2,
+                                              choice3:c3,
+                                              choice4:c4,
+                                              choice5:c5
+                                              }})
+	},
+		
     add_teacher: function(newTeacherList, editor) {
         if (editor.profile.role == 'teacher') {
             for (var nn=0;nn<newTeacherList.length;nn++) {
@@ -115,4 +166,3 @@ Meteor.methods({
         return role == 'teacher'
     }
 });
-
