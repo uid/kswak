@@ -85,15 +85,32 @@ Meteor.methods({
         createAccount(username, password);
         return [username, password];
     },
-    update_teacher_list: function(newTeacherList) {
-        for (var nn=0;nn<newTeacherList.length;nn++) {
-            var username = newTeacherList[nn];
-            Teachers.insert({username: username});
-            var userID = Meteor.users.findOne({username: username});
-            if (userID != null) {
-                Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
-                console.log(Meteor.users.findOne({username: username}).profile.role);
+    add_teacher: function(newTeacherList, editor) {
+        if (editor.profile.role == 'teacher') {
+            for (var nn=0;nn<newTeacherList.length;nn++) {
+                var username = newTeacherList[nn];
+                Teachers.insert({username: username});
+                var userID = Meteor.users.findOne({username: username});
+                if (userID != null) {
+                    Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
+                    console.log(Meteor.users.findOne({username: username}).profile.role);
+                }
             }
+        }
+        else {
+            console.log('ERROR: USER LACKS SUFFICIENT PRIVILEGES TO EDIT TEACHER ROSTER.')
+        }
+    },
+    remove_teacher: function(teacher_username, editor) {
+        if (editor.profile.role == 'teacher') {
+            var id = Meteor.users.findOne({username: teacher_username}).id;
+            console.log(id);
+            if (id != null) {
+                Meteor.users.update( id, { $set: { 'profile.role' : 'student'} } );
+            }
+        }
+        else {
+            console.log('ERROR: USER LACKS SUFFICIENT PRIVILEGES TO EDIT TEACHER ROSTER.')
         }
     }
 });
