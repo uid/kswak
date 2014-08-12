@@ -143,7 +143,7 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-        <span style='width:360px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
+        <span style='width:360px; display: inline-block'><i style='color:{{getStatusColor}}'>{{status_comment}} </i>(Time posted: {{time}})</span>
         <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
         <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
     <div class='form_container'>

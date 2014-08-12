@@ -225,16 +225,16 @@ if (Meteor.isClient) {
         'click #change_mode': function (event, template){
             if ( Questions.findOne(this.question_id).status == 'active'){
                 Questions.update( this.question_id, {$set:{status:'frozen'}});
-				Session.set('statusColor', '#ef6d86');
+				//Session.set('statusColor', '#ef6d86');
 				console.log('statusColor: ' + Session.get('statusColor'))
             }else if( Questions.findOne(this.question_id).status == 'frozen') {
                 Questions.update( this.question_id, {$set:{status:'active'}})
-				Session.set('statusColor', 'green');
+				//Session.set('statusColor', 'green');
 				console.log('statusColor: ' + Session.get('statusColor'))
             }else{
                 launchQuestion();
                 Questions.update( this.question_id, {$set:{status:'active'}})
-				Session.set('statusColor', 'green');
+				//Session.set('statusColor', 'green');
             }
         },
 
@@ -431,6 +431,12 @@ var passData_student = function(question, user) {
             var status_comment = 'Submission is closed';
             var overlay = "overlay open";
         }
+		
+		if (status_comment == 'Submission is open') {
+			Session.set('statusColor', 'green');	
+		} else if (status_comment == 'Submission is closed') {
+			Session.set('statusColor', '#ef6d86');	
+		}
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
         if (student_response != undefined){
@@ -483,6 +489,15 @@ var passData = function(question, user) {
             var status_control = 'to activate';
             var status_comment = 'This question is inactive'
         }
+		
+		if (status_comment == 'This question is live') {
+			Session.set('statusColor', 'green');	
+		} else if (status_comment == 'This question is live and FROZEN') {
+			Session.set('statusColor', '#ef6d86');	
+		} else {
+			Session.set('statusColor', '#ef6d86');	
+		}
+		
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
         for (i in choices) {
