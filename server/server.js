@@ -101,6 +101,7 @@ Meteor.methods({
             console.log('ERROR: USER LACKS SUFFICIENT PRIVILEGES TO EDIT TEACHER ROSTER.')
         }
     },
+    //todo: this is borked, debug.
     remove_teacher: function(teacher_username, editor) {
         if (editor.profile.role == 'teacher') {
             var id = Meteor.users.findOne({username: teacher_username}).id;
