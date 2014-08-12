@@ -195,5 +195,8 @@ input[name=addingTeacher]{
     height:30px;
 }
 
-
+.peoples{
+    background-color:lightgray;
+    margin:5px !important;
+}
 
