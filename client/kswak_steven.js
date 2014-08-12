@@ -392,6 +392,10 @@ if (Meteor.isClient) {
             var nameString = template.find('input[name=addingTeacher]').value;
             var tempNameList = nameString.split(","); //return an array
             Meteor.call('add_teacher', tempNameList, Meteor.user());
+        },
+        'click .deleteTeacher': function(event, template){
+        	var delUser = this.username;
+        	Meteor.call('remove_teacher', delUser, Meteor.user());
         }
     })
 }

@@ -279,10 +279,10 @@
                 </tr>
             {{#each people}}
                 {{#if isTeacher}}
-                <tr>
+                <tr name={{username}}>
                     <td>{{role}} </td>
                     <td>{{username}}</td>
-                    <td> <button class="close">&times;</button> </td>
+                    <td> <button class="close deleteTeacher" id="teacher_{{username}}" for={{username}}>&times;</button> </td>
                 </tr>
                 {{/if}}
             {{/each}}
