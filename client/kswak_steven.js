@@ -32,10 +32,10 @@ var MASTER = 'asd651c8138';
 //If an id is passed, launch its question
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
-        Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+		Meteor.call('inactivate_question');
     }
     if (typeof id != undefined){
-        Questions.update( id, {$set:{status:'active'}})
+		Meteor.call('activate_question', id);
     }
     Router.go('/teacher/home');
 }
@@ -116,7 +116,7 @@ if (Meteor.isClient) {
             }
             console.log('time data: ' + question_data.time)
             launchQuestion();
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+			Meteor.call('insert_question', question_data);
         },
 
         'click #mc2': function() {
@@ -133,7 +133,7 @@ if (Meteor.isClient) {
                 time: time
             }
             launchQuestion();
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Meteor.call('insert_question', question_data);
         },
 
         'click #mc3': function() {
@@ -150,7 +150,7 @@ if (Meteor.isClient) {
                 time: time
             }
             launchQuestion();
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Meteor.call('insert_question', question_data);
         },
 
         'click #mc4': function() {
@@ -167,7 +167,7 @@ if (Meteor.isClient) {
                 time: time
             }
             launchQuestion();
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Meteor.call('insert_question', question_data);
         },
 
         'click #mc5': function() {
@@ -184,7 +184,7 @@ if (Meteor.isClient) {
                 time: time,
             }
             launchQuestion();
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Meteor.call('insert_question', question_data);
         },
 
         'submit form': function (event, template) {
@@ -218,7 +218,7 @@ if (Meteor.isClient) {
             choice4.value = "";
             choice5.value = "";
             launchQuestion();
-            var question_id = Questions.insert(question_data, function(err) { /* handle error */ });
+            Meteor.call('insert_question', question_data);
         }
   });
 	
@@ -235,12 +235,12 @@ if (Meteor.isClient) {
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
             if ( Questions.findOne(this.question_id).status == 'active'){
-                Questions.update( this.question_id, {$set:{status:'frozen'}});
+                Meteor.call('freeze_question', this.question_id);
             }else if( Questions.findOne(this.question_id).status == 'frozen') {
-                Questions.update( this.question_id, {$set:{status:'active'}})
+                Meteor.call('activate_question',this.question_id)
             }else{
                 launchQuestion();
-                Questions.update( this.question_id, {$set:{status:'active'}})
+				Meteor.call('activate_question',this.question_id);
             }
         },
 
@@ -257,27 +257,24 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
-            Questions.update({}, {$set:{status:'inactive'}});
+			Meteor.call('inactivate');
             var selectionBox = event.target.parentElement.id;
             //selectionBox.append('<input type="radio">');
             //console.log("target", event.target.parentElement.lastChild)
-            Questions.update(this._id, {$set:{status:'active'}});
+			Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
             //Remove responses of this question
-            Responses.find({question:this._id}).forEach( function(response){
-                Responses.remove(response._id)
-            });
+			Meteor.call('remove_responses', this._id)
+           
             //Remove this question itself
-            Questions.remove(this._id);
+			Meteor.call('remove_question', this._id);
 
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
-                Questions.remove(question._id);
-                Responses.find({question:question._id}).forEach( function(response){
-                    Responses.remove(response._id)
-                });
+				Meteor.call('remove_question', question._id);
+				Meteor.call('remove_responses', question._id);
             });
         },
         'click #inactivateAll': function(event, template){
@@ -293,9 +290,7 @@ if (Meteor.isClient) {
         'click #save': function(event, template){
             var question = Session.get('editing');
             //Remove responses which are already submitted for the question
-            Responses.find({question:question}).forEach( function(response){
-                Responses.remove(response._id)
-            });
+			Meteor.call('remove_responses', question);
 
             //create new question and launch it
             var title = template.find("input[name=title]");
@@ -304,14 +299,9 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
+			
+			Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value)
 
-            Questions.update(question, {$set:{title:title.value,
-                                              choice1:choice1.value,
-                                              choice2:choice2.value,
-                                              choice3:choice3.value,
-                                              choice4:choice4.value,
-                                              choice5:choice5.value
-                                              }})
             if (question.status == 'active'){
                 Router.go('/teacher/home')
             }else{
@@ -322,9 +312,8 @@ if (Meteor.isClient) {
         'click #save_launch': function(event, template){
             var question = Session.get('editing');
             //Remove responses which are already submitted for the question
-            Responses.find({question:question}).forEach(function(response){
-                Responses.remove(response._id)
-            });
+			Meteor.call('remove_responses', question)
+       
             //disable current launched question
             launchQuestion();
             //create new question and launch it
@@ -334,15 +323,9 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-
-            Questions.update(question, {$set:{title:title.value,
-                                              choice1:choice1.value,
-                                              choice2:choice2.value,
-                                              choice3:choice3.value,
-                                              choice4:choice4.value,
-                                              choice5:choice5.value,
-                                              status:'active'
-                                              }})
+			
+			Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value);
+			Meteor.call('activate_question', question);
             Router.go('/teacher/home')
         }
     })
@@ -353,41 +336,19 @@ if (Meteor.isClient) {
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
-            event.preventDefault();
-            //console.log('user', Meteor.user()._id);
+            event.preventDefault();	
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            if (question.status == 'active'){
-                // var choice = template.find("input[name='choice']:checked");
-                var choice = template.find(".clicked");
-                console.log(template.find(".clicked"));
-                if (choice == null) {
-                    $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
-                }
-                else {
-                    var user_answer = choice.name;
-                    //console.log('.text() ' + choice.text());
-                    //console.log('.html() ' + choice.html());
-                    if (question.type == 'custom') { user_answer = choice.value; }
-                    var id = question._id;
-                    var user = Meteor.user()._id;
-                    var response = Responses.findOne({user:user, question:id})
-                    if (response != undefined){
-                        console.log('updating');
-						
-                        Responses.update(response._id, {$set: {answer: user_answer}})
-                    }else{
-                        console.log('inserting', user, id, user_answer);
-                        Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')})
-                    }
-                    //$('#submitFeedback').html('Your submission is ' + user_answer);
-                }
-            } else {
-                //$('#submitFeedback').html('Question submission is closed')
-            }
-            // $('#submitFeedback').effect("shake", {times:1});
-        }
-    });
-
+            
+			var choice = template.find(".clicked");
+			var user_answer = choice.name;
+			if (question.type == 'custom') { user_answer = choice.value };
+			var question_id = question._id;
+			console.log('submit', question, user_answer)
+			Meteor.call('submit_response', question, user_answer);
+			
+		}
+	})
+				
 	Template.teacher_control.events({
 		'click #add_teacher_submit': function(event, template){
 			var nameString = template.find('input[name=addingTeacher]').value;
@@ -413,7 +374,7 @@ var calcPercentages =function(question){
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
-            var numResponses = Responses.find({question: question._id , answer:letters[i]}).count();
+			var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
             normalizedList.push(numResponses);
             total +=numResponses;
         }else{
@@ -457,7 +418,6 @@ var passData_student = function(question, user) {
                 options.push(
                 {
                     choice: question[choices[i]],
-                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),
                     letter: letters[i],
                     color: color
                 })
@@ -495,7 +455,7 @@ var passData = function(question, user) {
                 options.push(
                 {
                     choice: question[choices[i]],
-                    voters: Responses.find({question:question_id, answer:letters[i]}).count(),
+                    voters: Responses.find({question: question_id, answer: letters[i]}).count(),
                     percent: stats[i],
                 })
             }
@@ -611,7 +571,8 @@ Router.map(function () {
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             console.log('user', Meteor.user())
-            return passData_student(question, Meteor.user());}
+            return passData_student(question, Meteor.user());
+		}
     });
 
     this.route('teacher_new', {
