@@ -118,6 +118,7 @@
 </template>
 
 <template name='question_view'>
+    <div class={{overlay_option}}></div>
     <title>KSWAK | {{title}}</title>
     <div id="container_question_view">
     <h2>Question view</h2>
@@ -272,7 +273,7 @@
 <template name='teacher_control'>
     <div id='container_teacher_control'>
         <input type="text" name="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
-        <table id="people_teacher">
+        <table class="people_table" id="people_teacher">
                 <tr>
                     <td class="peoples">TEACHERS</td>
                     <td class="peoples">USERNAME</td>
@@ -288,7 +289,7 @@
             {{/each}}
         </table>
 
-        <table id="people_student">
+        <table class="people_table" id="people_student">
                 <tr>
                     <td class="peoples">STUDENTS</td>
                     <td class="peoples">USERNAME</td>

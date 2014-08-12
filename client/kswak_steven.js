@@ -435,9 +435,11 @@ var passData_student = function(question, user) {
     if (question != undefined) {
         var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'Submission is open'
+            var status_comment = 'Submission is open';
+            var overlay = "overlay closed";
         } else {
-            var status_comment = 'Submission is closed'
+            var status_comment = 'Submission is closed';
+            var overlay = "overlay open";
         }
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
@@ -446,7 +448,6 @@ var passData_student = function(question, user) {
         } else {
             var feedback = "Please submit your response!";
         }
-
         var options = [];
         for (i in choices) {
             var color = '#e5e2e2'
@@ -473,7 +474,8 @@ var passData_student = function(question, user) {
             title: question.title,
             time: question.time,
             student_response: student_response,
-            feedback:feedback
+            feedback:feedback,
+            overlay_option: overlay
         }
     }
 }
