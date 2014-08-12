@@ -42,7 +42,6 @@ function createAccount(username, password) {
         username: username,
         user_email: username + '@mit.edu',
     };
-    console.log('in create accont');
 
     var exists = checkUser(username);
     var role;
@@ -70,10 +69,8 @@ function createAccount(username, password) {
     }
     else {
         if (role == 'teacher') {
-            console.log('updating db');
             var userID = Meteor.users.findOne({username: username});
             Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
-            console.log(Meteor.users.findOne({username: username}).profile.role);
         }
     }
 }
