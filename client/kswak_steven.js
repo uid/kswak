@@ -252,10 +252,10 @@ if (Meteor.isClient) {
             }*/
             Router.go('/teacher/edit')
         },
-		
-		'click #teacher_home_go_to_new': function (event, template) {
-			Router.go('/teacher/new');	
-		}
+
+        'click #teacher_home_go_to_new': function (event, template) {
+            Router.go('/teacher/new');
+        }
     })
 
     Template.teacher_summary.events({
@@ -286,9 +286,9 @@ if (Meteor.isClient) {
         'click #inactivateAll': function(event, template){
             launchQuestion()
         },
-		'click #summary_go_to_new': function(event, template) {
-			Router.go('/teacher/new');	
-		}
+        'click #summary_go_to_new': function(event, template) {
+            Router.go('/teacher/new');
+        }
     })
 
     Template.teacher_edit.events({
@@ -391,7 +391,7 @@ if (Meteor.isClient) {
         'click #add_teacher_submit': function(event, template){
             var nameString = template.find('input[name=addingTeacher]').value;
             var tempNameList = nameString.split(","); //return an array
-            Meteor.call('update_teacher_list',tempNameList)
+            Meteor.call('add_teacher', tempNameList, Meteor.user());
         }
     })
 }
