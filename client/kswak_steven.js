@@ -8,7 +8,6 @@ var automatic_signin = false; //TODO: true is currently broken, leave this false
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
 var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
-
 var MASTER = 'asd651c8138'; //SHOULD NOT BE ON THE CLIENT.
 
 Responses.allow({
@@ -365,25 +364,18 @@ if (Meteor.isClient) {
                 }
                 else {
                     var user_answer = choice.name;
-                    //console.log('.text() ' + choice.text());
-                    //console.log('.html() ' + choice.html());
-                    if (question.type == 'custom') { user_answer = choice.value; }
                     var id = question._id;
                     var user = Meteor.user()._id;
-                    var response = Responses.findOne({user:user, question:id})
+                    var response = Responses.findOne({user:user, question:id});
                     if (response != undefined){
                         console.log('updating');
-						
-                        Responses.update(response._id, {$set: {answer: user_answer}})
+                        Responses.update(response._id, {$set: {answer: user_answer}});
                     }else{
                         console.log('inserting', user, id, user_answer);
-                        Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')})
+                        Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')});
                     }
-                    //$('#submitFeedback').html('Your submission is ' + user_answer);
                 }
-            } else {
-                //$('#submitFeedback').html('Question submission is closed')
-            }
+            } 
             // $('#submitFeedback').effect("shake", {times:1});
         }
     });
@@ -440,7 +432,7 @@ var passData_student = function(question, user) {
         var student_response =  Responses.findOne({question:question_id, user:user._id});
         if (student_response != undefined){
             var feedback = 'Your submission is: ' + student_response.answer;
-        }else{
+        } else {
             var feedback = "Please submit your response!";
         }
 
