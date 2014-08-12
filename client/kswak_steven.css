@@ -1,8 +1,8 @@
-* { margin:0; padding:0;    
-    -webkit-box-sizing: border-box; 
-    -moz-box-sizing: border-box; 
-    -ms-box-sizing: border-box; 
-    box-sizing: border-box; 
+* { margin:0; padding:0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
@@ -12,6 +12,10 @@ body {
 #login-dropdown-list {
     position: absolute;
     left: -120px;
+}
+
+.a_not_a_link {
+    pointer-events: none;
 }
 
 .navbar-text:link {
@@ -36,11 +40,11 @@ body {
 }
 
 #tf {
-	height: 44px;
+    height: 44px;
 }
 
 .quickLaunch {
-	margin: 2px;
+    margin: 2px;
 }
 
 .blank {
