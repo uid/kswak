@@ -1,4 +1,8 @@
-var teacherList = ['rcm']
+Teachers = new Meteor.Collection("teachers");
+Teachers.insert({username:"sarivera"});
+Teachers.insert({username:"rcm"});
+Teachers.insert({username:"robsoto"});
+
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
@@ -39,8 +43,10 @@ function createAccount(username, password) {
         username: username,
         user_email: username + '@mit.edu',
     };
+    console.log('in create accont');
 
     var exists = checkUser(username);
+    console.log(exists);
     if (!exists) { //TODO: what if url is wrong? check if password formation is okay
         if (password == CryptoJS.MD5(username+MASTER).toString()) { //IMPORTANT
             var role;
@@ -58,6 +64,15 @@ function createAccount(username, password) {
             throw Error();
         }
     }
+    else {
+        (teacherList.indexOf(username) == -1) ? role = 'student' : role = 'teacher';
+        if (role == 'teacher') {
+            console.log('updating db');
+            var userID = Meteor.users.findOne({username: username});
+            Meteor.users.update( {_id: userID}, { $set: { role : 'teacher'} } );
+            console.log(Meteor.users.findOne({username: username}).profile.role); //WHY NOT TEACHER FGGGGGGGGGGGGRRRRR
+        }
+    }
 }
 
 //Gets the username of a user and creates an account for them if they don't have one already. Returns a list in the form
@@ -68,10 +83,11 @@ Meteor.methods({
         return [username, password];
     },
     update_teacher_list: function(newTeacherList){
+
     	for (var nn=0;nn<newTeacherList.length;nn++){
     		teacherList.push(newTeacherList[nn]);
     	}
-    	console.log(teacherList);
+    	console.log(teacherList); //prints into terminal
     	return teacherList
     }
 });
