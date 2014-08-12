@@ -1,8 +1,8 @@
-* { margin:0; padding:0;    
-    -webkit-box-sizing: border-box; 
-    -moz-box-sizing: border-box; 
-    -ms-box-sizing: border-box; 
-    box-sizing: border-box; 
+* { margin:0; padding:0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
@@ -12,6 +12,10 @@ body {
 #login-dropdown-list {
     position: absolute;
     left: -120px;
+}
+
+.a_not_a_link {
+    pointer-events: none;
 }
 
 .navbar-text:link {
@@ -36,11 +40,11 @@ body {
 }
 
 #tf {
-	height: 44px;
+    height: 44px;
 }
 
 .quickLaunch {
-	margin: 2px;
+    margin: 2px;
 }
 
 .blank {
@@ -195,5 +199,38 @@ input[name=addingTeacher]{
     height:30px;
 }
 
+td.peoples{
+    background-color:lightgray;
+    padding:6px;
+}
+
+.people_table{
+    margin:15px;
+}
 
 
+
+
+
+/*Tryan write an overlay for the question View*/
+.overlay.open {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 10;
+}
+
+.overlay.closed{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 0%;
+    width: 0%;
+    background-color: rgba(0,0,0,0);
+    z-index: 10;
+}
+
+/*////////////////////////////////////*/

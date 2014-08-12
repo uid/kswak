@@ -23,6 +23,7 @@
         <a href="{{ pathFor 'teacher_home' }}">teacher home page</a><br/>
         <a href="{{ pathFor 'teacher_summary' }}">teacher summary page</a><br/>
         <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
+        <a href="{{ pathFor 'teacher_control' }}">teacher control panel</a><br/>
     </div>
 </template>
 
@@ -51,7 +52,7 @@
              <ul class="nav pull-right">
                  <li class="navbar-text">
                      {{#if currentUser}}
-                        <a>{{currentUser.username}}</a>
+                        <a class='a_not_a_link'>{{currentUser.username}}</a>
                      {{else}}
                         <a class='cert_link'>Sign in</a>
                      {{/if}}
@@ -117,6 +118,7 @@
 </template>
 
 <template name='question_view'>
+    <div class={{overlay_option}}></div>
     <title>KSWAK | {{title}}</title>
     <div id="container_question_view">
     <h2>Question view</h2>
@@ -127,8 +129,8 @@
         <table id="studentTable">
         {{#each options}}
         <tr>
-			<td>{{letter}}.</td>
-			<td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}"></td>
+            <td>{{letter}}.</td>
+            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}"></td>
         </tr>
         {{/each}}
         </table>
@@ -143,7 +145,7 @@
     <div id="container_teacher_question_view">
         <span style='width:360px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}} </i>(Time posted: {{time}})</span>
         <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
-		<button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
+        <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
     <div class='form_container'>
         <div class="tableSummary" style="padding:10; margin:10px">{{title}}</div>
         Choices: <br>
@@ -271,13 +273,37 @@
 <template name='teacher_control'>
     <div id='container_teacher_control'>
         <input type="text" name="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
-        <table id="people_all">
+        <table class="people_table" id="people_teacher">
+                <tr>
+                    <td class="peoples">TEACHERS</td>
+                    <td class="peoples">USERNAME</td>
+                </tr>
             {{#each people}}
+                {{#if isTeacher}}
+                <tr name={{username}}>
+                    <td>{{role}} </td>
+                    <td>{{username}}</td>
+                    <td> <button class="close deleteTeacher" id="teacher_{{username}}" for={{username}}>&times;</button> </td>
+                </tr>
+                {{/if}}
+            {{/each}}
+        </table>
+
+        <table class="people_table" id="people_student">
+                <tr>
+                    <td class="peoples">STUDENTS</td>
+                    <td class="peoples">USERNAME</td>
+                </tr>
+            {{#each people}}
+                {{#if isStudent}}
                 <tr>
                     <td>{{role}} </td>
                     <td>{{username}}</td>
                 </tr>
+                {{/if}}
             {{/each}}
         </table>
     </div>
 </template>
+
+

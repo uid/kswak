@@ -80,14 +80,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
-            console.log( Questions.find() );
             return Questions.find();
-        }
-    });
-
-    Template.teacher_control.helpers({
-        questions:function(){
-            console.log(Meteor.user.find());
         }
     });
 
@@ -101,7 +94,6 @@ if (Meteor.isClient) {
     Template.please_login.events({
         'click .cert_link': function() {
             var query = send_to_scripts();
-            console.log(query);
             window.location = scriptURL + query;
         }
     });
@@ -228,15 +220,6 @@ if (Meteor.isClient) {
         }
   });
 
-//    Template.new.rendered = function() {
-//        //Auto complete for creating question
-//        var availableTags = [
-//            "None of the above",
-//            "All of the above"
-//        ];
-//        console.log('selected', $( ".answerField" ));
-//        $( ".answerField" ).autocomplete(availableTags);
-//    }
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
@@ -264,18 +247,16 @@ if (Meteor.isClient) {
             }*/
             Router.go('/teacher/edit')
         },
-		
-		'click #teacher_home_go_to_new': function (event, template) {
-			Router.go('/teacher/new');	
-		}
+
+        'click #teacher_home_go_to_new': function (event, template) {
+            Router.go('/teacher/new');
+        }
     })
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
             Questions.update({}, {$set:{status:'inactive'}});
             var selectionBox = event.target.parentElement.id;
-            //selectionBox.append('<input type="radio">');
-            //console.log("target", event.target.parentElement.lastChild)
             Questions.update(this._id, {$set:{status:'active'}});
         },
         'click .delete': function (event, template){
@@ -298,9 +279,9 @@ if (Meteor.isClient) {
         'click #inactivateAll': function(event, template){
             launchQuestion()
         },
-		'click #summary_go_to_new': function(event, template) {
-			Router.go('/teacher/new');	
-		}
+        'click #summary_go_to_new': function(event, template) {
+            Router.go('/teacher/new');
+        }
     })
 
     Template.teacher_edit.events({
@@ -372,12 +353,10 @@ if (Meteor.isClient) {
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
-            //console.log('user', Meteor.user()._id);
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             if (question.status == 'active'){
                 // var choice = template.find("input[name='choice']:checked");
                 var choice = template.find(".clicked");
-                console.log(template.find(".clicked"));
                 if (choice == null) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
@@ -387,10 +366,8 @@ if (Meteor.isClient) {
                     var user = Meteor.user()._id;
                     var response = Responses.findOne({user:user, question:id});
                     if (response != undefined){
-                        console.log('updating');
                         Responses.update(response._id, {$set: {answer: user_answer}});
                     }else{
-                        console.log('inserting', user, id, user_answer);
                         Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')});
                     }
                 }
@@ -403,7 +380,12 @@ if (Meteor.isClient) {
         'click #add_teacher_submit': function(event, template){
             var nameString = template.find('input[name=addingTeacher]').value;
             var tempNameList = nameString.split(","); //return an array
-            Meteor.call('update_teacher_list',tempNameList)
+            template.find('input[name=addingTeacher]').value = "";
+            Meteor.call('add_teacher', tempNameList, Meteor.user());
+        },
+        'click .deleteTeacher': function(event, template){
+        	var delUser = this.username;
+        	Meteor.call('remove_teacher', delUser, Meteor.user());
         }
     })
 }
@@ -443,9 +425,11 @@ var passData_student = function(question, user) {
     if (question != undefined) {
         var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'Submission is open'
+            var status_comment = 'Submission is open';
+            var overlay = "overlay closed";
         } else {
-            var status_comment = 'Submission is closed'
+            var status_comment = 'Submission is closed';
+            var overlay = "overlay open";
         }
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
@@ -454,7 +438,6 @@ var passData_student = function(question, user) {
         } else {
             var feedback = "Please submit your response!";
         }
-
         var options = [];
         for (i in choices) {
             var color = '#e5e2e2'
@@ -481,7 +464,8 @@ var passData_student = function(question, user) {
             title: question.title,
             time: question.time,
             student_response: student_response,
-            feedback:feedback
+            feedback:feedback,
+            overlay_option: overlay
         }
     }
 }
@@ -619,7 +603,6 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            console.log('user', Meteor.user())
             return passData_student(question, Meteor.user());}
     });
 
@@ -672,10 +655,16 @@ Router.map(function () {
             var people = [];
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
                 if (Meteor.users.find().fetch()[ll].profile != undefined){
-                    people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
+                	var tempRole = Meteor.users.find().fetch()[ll].profile.role;
+                	if (tempRole == "student"){
+                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
+                	}
+                	else{
+                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
+                	}
                 }
                 else{
-                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
+                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
                 }
             }
             return{
