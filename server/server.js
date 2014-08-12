@@ -65,7 +65,7 @@ function createAccount(username, password) {
         if (role == 'teacher') {
             console.log('updating db');
             var userID = Meteor.users.findOne({username: username});
-            Meteor.users.update( {_id: userID}, { $set: { role : 'teacher'} } );
+            Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
             console.log(Meteor.users.findOne({username: username}).profile.role); //WHY NOT TEACHER FGGGGGGGGGGGGRRRRR
         }
     }
@@ -85,6 +85,5 @@ Meteor.methods({
         console.log(teacherList);
         return teacherList
     },
-
 });
 
