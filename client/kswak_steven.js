@@ -251,7 +251,11 @@ if (Meteor.isClient) {
                 question.status = 'frozen';
             }*/
             Router.go('/teacher/edit')
-        }
+        },
+		
+		'click #teacher_home_go_to_new': function (event, template) {
+			Router.go('/teacher/new');	
+		}
     })
 
     Template.teacher_summary.events({
@@ -281,7 +285,10 @@ if (Meteor.isClient) {
         },
         'click #inactivateAll': function(event, template){
             launchQuestion()
-        }
+        },
+		'click #summary_go_to_new': function(event, template) {
+			Router.go('/teacher/new');	
+		}
     })
 
     Template.teacher_edit.events({
@@ -472,9 +479,9 @@ var passData = function(question, user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live'
-            var status_control = 'to freeze';
+            var status_control = 'To Freeze';
         } else if(question.status == 'frozen') {
-            var status_control = 'to activate';
+            var status_control = 'To Activate';
             var status_comment = 'This question is live and FROZEN'
         } else{
             var status_control = 'to activate';
