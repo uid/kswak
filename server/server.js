@@ -10,7 +10,8 @@ Meteor.publish("questions", function () {
 		console.log('teacher access to Questions', userID);
 		return Questions.find();
 	}else{
-		return Questions.findOne({status:{$in:['active', 'frozen']}});
+		console.log('student access to Questions', userID);
+		return Questions.find({}, {fields:{title:0}});
 	}
     
 });
