@@ -104,7 +104,7 @@ Meteor.methods({
     //todo: this is borked, debug.
     remove_teacher: function(teacher_username, editor) {
         if (editor.profile.role == 'teacher') {
-            var id = Meteor.users.findOne({username: teacher_username}).id;
+            var id = Meteor.users.findOne({username: teacher_username})._id;
             console.log(id);
             if (id != null) {
                 Meteor.users.update( id, { $set: { 'profile.role' : 'student'} } );
