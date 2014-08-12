@@ -5,7 +5,14 @@ Teachers.insert({username:"robsoto"});
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
-    return Questions.find();
+	var userID = this.userId;
+	if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+		console.log('teacher access to Questions', userID);
+		return Questions.find();
+	}else{
+		return Questions.findOne({status:{$in:['active', 'frozen']}});
+	}
+    
 });
 
 Responses = new Meteor.Collection("responses");
@@ -72,7 +79,11 @@ function createAccount(username){
     }
 }
 
-Future = Npm.require('fibers/future');
+var isTeacher = function(userID) {
+        var role = Meteor.users.findOne(userID).profile.role;
+        return role == 'teacher'
+    }
+
 
 Meteor.methods({
     kswak_login: function(encrypted_username) {
@@ -97,40 +108,54 @@ Meteor.methods({
 	},
 	
 	remove_responses: function ( question_id){
-		 Responses.find({question:question_id}).forEach( function(response){
-                Responses.remove(response._id)
-            });
+		if (isTeacher( Meteor.user()._id) ){
+			 Responses.find({question:question_id}).forEach( function(response){
+					Responses.remove(response._id)
+				});
+		}
 	},
 	
 	insert_question: function( question_data){
-		Questions.insert(question_data)
+		if (isTeacher( Meteor.user()._id) ){
+			Questions.insert(question_data)
+		}
 	},
 	
 	remove_question: function (question_id) {
-		Questions.remove(question_id);
+		if (isTeacher( Meteor.user()._id) ){
+			Questions.remove(question_id);
+		}
 	},
 	
 	
 	inactivate_question: function (){
-		Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+		if (isTeacher( Meteor.user()._id) ){
+			Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+		}
 	},
 	
 	activate_question: function(question_id){
-		 Questions.update( question_id, {$set:{status:'active'}})
+		if (isTeacher( Meteor.user()._id) ){
+			Questions.update( question_id, {$set:{status:'active'}})
+		}
 	},
 	
 	freeze_question: function(question_id){
-		Questions.update(question_id, {$set:{status:'frozen'}});
+		if (isTeacher( Meteor.user()._id) ){
+			Questions.update(question_id, {$set:{status:'frozen'}});
+		}
 	},
 	
 	update_question: function(question, title, c1,c2,c3,c4,c5){
-		            Questions.update(question, {$set:{title:title,
-                                              choice1:c1,
-                                              choice2:c2,
-                                              choice3:c3,
-                                              choice4:c4,
-                                              choice5:c5
-                                              }})
+		if (isTeacher( Meteor.user()._id) ){
+			Questions.update(question, {$set:{title:title,
+									  choice1:c1,
+									  choice2:c2,
+									  choice3:c3,
+									  choice4:c4,
+									  choice5:c5
+									  }})
+		}
 	},
 		
     add_teacher: function(newTeacherList, editor) {
@@ -160,9 +185,5 @@ Meteor.methods({
         else {
             console.log('ERROR: USER LACKS SUFFICIENT PRIVILEGES TO EDIT TEACHER ROSTER.')
         }
-    },
-    isTeacher: function(userID) {
-        var role = Meteor.users.findOne(userID).profile.role;
-        return role == 'teacher'
     }
 });
