@@ -2,6 +2,7 @@ Teachers = new Meteor.Collection("teachers");
 Teachers.insert({username:"rcm"});
 Teachers.insert({username:"robsoto"});
 
+
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
     return Questions.find();
@@ -17,15 +18,13 @@ Meteor.publish("accountstest", function () {
     return AccountsTest.find();
 });
 
-//variables used here but located in settings.
-var MASTER; //used to generate the users password. concat. to end of username and run md5 algorithm on that for user password.
-var ENCRYPTION_KEY; //used for AES encryption, which is ultimately used to decrypt the encrypted username in the url.
-//end
+var MASTER = 'asd651c8138'; //used to generate the users password. concat. to end of username and run md5 algorithm on that for user password.
+var ENCRYPTION_KEY = "26bc!@!$@$^W64vc"; //used for AES encryption, which is ultimately used to decrypt the encrypted username in the url.
 
 //Returns a username from the base64 string in the login/:encrypted_info path.
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
-    var username = decryptAES(realBase64String, Meteor.settings.ENCRYPTION_KEY); //read key from server, do decrypt from server.
+    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
     return username;
 }
 
@@ -55,7 +54,7 @@ function createAccount(username, password) {
     }
 
     if (!exists) { //TODO: what if url is wrong? check if password formation is okay
-        if (password == CryptoJS.MD5(username+Meteor.settings.MASTER).toString()) { //IMPORTANT
+        if (password == CryptoJS.MD5(username+MASTER).toString()) { //IMPORTANT
             var account_id = Accounts.createUser({
                 username: username,
                 email: account_data['user_email'],
@@ -106,6 +105,7 @@ Meteor.methods({
     remove_teacher: function(teacher_username, editor) {
         if (editor.profile.role == 'teacher') {
             var id = Meteor.users.findOne({username: teacher_username})._id;
+            console.log(id);
             if (id != null) {
                 Meteor.users.update( id, { $set: { 'profile.role' : 'student'} } );
             }
@@ -117,7 +117,6 @@ Meteor.methods({
     isTeacher: function(userID) {
         var role = Meteor.users.findOne(userID).profile.role;
         return role == 'teacher'
-
     }
 });
 
