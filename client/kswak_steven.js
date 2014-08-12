@@ -64,6 +64,13 @@ if (Meteor.isClient) {
             }
         }
     });
+	
+	Session.set('statusColor', '#ef6d86');
+	
+	UI.registerHelper('getStatusColor', function() {
+		//console.log('in getStatusColor, color: ' + Session.get('statusColor'));
+		return Session.get('statusColor');
+	});
 
     Template.home.helpers({
         questions: function() {
@@ -235,11 +242,16 @@ if (Meteor.isClient) {
         'click #change_mode': function (event, template){
             if ( Questions.findOne(this.question_id).status == 'active'){
                 Questions.update( this.question_id, {$set:{status:'frozen'}});
+				Session.set('statusColor', '#ef6d86');
+				console.log('statusColor: ' + Session.get('statusColor'))
             }else if( Questions.findOne(this.question_id).status == 'frozen') {
                 Questions.update( this.question_id, {$set:{status:'active'}})
+				Session.set('statusColor', 'green');
+				console.log('statusColor: ' + Session.get('statusColor'))
             }else{
                 launchQuestion();
                 Questions.update( this.question_id, {$set:{status:'active'}})
+				Session.set('statusColor', 'green');
             }
         },
 

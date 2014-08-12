@@ -122,7 +122,7 @@
     <h2>Question view</h2>
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
-    <span style='width:300px; display: inline-block'><i style='color:#ef6d86'>{{status_comment}}</i></span>
+    <span style='width:300px; display: inline-block'><i style='color:{{getStatusColor}}'>{{status_comment}}</i></span>
     <form id="student_question">
         <table id="studentTable">
         {{#each options}}
