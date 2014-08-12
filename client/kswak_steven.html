@@ -272,13 +272,36 @@
 <template name='teacher_control'>
     <div id='container_teacher_control'>
         <input type="text" name="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
-        <table id="people_all">
+        <table id="people_teacher">
+                <tr>
+                    <td class="peoples">TEACHERS</td>
+                    <td class="peoples">USERNAME</td>
+                </tr>
             {{#each people}}
+                {{#if isTeacher}}
                 <tr>
                     <td>{{role}} </td>
                     <td>{{username}}</td>
                 </tr>
+                {{/if}}
+            {{/each}}
+        </table>
+
+        <table id="people_student">
+                <tr>
+                    <td class="peoples">STUDENTS</td>
+                    <td class="peoples">USERNAME</td>
+                </tr>
+            {{#each people}}
+                {{#if isStudent}}
+                <tr>
+                    <td>{{role}} </td>
+                    <td>{{username}}</td>
+                </tr>
+                {{/if}}
             {{/each}}
         </table>
     </div>
 </template>
+
+

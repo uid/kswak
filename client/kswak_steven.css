@@ -195,5 +195,8 @@ input[name=addingTeacher]{
     height:30px;
 }
 
-
+td.peoples{
+    background-color:lightgray;
+    padding:6px;
+}
 

@@ -660,10 +660,16 @@ Router.map(function () {
             var people = [];
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
                 if (Meteor.users.find().fetch()[ll].profile != undefined){
-                    people.push({username: Meteor.users.find().fetch()[ll].username, role:Meteor.users.find().fetch()[ll].profile.role})
+                	var tempRole = Meteor.users.find().fetch()[ll].profile.role;
+                	if (tempRole == "student"){
+                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
+                	}
+                	else{
+                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
+                	}
                 }
                 else{
-                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student"})
+                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
                 }
             }
             return{
