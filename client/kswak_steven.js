@@ -64,6 +64,13 @@ if (Meteor.isClient) {
             }
         }
     });
+	
+	Session.set('statusColor', '#ef6d86');
+	
+	UI.registerHelper('getStatusColor', function() {
+		//console.log('in getStatusColor, color: ' + Session.get('statusColor'));
+		return Session.get('statusColor');
+	});
 
     Template.home.helpers({
         questions: function() {
@@ -391,6 +398,12 @@ var passData_student = function(question, user) {
             var status_comment = 'Submission is closed';
             var overlay = "overlay open";
         }
+		
+		if (status_comment == 'Submission is open') {
+			Session.set('statusColor', 'green');	
+		} else if (status_comment == 'Submission is closed') {
+			Session.set('statusColor', '#ef6d86');	
+		}
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
         if (student_response != undefined){
@@ -442,6 +455,15 @@ var passData = function(question, user) {
             var status_control = 'to activate';
             var status_comment = 'This question is inactive'
         }
+		
+		if (status_comment == 'This question is live') {
+			Session.set('statusColor', 'green');	
+		} else if (status_comment == 'This question is live and FROZEN') {
+			Session.set('statusColor', '#ef6d86');	
+		} else {
+			Session.set('statusColor', '#ef6d86');	
+		}
+		
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
         for (i in choices) {
