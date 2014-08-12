@@ -90,7 +90,6 @@ Meteor.methods({
                 var userID = Meteor.users.findOne({username: username});
                 if (userID != null) {
                     Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
-                    console.log(Meteor.users.findOne({username: username}).profile.role);
                 }
             }
         }
