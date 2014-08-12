@@ -73,14 +73,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
-            console.log( Questions.find() );
             return Questions.find();
-        }
-    });
-
-    Template.teacher_control.helpers({
-        questions:function(){
-            console.log(Meteor.user.find());
         }
     });
 
@@ -94,7 +87,6 @@ if (Meteor.isClient) {
     Template.please_login.events({
         'click .cert_link': function() {
             var query = send_to_scripts();
-            console.log(query);
             window.location = scriptURL + query;
         }
     });
@@ -221,15 +213,6 @@ if (Meteor.isClient) {
         }
   });
 
-//    Template.new.rendered = function() {
-//        //Auto complete for creating question
-//        var availableTags = [
-//            "None of the above",
-//            "All of the above"
-//        ];
-//        console.log('selected', $( ".answerField" ));
-//        $( ".answerField" ).autocomplete(availableTags);
-//    }
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
@@ -262,8 +245,6 @@ if (Meteor.isClient) {
         'change [name="launch"]': function (event, template){
             Questions.update({}, {$set:{status:'inactive'}});
             var selectionBox = event.target.parentElement.id;
-            //selectionBox.append('<input type="radio">');
-            //console.log("target", event.target.parentElement.lastChild)
             Questions.update(this._id, {$set:{status:'active'}});
         },
         'click .delete': function (event, template){
@@ -360,12 +341,10 @@ if (Meteor.isClient) {
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
-            //console.log('user', Meteor.user()._id);
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             if (question.status == 'active'){
                 // var choice = template.find("input[name='choice']:checked");
                 var choice = template.find(".clicked");
-                console.log(template.find(".clicked"));
                 if (choice == null) {
                     $('#submitFeedback').html('ERROR: nothing chosen. Please choose an answer.');
                 }
@@ -375,10 +354,8 @@ if (Meteor.isClient) {
                     var user = Meteor.user()._id;
                     var response = Responses.findOne({user:user, question:id});
                     if (response != undefined){
-                        console.log('updating');
                         Responses.update(response._id, {$set: {answer: user_answer}});
                     }else{
-                        console.log('inserting', user, id, user_answer);
                         Responses.insert({user:user, question:id, answer: user_answer}, function(err){console.log('failed to insert')});
                     }
                 }
@@ -613,7 +590,6 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            console.log('user', Meteor.user())
             return passData_student(question, Meteor.user());}
     });
 
