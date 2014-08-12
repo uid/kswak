@@ -1,4 +1,4 @@
-var teacherList = ['rcm']
+Teachers = new Meteor.Collection("teachers");
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
@@ -71,7 +71,7 @@ Meteor.methods({
     	for (var nn=0;nn<newTeacherList.length;nn++){
     		teacherList.push(newTeacherList[nn]);
     	}
-    	console.log(teacherList);
+    	console.log(teacherList); //prints into terminal
     	return teacherList
     }
 });
