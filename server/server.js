@@ -1,6 +1,8 @@
 Teachers = new Meteor.Collection("teachers");
 Teachers.insert({username:"rcm"});
+Teachers.insert({username:"maxg"});
 Teachers.insert({username:"robsoto"});
+Teachers.insert({username:"sarivera"});
 
 
 Questions = new Meteor.Collection("questions");

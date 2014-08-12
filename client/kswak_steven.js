@@ -4,11 +4,11 @@ Responses = new Meteor.Collection("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 
 //if true, homepage immediately directs user to script to log in.
-var automatic_signin = false; //TODO: true is currently broken, leave this false.
+var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
+
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
-var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
-var MASTER = 'asd651c8138'; //SHOULD NOT BE ON THE CLIENT.
+var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAK ALL DAY', 'KSWAK: GOOD FOR YOUR BONES'];
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -25,7 +25,6 @@ Responses.allow({
 var choices = ['choice1','choice2','choice3','choice4','choice5'];
 var letters = ['A', 'B', 'C', 'D', 'E'];
 var alert = new Audio('/sfx/alert_tone_01.mp3');
-var MASTER = 'asd651c8138';
 
 //set all questions inactive
 //If an id is passed, launch its question
@@ -62,10 +61,22 @@ if (Meteor.isClient) {
             else {
                 return false;
             }
+        },
+        launched_question: function() {
+            var b;
+            (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) ? b = true : b = false;
+            return b;
+        },
+    });
+
+    Template.login.helpers({
+        loggingInMessage: function() {
+            var rand = Math.random();
+            return awesomeList[Math.floor(rand * awesomeList.length)]
         }
     });
 
-    Template.home.helpers({
+    Template.dev_home.helpers({
         questions: function() {
             return Questions.find();
         }
@@ -94,7 +105,6 @@ if (Meteor.isClient) {
     Template.please_login.events({
         'click .cert_link': function() {
             var query = send_to_scripts();
-            console.log(query);
             window.location = scriptURL + query;
         }
     });
@@ -394,8 +404,8 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	var delUser = this.username;
-        	Meteor.call('remove_teacher', delUser, Meteor.user());
+            var delUser = this.username;
+            Meteor.call('remove_teacher', delUser, Meteor.user());
         }
     })
 }
@@ -517,23 +527,32 @@ var passData = function(question, user) {
     }
 }
 
-
-var teacherList = ['rcm','sarivera']
-
-
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
         path: '/',
         template: function() {
-            if (automatic_signin && !user_signed_in) {
+            if (automatic_signin && !Meteor.user()) {
                 var query = send_to_scripts();
-                window.location = 'https://sarivera.scripts.mit.edu:444/auth.php?' + query;
+                console.log(query);
+                window.location.replace(scriptURL + query);
+            }
+            else if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'student') {
+                    Router.go('question_view');
+                }
+                else if (Meteor.user().profile.role == 'teacher') {
+                    Router.go('teacher_home');
+                }
             }
             else {
-                return 'home';
+                Router.go('question_view'); //this redirects to a sign in page
             }
         }
+    });
+
+    this.route('dev_home', {
+        path: '/devhome',
     });
 
     this.route('login', {
@@ -549,7 +568,7 @@ Router.map(function () {
                 var password = dataz[1];
                 Meteor.loginWithPassword(username, password);
                 user_signed_in = true;
-                Router.go('home');
+                $('.loading').fadeOut(500, function() { Router.go('home'); });
             }
 
             var sneakysneaky = this.params.encrypted_info;
@@ -563,24 +582,16 @@ Router.map(function () {
         },
     });
 
-    this.route('account', {
-        path: '/account/:username',
-        waitOn: function() {
-            return Meteor.subscribe("accountstest")
-        },
-        data: function() {
-            return this.params.username;
-        },
-    });
-
     this.route('teacher_home', {
         path: 'teacher/home',
         template: function() {
             if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
                 return 'new'
-            }else{
-                return 'teacher_question_view'}
-            },
+            }
+            else{
+                return 'teacher_question_view'
+            }
+        },
         waitOn: function() {
             return Meteor.subscribe("questions")
         },
@@ -613,7 +624,6 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            console.log('user', Meteor.user())
             return passData_student(question, Meteor.user());}
     });
 
@@ -666,13 +676,13 @@ Router.map(function () {
             var people = [];
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
                 if (Meteor.users.find().fetch()[ll].profile != undefined){
-                	var tempRole = Meteor.users.find().fetch()[ll].profile.role;
-                	if (tempRole == "student"){
-                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
-                	}
-                	else{
-                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
-                	}
+                    var tempRole = Meteor.users.find().fetch()[ll].profile.role;
+                    if (tempRole == "student"){
+                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
+                    }
+                    else{
+                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
+                    }
                 }
                 else{
                     people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
