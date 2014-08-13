@@ -237,9 +237,10 @@ if (Meteor.isClient) {
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
-            if ( Questions.findOne(this.question_id).status == 'active'){
+			var status = Questions.findOne(this.question_id).status; 
+            if ( status == 'active'){
                 Meteor.call('freeze_question', this.question_id);
-            }else if( Questions.findOne(this.question_id).status == 'frozen') {
+            }else if( status == 'frozen') {
                 Meteor.call('activate_question',this.question_id)
             }else{
                 launchQuestion();

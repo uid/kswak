@@ -22,10 +22,8 @@ Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
 	var userID = this.userId;
     if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-        console.log('teacher access to Questions', userID);
         return Responses.find();
     }else{
-        console.log('student access to Questions', userID);
         return Responses.find({user:userID});
     }
 });
