@@ -3,24 +3,22 @@ Teachers.insert({username:"rcm"});
 Teachers.insert({username:"maxg"});
 Teachers.insert({username:"robsoto"});
 Teachers.insert({username:"sarivera"});
+Teachers.insert({username:"peitao"});
 Teachers.insert({username:"iveel"});
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
-    var userID = this.userId;
-	console.log('id', userID);
-	if( Meteor.users.findOne(userID) == null){
-		console.log('undefined user')
-	}else if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-        console.log('teacher access to Questions', userID);
-        return Questions.find();
-    }else{
-        console.log('student access to Questions', userID);
-		console.log('student')
-        return Questions.find({}, {fields:{title:0}});
-    }
+//    var userID = this.userId;
+//    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+//        console.log('teacher access to Questions', userID);
+//        return Questions.find();
+//    }else{
+//        console.log('student access to Questions', userID);
+//        return Questions.find({}, {fields:{title:0}});
+//    }
 
-//    return Questions.find();
+    return Questions.find();
+
 });
 
 Responses = new Meteor.Collection("responses");
@@ -58,12 +56,7 @@ function createAccount(username, password) {
 
     var exists = checkUser(username);
     var role;
-    if (Teachers.findOne({username: username}) == null) {
-        role = 'student'
-    }
-    else {
-        role = 'teacher';
-    }
+    (Teachers.findOne({username: username}) == null) ? role = 'student' : role = 'teacher';
 
     if (!exists) { //TODO: what if url is wrong? check if password formation is okay
         if (password == CryptoJS.MD5(username+MASTER).toString()) { //IMPORTANT

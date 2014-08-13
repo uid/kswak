@@ -49,7 +49,7 @@ body {
 }
 
 #tf {
-    height: 44px;
+    height: 50px;
 }
 
 .quickLaunch {
@@ -96,7 +96,7 @@ input[name="choice"]{
 
 .alertBox{
     position: absolute;
-    width:300px;
+    width: 300px;
     height: 100px;
     text-align: center;
     z-index: 2;
@@ -105,7 +105,10 @@ input[name="choice"]{
     background-color: #fabdbd;
 }
 
+.ohno {
+    text-align: center;
 
+}
 
 /*#studentTable{
     margin-right:auto;
@@ -211,14 +214,15 @@ td span {
 
 input[name=addingTeacher]{
     height:30px;
+    margin:0px;
 }
 
-td.peoples{
+td.peoples, td.responses{
     background-color:lightgray;
     padding:6px;
 }
 
-.people_table{
+.people_table, .responses_table{
     margin:15px;
 }
 
