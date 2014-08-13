@@ -40,7 +40,7 @@ function launchQuestion(id){
 
 function setTime() {
     var _time = (new Date);
-	var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
+    var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
     return time;
 }
 
@@ -363,10 +363,10 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	var delUser = this.username;
-        	if (delUser != Meteor.user().username){
-        		Meteor.call('remove_teacher', delUser, Meteor.user());
-        	}
+            var delUser = this.username;
+            if (delUser != Meteor.user().username){
+                Meteor.call('remove_teacher', delUser, Meteor.user());
+            }
         }
     })
 }
@@ -543,7 +543,7 @@ Router.map(function () {
                 var password = dataz[1];
                 Meteor.loginWithPassword(username, password);
                 user_signed_in = true;
-                $('.loading').fadeOut(500, function() { Router.go('home'); });
+                setTimeout(function() { $('.loading').fadeOut(500, function() { Router.go('home'); })}, 500);
             }
 
             var sneakysneaky = this.params.encrypted_info;
@@ -665,12 +665,12 @@ Router.map(function () {
             }
             var responses = []
             for (var mm=0; mm<Responses.find().fetch().length; mm++){
-            	var userId = Responses.find().fetch()[mm].user;
-            	var questionId = Responses.find().fetch()[mm].question;
-            	var answer = Responses.find().fetch()[mm].answer;
-            	var studentUser = Meteor.users.findOne({_id:userId}).username;
-            	var questionTime = Questions.findOne({_id:questionId}).time;
-            	responses.push({question:questionTime, user:studentUser, response: answer})
+                var userId = Responses.find().fetch()[mm].user;
+                var questionId = Responses.find().fetch()[mm].question;
+                var answer = Responses.find().fetch()[mm].answer;
+                var studentUser = Meteor.users.findOne({_id:userId}).username;
+                var questionTime = Questions.findOne({_id:questionId}).time;
+                responses.push({question:questionTime, user:studentUser, response: answer})
             }
             return{
                 people: people,
