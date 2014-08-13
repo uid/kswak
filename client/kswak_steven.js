@@ -39,8 +39,9 @@ function launchQuestion(id){
 }
 
 function setTime() {
-    var _time = (new Date).toTimeString().substring(0,5);
-    return _time;
+    var _time = (new Date);
+	var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
+    return time;
 }
 
 function send_to_scripts() {
