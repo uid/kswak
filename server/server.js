@@ -1,11 +1,21 @@
-
 Teachers = new Meteor.Collection("teachers");
 Teachers.insert({username:"rcm"});
+Teachers.insert({username:"maxg"});
 Teachers.insert({username:"robsoto"});
+Teachers.insert({username:"sarivera"});
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
-    return Questions.find();
+    var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+        console.log('teacher access to Questions', userID);
+        return Questions.find();
+    }else{
+        console.log('student access to Questions', userID);
+        return Questions.find({}, {fields:{title:0}});
+    }
+
+//    return Questions.find();
 });
 
 Responses = new Meteor.Collection("responses");
@@ -33,8 +43,9 @@ function checkUser(username) {
     return exists;
 }
 
-//Creates an account and returns the id of that account.
-function createAccount(username){
+//Creates an account if the user doesn't already exist in the db.
+//Be sure to be mindful of the password checking in the nested if statement below. Master password must be shared between script and here, or else no one will be able to successfully log in.
+function createAccount(username, password) {
     var account_data = {
         username: username,
         user_email: username + '@mit.edu',
@@ -72,67 +83,85 @@ function createAccount(username){
     }
 }
 
-Future = Npm.require('fibers/future');
+var isTeacher = function(userID) {
+        var role = Meteor.users.findOne(userID).profile.role;
+        return role == 'teacher'
+    }
+
 
 Meteor.methods({
-    kswak_login: function(encrypted_username) {
+    kswak_login: function(encrypted_username, password) {
         var username = getUsernameFromBase64(encrypted_username);
-        createAccount(username);
-        return username;
+        createAccount(username, password);
+        return [username, password];
     },
-	
-	submit_response : function (question, user_answer) {
-		var user_id = Meteor.user()._id;
-		if (question.status == 'active'){
-			var question_id = question._id;
-			var response = Responses.findOne({user:user_id, question:question_id});		
-			if (response != undefined){
-				console.log('updating')
-				Responses.update(response._id, {$set: {answer: user_answer}})
-			}else{
-				console.log('inserting');
-				Responses.insert({user:user_id, question:question_id, answer: user_answer}, function(err){console.log('failed to insert')})
-			}	
-		}
-	},
-	
-	remove_responses: function ( question_id){
-		 Responses.find({question:question_id}).forEach( function(response){
-                Responses.remove(response._id)
-            });
-	},
-	
-	insert_question: function( question_data){
-		Questions.insert(question_data)
-	},
-	
-	remove_question: function (question_id) {
-		Questions.remove(question_id);
-	},
-	
-	
-	inactivate_question: function (){
-		Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
-	},
-	
-	activate_question: function(question_id){
-		 Questions.update( question_id, {$set:{status:'active'}})
-	},
-	
-	freeze_question: function(question_id){
-		Questions.update(question_id, {$set:{status:'frozen'}});
-	},
-	
-	update_question: function(question, title, c1,c2,c3,c4,c5){
-		            Questions.update(question, {$set:{title:title,
-                                              choice1:c1,
-                                              choice2:c2,
-                                              choice3:c3,
-                                              choice4:c4,
-                                              choice5:c5
-                                              }})
-	},
-		
+
+    submit_response : function (question, user_answer) {
+        var user_id = Meteor.user()._id;
+        if (question.status == 'active'){
+            var question_id = question._id;
+            var response = Responses.findOne({user:user_id, question:question_id});
+            if (response != undefined){
+                console.log('updating')
+                Responses.update(response._id, {$set: {answer: user_answer}})
+            }else{
+                console.log('inserting');
+                Responses.insert({user:user_id, question:question_id, answer: user_answer}, function(err){console.log('failed to insert')})
+            }
+        }
+    },
+
+    remove_responses: function ( question_id){
+        if (isTeacher( Meteor.user()._id) ){
+             Responses.find({question:question_id}).forEach( function(response){
+                    Responses.remove(response._id)
+                });
+        }
+    },
+
+    insert_question: function( question_data){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.insert(question_data)
+        }
+    },
+
+    remove_question: function (question_id) {
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.remove(question_id);
+        }
+    },
+
+
+    inactivate_question: function (){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+        }
+    },
+
+    activate_question: function(question_id){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update( question_id, {$set:{status:'active'}})
+        }
+    },
+
+    freeze_question: function(question_id){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update(question_id, {$set:{status:'frozen'}});
+        }
+    },
+
+    update_question: function(question, title, c1,c2,c3,c4,c5){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update(question, {$set:{title:title,
+                                      choice1:c1,
+                                      choice2:c2,
+                                      choice3:c3,
+                                      choice4:c4,
+                                      choice5:c5
+                                      }})
+        }
+    },
+
     add_teacher: function(newTeacherList, editor) {
         if (editor.profile.role == 'teacher') {
             for (var nn=0;nn<newTeacherList.length;nn++) {
@@ -160,9 +189,5 @@ Meteor.methods({
         else {
             console.log('ERROR: USER LACKS SUFFICIENT PRIVILEGES TO EDIT TEACHER ROSTER.')
         }
-    },
-    isTeacher: function(userID) {
-        var role = Meteor.users.findOne(userID).profile.role;
-        return role == 'teacher'
     }
 });

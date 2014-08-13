@@ -4,11 +4,11 @@ Responses = new Meteor.Collection("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 
 //if true, homepage immediately directs user to script to log in.
-var automatic_signin = false; //TODO: true is currently broken, leave this false.
+var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
+
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
-var user_signed_in = false; //use this for quicker updating when Meteor.user() isn't fast enough
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
-var MASTER = 'asd651c8138'; //SHOULD NOT BE ON THE CLIENT.
+var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAK ALL DAY', 'KSWAK: GOOD FOR YOUR BONES'];
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -25,16 +25,15 @@ Responses.allow({
 var choices = ['choice1','choice2','choice3','choice4','choice5'];
 var letters = ['A', 'B', 'C', 'D', 'E'];
 var alert = new Audio('/sfx/alert_tone_01.mp3');
-var MASTER = 'asd651c8138';
 
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
     if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
-		Meteor.call('inactivate_question');
+        Meteor.call('inactivate_question');
     }
     if (typeof id != undefined){
-		Meteor.call('activate_question', id);
+        Meteor.call('activate_question', id);
     }
     Router.go('/teacher/home');
 }
@@ -62,17 +61,29 @@ if (Meteor.isClient) {
             else {
                 return false;
             }
+        },
+        launched_question: function() {
+            var b;
+            (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) ? b = true : b = false;
+            return b;
+        },
+    });
+
+    Template.login.helpers({
+        loggingInMessage: function() {
+            var rand = Math.random();
+            return awesomeList[Math.floor(rand * awesomeList.length)]
         }
     });
-	
-	Session.set('statusColor', '#ef6d86');
-	
-	UI.registerHelper('getStatusColor', function() {
-		//console.log('in getStatusColor, color: ' + Session.get('statusColor'));
-		return Session.get('statusColor');
-	});
 
-    Template.home.helpers({
+    Session.set('statusColor', '#ef6d86');
+
+    UI.registerHelper('getStatusColor', function() {
+        //console.log('in getStatusColor, color: ' + Session.get('statusColor'));
+        return Session.get('statusColor');
+    });
+
+    Template.dev_home.helpers({
         questions: function() {
             return Questions.find();
         }
@@ -114,7 +125,7 @@ if (Meteor.isClient) {
             }
             console.log('time data: ' + question_data.time)
             launchQuestion();
-			Meteor.call('insert_question', question_data);
+            Meteor.call('insert_question', question_data);
         },
 
         'click #mc2': function() {
@@ -229,7 +240,7 @@ if (Meteor.isClient) {
                 Meteor.call('activate_question',this.question_id)
             }else{
                 launchQuestion();
-				Meteor.call('activate_question',this.question_id);
+                Meteor.call('activate_question',this.question_id);
             }
         },
 
@@ -250,22 +261,22 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
-			Meteor.call('inactivate');
+            Meteor.call('inactivate');
             var selectionBox = event.target.parentElement.id;
-			Meteor.call('activate', this._id)
+            Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
             //Remove responses of this question
-			Meteor.call('remove_responses', this._id)
-           
+            Meteor.call('remove_responses', this._id)
+
             //Remove this question itself
-			Meteor.call('remove_question', this._id);
+            Meteor.call('remove_question', this._id);
 
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
-				Meteor.call('remove_question', question._id);
-				Meteor.call('remove_responses', question._id);
+                Meteor.call('remove_question', question._id);
+                Meteor.call('remove_responses', question._id);
             });
         },
         'click #inactivateAll': function(event, template){
@@ -284,7 +295,7 @@ if (Meteor.isClient) {
         'click #save': function(event, template){
             var question = Session.get('editing');
             //Remove responses which are already submitted for the question
-			Meteor.call('remove_responses', question);
+            Meteor.call('remove_responses', question);
 
             //create new question and launch it
             var title = template.find("input[name=title]");
@@ -293,8 +304,8 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			
-			Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value)
+
+            Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value)
 
             if (question.status == 'active'){
                 Router.go('/teacher/home')
@@ -306,8 +317,8 @@ if (Meteor.isClient) {
         'click #save_launch': function(event, template){
             var question = Session.get('editing');
             //Remove responses which are already submitted for the question
-			Meteor.call('remove_responses', question)
-       
+            Meteor.call('remove_responses', question)
+
             //disable current launched question
             launchQuestion();
             //create new question and launch it
@@ -317,9 +328,9 @@ if (Meteor.isClient) {
             var choice3 = template.find("input[name=choice3]");
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
-			
-			Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value);
-			Meteor.call('activate_question', question);
+
+            Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value);
+            Meteor.call('activate_question', question);
             Router.go('/teacher/home')
         }
     })
@@ -330,19 +341,19 @@ if (Meteor.isClient) {
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
-            event.preventDefault();	
+            event.preventDefault();
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            
-			var choice = template.find(".clicked");
-			var user_answer = choice.name;
-			if (question.type == 'custom') { user_answer = choice.value };
-			var question_id = question._id;
-			console.log('submit', question, user_answer)
-			Meteor.call('submit_response', question, user_answer);
-			
-		}
-	})
-			
+
+            var choice = template.find(".clicked");
+            var user_answer = choice.name;
+            if (question.type == 'custom') { user_answer = choice.value };
+            var question_id = question._id;
+            console.log('submit', question, user_answer)
+            Meteor.call('submit_response', question, user_answer);
+
+        }
+    })
+
     Template.teacher_control.events({
         'click #add_teacher_submit': function(event, template){
             var nameString = template.find('input[name=addingTeacher]').value;
@@ -351,8 +362,8 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	var delUser = this.username;
-        	Meteor.call('remove_teacher', delUser, Meteor.user());
+            var delUser = this.username;
+            Meteor.call('remove_teacher', delUser, Meteor.user());
         }
     })
 }
@@ -373,7 +384,7 @@ var calcPercentages =function(question){
     var total = 0;
     for ( var i =0; i< choices.length; i++){
         if (question[choices[i]] != ''){
-			var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
+            var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
             normalizedList.push(numResponses);
             total +=numResponses;
         }else{
@@ -398,12 +409,12 @@ var passData_student = function(question, user) {
             var status_comment = 'Submission is closed';
             var overlay = "overlay open";
         }
-		
-		if (status_comment == 'Submission is open') {
-			Session.set('statusColor', 'green');	
-		} else if (status_comment == 'Submission is closed') {
-			Session.set('statusColor', '#ef6d86');	
-		}
+
+        if (status_comment == 'Submission is open') {
+            Session.set('statusColor', 'green');
+        } else if (status_comment == 'Submission is closed') {
+            Session.set('statusColor', '#ef6d86');
+        }
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
         if (student_response != undefined){
@@ -455,15 +466,15 @@ var passData = function(question, user) {
             var status_control = 'to activate';
             var status_comment = 'This question is inactive'
         }
-		
-		if (status_comment == 'This question is live') {
-			Session.set('statusColor', 'green');	
-		} else if (status_comment == 'This question is live and FROZEN') {
-			Session.set('statusColor', '#ef6d86');	
-		} else {
-			Session.set('statusColor', '#ef6d86');	
-		}
-		
+
+        if (status_comment == 'This question is live') {
+            Session.set('statusColor', 'green');
+        } else if (status_comment == 'This question is live and FROZEN') {
+            Session.set('statusColor', '#ef6d86');
+        } else {
+            Session.set('statusColor', '#ef6d86');
+        }
+
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
         for (i in choices) {
@@ -488,23 +499,32 @@ var passData = function(question, user) {
     }
 }
 
-
-var teacherList = ['rcm','sarivera']
-
-
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
         path: '/',
         template: function() {
-            if (automatic_signin && !user_signed_in) {
+            if (automatic_signin && !Meteor.user()) {
                 var query = send_to_scripts();
-                window.location = 'https://sarivera.scripts.mit.edu:444/auth.php?' + query;
+                console.log(query);
+                window.location = scriptURL + query;
+            }
+            else if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'student') {
+                    Router.go('question_view');
+                }
+                else if (Meteor.user().profile.role == 'teacher') {
+                    Router.go('teacher_home');
+                }
             }
             else {
-                return 'home';
+                Router.go('question_view'); //this redirects to a sign in page
             }
         }
+    });
+
+    this.route('dev_home', {
+        path: '/devhome',
     });
 
     this.route('login', {
@@ -520,7 +540,7 @@ Router.map(function () {
                 var password = dataz[1];
                 Meteor.loginWithPassword(username, password);
                 user_signed_in = true;
-                Router.go('home');
+                $('.loading').fadeOut(500, function() { Router.go('home'); });
             }
 
             var sneakysneaky = this.params.encrypted_info;
@@ -534,24 +554,16 @@ Router.map(function () {
         },
     });
 
-    this.route('account', {
-        path: '/account/:username',
-        waitOn: function() {
-            return Meteor.subscribe("accountstest")
-        },
-        data: function() {
-            return this.params.username;
-        },
-    });
-
     this.route('teacher_home', {
         path: 'teacher/home',
         template: function() {
             if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
                 return 'new'
-            }else{
-                return 'teacher_question_view'}
-            },
+            }
+            else{
+                return 'teacher_question_view'
+            }
+        },
         waitOn: function() {
             return Meteor.subscribe("questions")
         },
@@ -636,13 +648,13 @@ Router.map(function () {
             var people = [];
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
                 if (Meteor.users.find().fetch()[ll].profile != undefined){
-                	var tempRole = Meteor.users.find().fetch()[ll].profile.role;
-                	if (tempRole == "student"){
-                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
-                	}
-                	else{
-                		people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
-                	}
+                    var tempRole = Meteor.users.find().fetch()[ll].profile.role;
+                    if (tempRole == "student"){
+                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
+                    }
+                    else{
+                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
+                    }
                 }
                 else{
                     people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})

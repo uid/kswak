@@ -18,6 +18,15 @@ body {
     pointer-events: none;
 }
 
+.loading {
+    vertical-align: middle;
+    width: 100%;
+    align-content: center;
+    font-size: 30px;
+    text-align: center;
+
+}
+
 .navbar-text:link {
     color: #0088cc;
 }
@@ -78,6 +87,11 @@ input[name="choice"]{
 
 .chart rect {
   fill: blue;
+}
+
+#addingTeacher{
+    margin-bottom: 0px;
+    margin-right: 5px;
 }
 
 .alertBox{
