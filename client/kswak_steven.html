@@ -21,7 +21,7 @@
     <div id="container_home">
         <a href="{{ pathFor 'teacher_new' }}">new question</a><br/>
         <a href="{{ pathFor 'teacher_home' }}">manage launched question</a><br/>
-        <a href="{{ pathFor 'teacher_summary' }}">teacher summary</a><br/>
+        <a href="{{ pathFor 'teacher_summary' }}">question log</a><br/>
         <a href="{{ pathFor 'teacher_control' }}">admin panel</a><br/>
         <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
     </div>
@@ -44,11 +44,11 @@
                     {{#if launched_question}}
                         <li><a href="{{ pathFor 'teacher_home' }}">manage launched question</a></li>
                     {{/if}}
-                    <li><a href="{{ pathFor 'teacher_summary' }}">teacher summary</a></li>
+                    <li><a href="{{ pathFor 'teacher_summary' }}">question log</a></li>
                     <li><a href="{{ pathFor 'teacher_control' }}">admin panel</a></li>
-                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
                  {{else}}
-                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
                  {{/if}}
 
              </ul>
@@ -73,12 +73,12 @@
     <h1>Create a question</h1>
 
     <h4>Quick Launch:</h4>
-        <button class='quickLaunch' id='tf'>True/False</button>
-        <button class='quickLaunch' id='mc2'>Multiple Choice<br>(2 choices)</button>
-        <button class='quickLaunch' id='mc3'>Multiple Choice<br>(3 choices)</button>
-        <button class='quickLaunch' id='mc4'>Multiple Choice<br>(4 choices)</button>
-        <button class='quickLaunch' id='mc5'>Multiple Choice<br>(5 choices)</button>
-    <br>
+        <button class='quickLaunch btn btn-primary' id='tf'>True/False</button>
+        <button class='quickLaunch btn btn-primary' id='mc2'>Multiple Choice<br>(2 choices)</button>
+        <button class='quickLaunch btn btn-primary' id='mc3'>Multiple Choice<br>(3 choices)</button>
+        <button class='quickLaunch btn btn-primary' id='mc4'>Multiple Choice<br>(4 choices)</button>
+        <button class='quickLaunch btn btn-primary' id='mc5'>Multiple Choice<br>(5 choices)</button>
+    <br><br>
     <h4>Custom:</h4>
     <div class='form_container'>
         <form id='question_form'>
@@ -189,7 +189,7 @@
 
 <template name='teacher_summary'>
     <div id="container_home">
-    <h1>Teacher Summary</h1><br/>
+    <h1>Question Log</h1><br/>
        <table class="gridTable" border="1" rules="rows">
     <tr>
         <th>Questions</th>
@@ -285,7 +285,13 @@
 
 <template name='teacher_control'>
     <div id='container_teacher_control'>
-        <input type="text" name="addingTeacher" id="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
+        <table>
+            <tr>
+                <td><input type="text" name="addingTeacher"></td>
+                <td><button id="add_teacher_submit" class="btn ">Add Teacher</button></td>
+            </tr>
+        </table>
+        <div id="peopleFeedback"></div>
         <table class="people_table" id="people_teacher">
                 <tr>
                     <td class="peoples">TEACHERS</td>
@@ -314,6 +320,21 @@
                     <td>{{username}}</td>
                 </tr>
                 {{/if}}
+            {{/each}}
+        </table>
+
+        <table class="responses_table" id="all_responses">
+            <tr>
+                    <td class="responses">QUESTION</td>
+                    <td class="responses">USER</td>
+                    <td class="responses">RESPONSE</td>
+                </tr>
+            {{#each responses}}
+                <tr>
+                    <td>{{question}}</td>
+                    <td>{{user}}</td>
+                    <td>{{response}}</td>
+                </tr>
             {{/each}}
         </table>
     </div>
