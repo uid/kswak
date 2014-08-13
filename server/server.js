@@ -14,14 +14,20 @@ Meteor.publish("questions", function () {
         return Questions.find();
     }else{
         console.log('student access to Questions', userID);
-        return Questions.find({}, {fields:{title:0}});
+        return Questions.find({status:{$in:['active', 'frozen']}});
     }
-//    return Questions.find();
 });
 
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
-    return Responses.find();
+	var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+        console.log('teacher access to Questions', userID);
+        return Responses.find();
+    }else{
+        console.log('student access to Questions', userID);
+        return Responses.find({user:userID});
+    }
 });
 
 AccountsTest = new Meteor.Collection("accountstest");
@@ -108,8 +114,8 @@ Meteor.methods({
                 console.log('updating')
                 Responses.update(response._id, {$set: {answer: user_answer}})
             }else{
-                console.log('inserting');
-                Responses.insert({user:user_id, question:question_id, answer: user_answer}, function(err){console.log('failed to insert')})
+                console.log('inserting, respones:', Responses.find().fetch());
+                Responses.insert({user:user_id, question:question_id, answer: user_answer})
             }
         }else{
 			console.log('you are not student')
