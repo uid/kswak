@@ -29,7 +29,7 @@ var alert = new Audio('/sfx/alert_tone_01.mp3');
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
-	Meteor.call('inactivate_question');
+    Meteor.call('inactivate_question');
 
     if (typeof id != undefined){
         Meteor.call('activate_question', id);
@@ -39,7 +39,7 @@ function launchQuestion(id){
 
 function setTime() {
     var _time = (new Date);
-	var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
+    var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
     return time;
 }
 
@@ -124,10 +124,10 @@ if (Meteor.isClient) {
                 time: time
             }
             console.log('time data: ' + question_data.time)
-			Meteor.call('insert_question', question_data, function(error, data){
-				launchQuestion(data);
-			});
-            
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
+
         },
 
         'click #mc2': function() {
@@ -143,10 +143,10 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time
             }
-			Meteor.call('insert_question', question_data, function(error, data){
-				launchQuestion(data);
-			});
-            
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
+
         },
 
         'click #mc3': function() {
@@ -162,10 +162,10 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time
             }
-			Meteor.call('insert_question', question_data, function(error, data){
-				launchQuestion(data);
-			});
-            
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
+
         },
 
         'click #mc4': function() {
@@ -181,10 +181,10 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time
             }
-			Meteor.call('insert_question', question_data, function(error, data){
-				launchQuestion(data);
-			});
-            
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
+
         },
 
         'click #mc5': function() {
@@ -200,9 +200,9 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time,
             }
-			Meteor.call('insert_question', question_data, function(error, data){
-				launchQuestion(data);
-			});
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
         },
 
         'submit form': function (event, template) {
@@ -235,10 +235,10 @@ if (Meteor.isClient) {
             choice3.value = "";
             choice4.value = "";
             choice5.value = "";
-			Meteor.call('insert_question', question_data, function(error, data){
-				launchQuestion(data);
-			});
-            
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
+
         }
   });
 
@@ -357,7 +357,7 @@ if (Meteor.isClient) {
 
             var choice = template.find(".clicked");
             var user_answer = choice.name;
-            if (question.type == 'custom') { user_answer = choice.value };
+            if (question.type == 'custom') { user_answer = choice.name };
             var question_id = question._id;
             console.log('submit', question, user_answer)
             Meteor.call('submit_response', question, user_answer);
@@ -373,10 +373,10 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	var delUser = this.username;
-        	if (delUser != Meteor.user().username){
-        		Meteor.call('remove_teacher', delUser, Meteor.user());
-        	}
+            var delUser = this.username;
+            if (delUser != Meteor.user().username){
+                Meteor.call('remove_teacher', delUser, Meteor.user());
+            }
         }
     })
 }
@@ -553,7 +553,7 @@ Router.map(function () {
                 var password = dataz[1];
                 Meteor.loginWithPassword(username, password);
                 user_signed_in = true;
-                $('.loading').fadeOut(500, function() { Router.go('home'); });
+                setTimeout(function() { $('.loading').fadeOut(500, function() { Router.go('home'); })}, 500);
             }
 
             var sneakysneaky = this.params.encrypted_info;
@@ -576,7 +576,7 @@ Router.map(function () {
 //            else{
 //                return 'teacher_question_view'
 //            }
-			return 'teacher_question_view'
+            return 'teacher_question_view'
         },
         waitOn: function() {
             return Meteor.subscribe("questions")
@@ -650,6 +650,38 @@ Router.map(function () {
         }
     })
 
+    this.route('teacher_question_private', {
+        path: '/teacher/private/:_id',
+        waitOn: function() {
+            return [Meteor.subscribe("questions"), Meteor.subscribe("responses")] //, Meteor.subscribe("userData"), Meteor.subscribe("responses")]
+        }
+        ,
+        template: 'teacher_question_private',
+        data: function() {
+        	console.log(this.params._id)
+            var question = Questions.findOne(this.params._id);
+            var questionId = this.params._id;
+            var responses = []
+            for (var mm=0; mm<Responses.find().fetch().length; mm++){
+            	if (Responses.find().fetch()[mm].question == questionId){
+            		var userId = Responses.find().fetch()[mm].user;
+            		var answer = Responses.find().fetch()[mm].answer;
+            		var studentUser = Meteor.users.findOne({_id:userId}).username;
+            		responses.push({user:studentUser, response: answer})
+            	}
+            }
+            return {
+            	responses: responses,
+            	questionData: passData(question)
+            }
+        },
+        action: function(){
+            if (this.ready()){
+                this.render()
+            }
+        }
+    })
+
 
     //temporary trying to make a teacher page so they can see the students and what not
     this.route('teacher_control',{
@@ -676,12 +708,12 @@ Router.map(function () {
             }
             var responses = []
             for (var mm=0; mm<Responses.find().fetch().length; mm++){
-            	var userId = Responses.find().fetch()[mm].user;
-            	var questionId = Responses.find().fetch()[mm].question;
-            	var answer = Responses.find().fetch()[mm].answer;
-            	var studentUser = Meteor.users.findOne({_id:userId}).username;
-            	var questionTime = Questions.findOne({_id:questionId}).time;
-            	responses.push({question:questionTime, user:studentUser, response: answer})
+                var userId = Responses.find().fetch()[mm].user;
+                var questionId = Responses.find().fetch()[mm].question;
+                var answer = Responses.find().fetch()[mm].answer;
+                var studentUser = Meteor.users.findOne({_id:userId}).username;
+                var questionTime = Questions.findOne({_id:questionId}).time;
+                responses.push({question:questionTime, user:studentUser, response: answer})
             }
             return{
                 people: people,
