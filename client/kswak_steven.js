@@ -639,6 +639,38 @@ Router.map(function () {
         }
     })
 
+    this.route('teacher_question_private', {
+        path: '/teacher/private/:_id',
+        waitOn: function() {
+            return [Meteor.subscribe("questions"), Meteor.subscribe("responses")] //, Meteor.subscribe("userData"), Meteor.subscribe("responses")]
+        }
+        ,
+        template: 'teacher_question_private',
+        data: function() {
+        	console.log(this.params._id)
+            var question = Questions.findOne(this.params._id);
+            var questionId = this.params._id;
+            var responses = []
+            for (var mm=0; mm<Responses.find().fetch().length; mm++){
+            	if (Responses.find().fetch()[mm].question == questionId){
+            		var userId = Responses.find().fetch()[mm].user;
+            		var answer = Responses.find().fetch()[mm].answer;
+            		var studentUser = Meteor.users.findOne({_id:userId}).username;
+            		responses.push({user:studentUser, response: answer})
+            	}
+            }
+            return {
+            	responses: responses,
+            	questionData: passData(question)
+            }
+        },
+        action: function(){
+            if (this.ready()){
+                this.render()
+            }
+        }
+    })
+
 
     //temporary trying to make a teacher page so they can see the students and what not
     this.route('teacher_control',{
