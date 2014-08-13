@@ -357,7 +357,7 @@ if (Meteor.isClient) {
 
             var choice = template.find(".clicked");
             var user_answer = choice.name;
-            if (question.type == 'custom') { user_answer = choice.value };
+            if (question.type == 'custom') { user_answer = choice.name };
             var question_id = question._id;
             console.log('submit', question, user_answer)
             Meteor.call('submit_response', question, user_answer);
