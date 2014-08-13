@@ -29,9 +29,8 @@ var alert = new Audio('/sfx/alert_tone_01.mp3');
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
-    if (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) {
-        Meteor.call('inactivate_question');
-    }
+	Meteor.call('inactivate_question');
+
     if (typeof id != undefined){
         Meteor.call('activate_question', id);
     }
@@ -125,8 +124,10 @@ if (Meteor.isClient) {
                 time: time
             }
             console.log('time data: ' + question_data.time)
-            launchQuestion();
-            Meteor.call('insert_question', question_data);
+			Meteor.call('insert_question', question_data, function(error, data){
+				launchQuestion(data);
+			});
+            
         },
 
         'click #mc2': function() {
@@ -142,8 +143,10 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time
             }
-            launchQuestion();
-            Meteor.call('insert_question', question_data);
+			Meteor.call('insert_question', question_data, function(error, data){
+				launchQuestion(data);
+			});
+            
         },
 
         'click #mc3': function() {
@@ -159,8 +162,10 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time
             }
-            launchQuestion();
-            Meteor.call('insert_question', question_data);
+			Meteor.call('insert_question', question_data, function(error, data){
+				launchQuestion(data);
+			});
+            
         },
 
         'click #mc4': function() {
@@ -176,8 +181,10 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time
             }
-            launchQuestion();
-            Meteor.call('insert_question', question_data);
+			Meteor.call('insert_question', question_data, function(error, data){
+				launchQuestion(data);
+			});
+            
         },
 
         'click #mc5': function() {
@@ -193,8 +200,9 @@ if (Meteor.isClient) {
                 status: 'active',
                 time: time,
             }
-            launchQuestion();
-            Meteor.call('insert_question', question_data);
+			Meteor.call('insert_question', question_data, function(error, data){
+				launchQuestion(data);
+			});
         },
 
         'submit form': function (event, template) {
@@ -227,8 +235,10 @@ if (Meteor.isClient) {
             choice3.value = "";
             choice4.value = "";
             choice5.value = "";
-            launchQuestion();
-            Meteor.call('insert_question', question_data);
+			Meteor.call('insert_question', question_data, function(error, data){
+				launchQuestion(data);
+			});
+            
         }
   });
 
@@ -560,12 +570,13 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher/home',
         template: function() {
-            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
-                return 'new'
-            }
-            else{
-                return 'teacher_question_view'
-            }
+//            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
+//                return 'new'
+//            }
+//            else{
+//                return 'teacher_question_view'
+//            }
+			return 'teacher_question_view'
         },
         waitOn: function() {
             return Meteor.subscribe("questions")

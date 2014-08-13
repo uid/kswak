@@ -18,6 +18,7 @@ Meteor.publish("questions", function () {
 //    }
 
     return Questions.find();
+
 });
 
 Responses = new Meteor.Collection("responses");
@@ -118,7 +119,8 @@ Meteor.methods({
 
     insert_question: function( question_data){
         if (isTeacher( Meteor.user()._id) ){
-            Questions.insert(question_data)
+			console.log('insert')
+            return Questions.insert(question_data)
         }
     },
 
@@ -131,7 +133,10 @@ Meteor.methods({
 
     inactivate_question: function (){
         if (isTeacher( Meteor.user()._id) ){
-            Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+			var active = Questions.findOne({status:{$in:['active', 'frozen']}})
+			if (active != undefined){
+				Questions.update(active._id,  {$set:{status:'inactive'}})
+			}
         }
     },
 
