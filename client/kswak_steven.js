@@ -643,7 +643,7 @@ Router.map(function () {
     this.route('teacher_control',{
         path:'/control',
         waitOn: function(){
-            return Meteor.subscribe("userData");
+            return Meteor.subscribe("userData", "responses");
         },
         template: 'teacher_control',
         data: function(){
@@ -662,8 +662,18 @@ Router.map(function () {
                     people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
                 }
             }
+            var responses = []
+            for (var mm=0; mm<Responses.find().fetch().length; mm++){
+            	var userId = Responses.find().fetch()[mm].user;
+            	var questionId = Responses.find().fetch()[mm].question;
+            	var answer = Responses.find().fetch()[mm].answer;
+            	var studentUser = Meteor.users.findOne({_id:userId}).username;
+            	var questionTime = Questions.findOne({_id:questionId}).time;
+            	responses.push({question:questionTime, user:studentUser, response: answer})
+            }
             return{
-                people: people
+                people: people,
+                responses: responses
             }
 
         }

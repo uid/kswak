@@ -310,6 +310,21 @@
                 {{/if}}
             {{/each}}
         </table>
+
+        <table class="responses_table" id="all_responses">
+            <tr>
+                    <td class="responses">QUESTION</td>
+                    <td class="responses">USER</td>
+                    <td class="responses">RESPONSE</td>
+                </tr>
+            {{#each responses}}
+                <tr>
+                    <td>{{question}}</td>
+                    <td>{{user}}</td>
+                    <td>{{response}}</td>
+                </tr>
+            {{/each}}
+        </table>
     </div>
 </template>
 
