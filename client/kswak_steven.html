@@ -46,9 +46,9 @@
                     {{/if}}
                     <li><a href="{{ pathFor 'teacher_summary' }}">question log</a></li>
                     <li><a href="{{ pathFor 'teacher_control' }}">admin panel</a></li>
-                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
                  {{else}}
-                    <li><a href="{{ pathFor 'question_view' }}">student home | launched question</a></li>
+                    <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
                  {{/if}}
 
              </ul>
@@ -273,7 +273,13 @@
 
 <template name='teacher_control'>
     <div id='container_teacher_control'>
-        <input type="text" name="addingTeacher" id="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
+        <table>
+            <tr>
+                <td><input type="text" name="addingTeacher"></td>
+                <td><button id="add_teacher_submit" class="btn ">Add Teacher</button></td>
+            </tr>
+        </table>
+        <div id="peopleFeedback"></div>
         <table class="people_table" id="people_teacher">
                 <tr>
                     <td class="peoples">TEACHERS</td>
@@ -302,6 +308,21 @@
                     <td>{{username}}</td>
                 </tr>
                 {{/if}}
+            {{/each}}
+        </table>
+
+        <table class="responses_table" id="all_responses">
+            <tr>
+                    <td class="responses">QUESTION</td>
+                    <td class="responses">USER</td>
+                    <td class="responses">RESPONSE</td>
+                </tr>
+            {{#each responses}}
+                <tr>
+                    <td>{{question}}</td>
+                    <td>{{user}}</td>
+                    <td>{{response}}</td>
+                </tr>
             {{/each}}
         </table>
     </div>

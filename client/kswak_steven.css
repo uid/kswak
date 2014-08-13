@@ -211,14 +211,15 @@ td span {
 
 input[name=addingTeacher]{
     height:30px;
+    margin:0px;
 }
 
-td.peoples{
+td.peoples, td.responses{
     background-color:lightgray;
     padding:6px;
 }
 
-.people_table{
+.people_table, .responses_table{
     margin:15px;
 }
 
