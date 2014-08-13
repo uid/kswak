@@ -272,7 +272,13 @@
 
 <template name='teacher_control'>
     <div id='container_teacher_control'>
-        <input type="text" name="addingTeacher"><button id="add_teacher_submit" class="btn ">Add Teacher</button>
+        <table>
+            <tr>
+                <td><input type="text" name="addingTeacher"></td>
+                <td><button id="add_teacher_submit" class="btn ">Add Teacher</button></td>
+            </tr>
+        </table>
+        <div id="peopleFeedback"></div>
         <table class="people_table" id="people_teacher">
                 <tr>
                     <td class="peoples">TEACHERS</td>

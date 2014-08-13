@@ -373,7 +373,9 @@ if (Meteor.isClient) {
         },
         'click .deleteTeacher': function(event, template){
         	var delUser = this.username;
-        	Meteor.call('remove_teacher', delUser, Meteor.user());
+        	if (delUser != Meteor.user().username){
+        		Meteor.call('remove_teacher', delUser, Meteor.user());
+        	}
         }
     })
 }
