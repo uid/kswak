@@ -259,8 +259,17 @@ if (Meteor.isClient) {
 
         'click #teacher_home_go_to_new': function (event, template) {
             Router.go('/teacher/new');
+        },
+        'click #viewPrivate': function (event, template){
+        	Router.go('/teacher/private/' + this.question_id)
         }
     })
+
+	Template.teacher_question_private.events({
+		'click #backToProjector': function (event, template){
+			Router.go('/teacher/' + this.questionData.question_id)
+		}
+	})
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
