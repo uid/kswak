@@ -1,11 +1,21 @@
 Teachers = new Meteor.Collection("teachers");
 Teachers.insert({username:"rcm"});
+Teachers.insert({username:"maxg"});
 Teachers.insert({username:"robsoto"});
-
+Teachers.insert({username:"sarivera"});
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
-    return Questions.find();
+    var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+        console.log('teacher access to Questions', userID);
+        return Questions.find();
+    }else{
+        console.log('student access to Questions', userID);
+        return Questions.find({}, {fields:{title:0}});
+    }
+
+//    return Questions.find();
 });
 
 Responses = new Meteor.Collection("responses");
@@ -18,17 +28,15 @@ Meteor.publish("accountstest", function () {
     return AccountsTest.find();
 });
 
-var MASTER = 'asd651c8138'; //used to generate the users password. concat. to end of username and run md5 algorithm on that for user password.
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc"; //used for AES encryption, which is ultimately used to decrypt the encrypted username in the url.
+var MASTER = 'asd651c8138';
+var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
 
-//Returns a username from the base64 string in the login/:encrypted_info path.
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
     var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
     return username;
 }
 
-//Checks if a user exists. If they do, returns true.
 function checkUser(username) {
     var exists = false;
     Meteor.users.findOne({username: username}) ? exists = true : exists = false;
@@ -75,13 +83,85 @@ function createAccount(username, password) {
     }
 }
 
-//Gets the username of a user and creates an account for them if they don't have one already. Returns a list in the form
+var isTeacher = function(userID) {
+        var role = Meteor.users.findOne(userID).profile.role;
+        return role == 'teacher'
+    }
+
+
 Meteor.methods({
     kswak_login: function(encrypted_username, password) {
         var username = getUsernameFromBase64(encrypted_username);
         createAccount(username, password);
         return [username, password];
     },
+
+    submit_response : function (question, user_answer) {
+        var user_id = Meteor.user()._id;
+        if (question.status == 'active'){
+            var question_id = question._id;
+            var response = Responses.findOne({user:user_id, question:question_id});
+            if (response != undefined){
+                console.log('updating')
+                Responses.update(response._id, {$set: {answer: user_answer}})
+            }else{
+                console.log('inserting');
+                Responses.insert({user:user_id, question:question_id, answer: user_answer}, function(err){console.log('failed to insert')})
+            }
+        }
+    },
+
+    remove_responses: function ( question_id){
+        if (isTeacher( Meteor.user()._id) ){
+             Responses.find({question:question_id}).forEach( function(response){
+                    Responses.remove(response._id)
+                });
+        }
+    },
+
+    insert_question: function( question_data){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.insert(question_data)
+        }
+    },
+
+    remove_question: function (question_id) {
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.remove(question_id);
+        }
+    },
+
+
+    inactivate_question: function (){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update( Questions.findOne({status:{$in:['active', 'frozen']}})._id, {$set:{status:'inactive'}})
+        }
+    },
+
+    activate_question: function(question_id){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update( question_id, {$set:{status:'active'}})
+        }
+    },
+
+    freeze_question: function(question_id){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update(question_id, {$set:{status:'frozen'}});
+        }
+    },
+
+    update_question: function(question, title, c1,c2,c3,c4,c5){
+        if (isTeacher( Meteor.user()._id) ){
+            Questions.update(question, {$set:{title:title,
+                                      choice1:c1,
+                                      choice2:c2,
+                                      choice3:c3,
+                                      choice4:c4,
+                                      choice5:c5
+                                      }})
+        }
+    },
+
     add_teacher: function(newTeacherList, editor) {
         if (editor.profile.role == 'teacher') {
             for (var nn=0;nn<newTeacherList.length;nn++) {
@@ -109,10 +189,5 @@ Meteor.methods({
         else {
             console.log('ERROR: USER LACKS SUFFICIENT PRIVILEGES TO EDIT TEACHER ROSTER.')
         }
-    },
-    isTeacher: function(userID) {
-        var role = Meteor.users.findOne(userID).profile.role;
-        return role == 'teacher'
     }
 });
-
