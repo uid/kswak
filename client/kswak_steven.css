@@ -96,7 +96,7 @@ input[name="choice"]{
 
 .alertBox{
     position: absolute;
-    width:300px;
+    width: 300px;
     height: 100px;
     text-align: center;
     z-index: 2;
@@ -105,7 +105,10 @@ input[name="choice"]{
     background-color: #fabdbd;
 }
 
+.ohno {
+    text-align: center;
 
+}
 
 /*#studentTable{
     margin-right:auto;

@@ -8,7 +8,7 @@ var automatic_signin = false; //forces certs. do not use for debug, it's annoyin
 
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
-var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAK ALL DAY', 'KSWAK: GOOD FOR YOUR BONES'];
+var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
 
 Responses.allow({
   insert: function (userId, doc) {
@@ -524,7 +524,7 @@ Router.map(function () {
     });
 
     this.route('dev_home', {
-        path: '/devhome',
+        path: '/dev_home',
     });
 
     this.route('login', {
