@@ -170,15 +170,9 @@ Meteor.methods({
         }
     },
 
-    update_question: function(question, title, c1,c2,c3,c4,c5){
+    update_question: function(question, title, choices){
         if (isTeacher( Meteor.user()._id) ){
-            Questions.update(question, {$set:{title:title,
-                                      choice1:c1,
-                                      choice2:c2,
-                                      choice3:c3,
-											  
-                                      choice4:c4,
-                                      choice5:c5
+            Questions.update(question, {$set:{choices:choices
                                       }})
         }
     },
