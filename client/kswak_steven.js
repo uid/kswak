@@ -18,8 +18,8 @@ var choices = ['choice1','choice2','choice3','choice4','choice5'];
 var letters = ['A', 'B', 'C', 'D', 'E'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
-//set all questions inactive
-//If an id is passed, launch its question
+//sets all questions inactive
+//If an id is passed, launches its question
 function launchQuestion(id){
     Meteor.call('inactivate_question');
 
@@ -27,15 +27,16 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher/home');
+	/*setTimeout(function() {
+		Meteor.call('freeze_question', id);
+	}, 30000);*/
 }
 
-
-//TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
+//returns date as time passed since a set date (used for sorting) and time created as the string var time
 function setTime() {
     var _time = (new Date);
 	var dateStr = _time.toDateString()
 	var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
-	console.log('date: ' + date);
 	var minutes = _time.getMinutes();
 	if (minutes < 10) { minutes = '0' + minutes; }
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
@@ -78,7 +79,6 @@ if (Meteor.isClient) {
     Session.set('statusColor', '#ef6d86');
 
     UI.registerHelper('getStatusColor', function() {
-        //console.log('in getStatusColor, color: ' + Session.get('statusColor'));
         return Session.get('statusColor');
     });
 
@@ -109,6 +109,8 @@ if (Meteor.isClient) {
     });
 
     Template.new.events({
+		/* Click handlers for all quick launch buttons are below */
+		
         'click #tf': function(event, template) {
             var date_and_time = setTime();
 			var date_created = date_and_time.date;
@@ -219,7 +221,8 @@ if (Meteor.isClient) {
             });
         },
 
-        'submit form': function (event, template) {
+        //custom question creation
+		'submit form': function (event, template) {
             event.preventDefault();
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
@@ -276,10 +279,6 @@ if (Meteor.isClient) {
         //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
-            /*var question = Session.get('editing');
-            if (question.status == 'active') {
-                question.status = 'frozen';
-            }*/
             Router.go('/teacher/edit')
         },
 
@@ -360,8 +359,7 @@ if (Meteor.isClient) {
             //Remove responses which are already submitted for the question
             Meteor.call('remove_responses', question)
 
-            //disable current launched question
-            launchQuestion();
+            launchQuestion(); //disable current launched question
             //create new question and launch it
             var title = template.find("input[name=title]");
             var choice1 = template.find("input[name=choice1]");
@@ -376,11 +374,14 @@ if (Meteor.isClient) {
         }
     })
 
-   /* Template.question_view.rendered = function() {
+    /* alert sound that plays when student's question view page is rendered
+	probably more annoying than useful, and also still buggy: will play anytime the student refreshes the page, seems to not always play when the teacher launches a new question */
+	/* Template.question_view.rendered = function() {
         alert.play();
     } */
 
     Template.question_view.events({
+		//student response submission
         'submit #student_question': function (event, template) {
             event.preventDefault();
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
@@ -388,7 +389,6 @@ if (Meteor.isClient) {
             var user_answer = choice.name;
             var question_id = question._id;
             Meteor.call('submit_response', question, user_answer);
-
         }
     })
 
@@ -411,17 +411,8 @@ if (Meteor.isClient) {
     })
 }
 
-
-
-
-if (Meteor.isServer) {
-    Meteor.startup(function () {
-        // code to run on server at startup
-        //certificate auth should be here eventually
-    });
-}
-
-
+//calculates response percentages for each answer choice
+//returns array of percentages, one for each answer choice
 var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
@@ -468,7 +459,6 @@ var passData_student = function(question, user) {
         var options = [];
         for (i in choices) {
             var color = '#e5e2e2'
-            //for use of identifying chosen answer
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
@@ -749,7 +739,6 @@ Router.map(function () {
                 people: people,
                 responses: responses
             }
-
         }
     });
 });
