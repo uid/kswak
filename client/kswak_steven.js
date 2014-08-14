@@ -36,7 +36,9 @@ function setTime() {
 	var dateStr = _time.toDateString()
 	var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
 	console.log('date: ' + date);
-    var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
+	var minutes = _time.getMinutes();
+	if (minutes < 10) { minutes = '0' + minutes; }
+    var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
     return {'date': date, 'time': time};
 }
 
@@ -384,7 +386,6 @@ if (Meteor.isClient) {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
             var choice = template.find(".clicked");
             var user_answer = choice.name;
-            if (question.type == 'custom') { user_answer = choice.name };
             var question_id = question._id;
             Meteor.call('submit_response', question, user_answer);
 
@@ -467,7 +468,7 @@ var passData_student = function(question, user) {
         var options = [];
         for (i in choices) {
             var color = '#e5e2e2'
-            //for use of identifing chosen answer
+            //for use of identifying chosen answer
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
