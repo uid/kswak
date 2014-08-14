@@ -17,7 +17,7 @@ var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR P
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5'];
 var letters = ['A', 'B', 'C', 'D', 'E'];
-var alert = new Audio('/sfx/alert_tone_01.mp3');
+//var alert = new Audio('/sfx/alert_tone_01.mp3');
 
 //set all questions inactive
 //If an id is passed, launch its question
@@ -30,10 +30,17 @@ function launchQuestion(id){
     Router.go('/teacher/home');
 }
 
+
+//TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
-    var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + _time.getMinutes();
-    return time;
+	var dateStr = _time.toDateString()
+	var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
+	console.log('date: ' + date);
+	var minutes = _time.getMinutes();
+	if (minutes < 10) { minutes = '0' + minutes; }
+    var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
+    return {'date': date, 'time': time};
 }
 
 function send_to_scripts() {
@@ -84,7 +91,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
-            return Questions.find();
+			return Questions.find({}, {sort: {date_created: -1}})
         }
     });
 
@@ -104,7 +111,9 @@ if (Meteor.isClient) {
 
     Template.new.events({
         'click #tf': function(event, template) {
-            var time = setTime();
+            var date_and_time = setTime();
+			var date_created = date_and_time.date;
+			var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'tf',
@@ -114,7 +123,8 @@ if (Meteor.isClient) {
                 choice4: '',
                 choice5: '',
                 status: 'active',
-                time: time
+                time: time,
+				date_created: date_created
             }
             console.log('time data: ' + question_data.time)
             Meteor.call('insert_question', question_data, function(error, data){
@@ -124,7 +134,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc2': function() {
-            var time = setTime();
+            var date_and_time = setTime();
+			var date_created = date_and_time.date;
+			var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc2',
@@ -134,7 +146,8 @@ if (Meteor.isClient) {
                 choice4: '',
                 choice5: '',
                 status: 'active',
-                time: time
+                time: time,
+				date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -143,7 +156,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc3': function() {
-            var time = setTime();
+            var date_and_time = setTime();
+			var date_created = date_and_time.date;
+			var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc3',
@@ -153,7 +168,8 @@ if (Meteor.isClient) {
                 choice4: '',
                 choice5: '',
                 status: 'active',
-                time: time
+                time: time,
+				date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -162,7 +178,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc4': function() {
-            var time = setTime();
+            var date_and_time = setTime();
+			var date_created = date_and_time.date;
+			var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc4',
@@ -172,7 +190,8 @@ if (Meteor.isClient) {
                 choice4: 'D',
                 choice5: '',
                 status: 'active',
-                time: time
+                time: time,
+				date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -181,7 +200,9 @@ if (Meteor.isClient) {
         },
 
         'click #mc5': function() {
-            var time = setTime();
+            var date_and_time = setTime();
+			var date_created = date_and_time.date;
+			var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc5',
@@ -192,6 +213,7 @@ if (Meteor.isClient) {
                 choice5: 'E',
                 status: 'active',
                 time: time,
+				date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -207,7 +229,9 @@ if (Meteor.isClient) {
             var choice4 = template.find("input[name=choice4]");
             var choice5 = template.find("input[name=choice5]");
 
-            var time = setTime();
+            var date_and_time = setTime();
+			var date_created = date_and_time.date;
+			var time = date_and_time.time;
             var question_data = {
                 title: title.value,
                 type: 'custom',
@@ -217,7 +241,8 @@ if (Meteor.isClient) {
                 choice4: choice4.value,
                 choice5: choice5.value,
                 status: 'active',
-                time: time
+                time: time,
+				date_created: date_created
             }
 
 
@@ -280,11 +305,14 @@ if (Meteor.isClient) {
             Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
-            //Remove responses of this question
-            Meteor.call('remove_responses', this._id)
+        	var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
+        	if (confirm){
+        		//Remove responses of this question
+	            Meteor.call('remove_responses', this._id)
 
-            //Remove this question itself
-            Meteor.call('remove_question', this._id);
+	            //Remove this question itself
+	            Meteor.call('remove_question', this._id);
+        	}
 
         },
         'click #deleteAll':function (event, template){
@@ -349,18 +377,16 @@ if (Meteor.isClient) {
         }
     })
 
-    Template.question_view.rendered = function() {
+   /* Template.question_view.rendered = function() {
         alert.play();
-    }
+    } */
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-
             var choice = template.find(".clicked");
             var user_answer = choice.name;
-            if (question.type == 'custom') { user_answer = choice.name };
             var question_id = question._id;
             Meteor.call('submit_response', question, user_answer);
 
@@ -375,10 +401,13 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-            var delUser = this.username;
-            if (delUser != Meteor.user().username){
+        	var delUser = this.username;
+        	var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
+        	if (confirm){
+            	if (delUser != Meteor.user().username){
                 Meteor.call('remove_teacher', delUser, Meteor.user());
-            }
+            	}
+        	}
         }
     })
 }
@@ -440,7 +469,7 @@ var passData_student = function(question, user) {
         var options = [];
         for (i in choices) {
             var color = '#e5e2e2'
-            //for use of identifing chosen answer
+            //for use of identifying chosen answer
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
