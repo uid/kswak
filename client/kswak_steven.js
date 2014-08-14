@@ -279,11 +279,14 @@ if (Meteor.isClient) {
             Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
-            //Remove responses of this question
-            Meteor.call('remove_responses', this._id)
+        	var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
+        	if (confirm){
+        		//Remove responses of this question
+	            Meteor.call('remove_responses', this._id)
 
-            //Remove this question itself
-            Meteor.call('remove_question', this._id);
+	            //Remove this question itself
+	            Meteor.call('remove_question', this._id);
+        	}
 
         },
         'click #deleteAll':function (event, template){
@@ -374,11 +377,13 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	// window.alert("sometext");
-            var delUser = this.username;
-            if (delUser != Meteor.user().username){
+        	var delUser = this.username;
+        	var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
+        	if (confirm){
+            	if (delUser != Meteor.user().username){
                 Meteor.call('remove_teacher', delUser, Meteor.user());
-            }
+            	}
+        	}
         }
     })
 }
