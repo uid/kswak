@@ -382,6 +382,7 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
+        	// window.alert("sometext");
             var delUser = this.username;
             if (delUser != Meteor.user().username){
                 Meteor.call('remove_teacher', delUser, Meteor.user());
