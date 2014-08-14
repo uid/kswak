@@ -15,7 +15,7 @@ var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR P
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5'];
-var letters = ['A', 'B', 'C', 'D', 'E'];
+var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
 //sets all questions inactive
@@ -108,13 +108,17 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.new.events({
+    
+	Template.new.events({
 		/* Click handlers for all quick launch buttons are below */
 		
         'click #tf': function(event, template) {
             var date_and_time = setTime();
 			var date_created = date_and_time.date;
 			var time = date_and_time.time;
+			var choices = choice_data.slice(0); //clone choice_data
+			choices[0] = 'True';
+			choices[1] = 'False';
             var question_data = {
                 title: '',
                 type: 'tf',
@@ -258,10 +262,12 @@ if (Meteor.isClient) {
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
-
-        }
+        },
+		
+		'click addAnswerChoice': function() {
+				
+		}
   });
-
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
@@ -636,6 +642,13 @@ Router.map(function () {
     this.route('teacher_new', {
         path: '/teacher/new',
         template: 'new',
+		data: function() { 
+			var options = [];
+			for (i in choices) {
+				options.push({letter:letters[i], choice:choices[i]});	
+			}
+			return { options: options };
+		}
     });
 
     this.route('teacher_edit',{

@@ -85,26 +85,16 @@
             Question: <input type="text" name="title"> <br>
             Choices: <br>
             <table id='input_choices'>
-                <tr>
-                    <td align='right'>A </td>
-                    <td align='left'><input type="text" name="choice1" class='answerField'></td>
-                </tr>
-                <tr>
-                    <td align='right'>B </td>
-                    <td align='left'><input type="text" name="choice2"></td>
-                </tr>
-                <tr>
-                    <td align='right'>C </td>
-                    <td align='left'><input type="text" name="choice3"></td>
-                </tr>
-                <tr>
-                    <td align='right'>D </td>
-                    <td align='left'><input type="text" name="choice4"></td>
-                </tr>
-                <tr>
-                    <td align='right'>E </td>
-                    <td align='left'><input type="text" name="choice5"></td>
-                </tr>
+				{{#each options}}
+				<tr>
+					<td align='right'>{{letter}}</td>
+					<td align='left'><input type='text' name='{{choice}}'></td>
+				</tr>
+				{{/each}}
+				<tr>
+					<td align='right'><button class='btn btn-primary' id='addAnswerChoice'>+</button></td>
+					<td align='left' style='font-style: italic'>add answer choice</td>
+				</tr>
             </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
