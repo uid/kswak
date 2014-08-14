@@ -78,11 +78,6 @@ if (Meteor.isClient) {
 
     Session.set('statusColor', '#ef6d86');
 
-    UI.registerHelper('getStatusColor', function() {
-        //console.log('in getStatusColor, color: ' + Session.get('statusColor'));
-        return Session.get('statusColor');
-    });
-
     Template.dev_home.helpers({
         questions: function() {
             return Questions.find();
@@ -412,16 +407,12 @@ var passData_student = function(question, user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open';
+			var statusColor = 'green';
             var overlay = "overlay closed";
         } else {
             var status_comment = 'Submission is closed';
+			var statusColor = '#ef6d86';
             var overlay = "overlay open";
-        }
-
-        if (status_comment == 'Submission is open') {
-            Session.set('statusColor', 'green');
-        } else if (status_comment == 'Submission is closed') {
-            Session.set('statusColor', '#ef6d86');
         }
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
@@ -450,6 +441,7 @@ var passData_student = function(question, user) {
         return {
             question_id: question_id,
             status_comment: status_comment,
+			statusColor: statusColor,
             options: options,
             title: question.title,
             time: question.time,
