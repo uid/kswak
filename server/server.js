@@ -18,6 +18,13 @@ Meteor.publish("questions", function () {
     }
 });
 
+Meteor.publish("directory", function () {
+	var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+		return Meteor.users.find();
+	}
+});
+
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
 	var userID = this.userId;
@@ -169,6 +176,7 @@ Meteor.methods({
                                       choice1:c1,
                                       choice2:c2,
                                       choice3:c3,
+											  
                                       choice4:c4,
                                       choice5:c5
                                       }})

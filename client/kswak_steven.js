@@ -3,6 +3,7 @@ questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
 responsesHandle = Meteor.subscribe("responses");
 AccountsTest = new Meteor.Collection("accountstest");
+handle = Meteor.subscribe("directory");
 
 //if true, homepage immediately directs user to script to log in.
 var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
