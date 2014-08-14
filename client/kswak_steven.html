@@ -164,17 +164,65 @@
 
                     <td class='tableSummary'>{{total}}</td>
                 </tr>
-        </table><br>
-
-        <br><br>
-        <div class='questionCopy'></div>
-        <div id="work_queues_chart"></div>
-        <div class='chart' id='bar'></div>
-        <div class='chart' id='pie'></div>
+        </table>
+        <br>
+        <br>
+        <button style="margin-left:10px" id='viewPrivate' class="btn btn-primary">Private View</button>
 
     </div>
     </div>
 </template>
+
+
+
+<template name="teacher_question_private">
+    <div id="container_teacher_question_private">
+
+        <span style='width:360px; display: inline-block'><i style='color:{{getStatusColor}}'>{{questionData.status_comment}} </i>(Time posted: {{questionData.time}})</span>
+        <!-- <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
+        <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button> -->
+    <div class='form_container'>
+        <div class="tableSummary" style="padding:10; margin:10px">{{questionData.title}}</div>
+        Choices: <br>
+        <table id='input_choices'>
+            {{#each questionData.options}}
+                <tr>
+                    <td align='left' class="teacherOptions">{{choice}}</td>
+                    <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}% of responders)</td>
+                    <td style="width:200px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
+                </tr>
+            {{/each}}
+                <tr>
+                    <td class='tableSummary'>Total number of responders:</td>
+
+                    <td class='tableSummary'>{{questionData.total}}</td>
+                </tr>
+        </table>
+        <br>
+        <br>
+        <button style="margin-left:10px" id='backToProjector' class="btn btn-primary">⇦ Back</button>
+        <br>
+        <br>
+        <table class="responses_table" id="all_responses">
+            <tr>
+                    <td class="responses">USER</td>
+                    <td class="responses">RESPONSE</td>
+                </tr>
+            {{#each responses}}
+                <tr>
+                    <td>{{user}}</td>
+                    <td>{{response}}</td>
+                </tr>
+            {{/each}}
+        </table>
+    </div>
+    </div>
+</template>
+
+
+
+
+
 
 
 <template name='projector_view'>
@@ -322,20 +370,6 @@
             {{/each}}
         </table>
 
-        <table class="responses_table" id="all_responses">
-            <tr>
-                    <td class="responses">QUESTION</td>
-                    <td class="responses">USER</td>
-                    <td class="responses">RESPONSE</td>
-                </tr>
-            {{#each responses}}
-                <tr>
-                    <td>{{question}}</td>
-                    <td>{{user}}</td>
-                    <td>{{response}}</td>
-                </tr>
-            {{/each}}
-        </table>
     </div>
 </template>
 

@@ -1,6 +1,7 @@
 Questions = new Meteor.Collection("questions");
 questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
+responsesHandle = Meteor.subscribe("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 
 //if true, homepage immediately directs user to script to log in.
@@ -10,16 +11,7 @@ var automatic_signin = false; //forces certs. do not use for debug, it's annoyin
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
 
-Responses.allow({
-  insert: function (userId, doc) {
-    // the user must be logged in, and the document must be owned by the user
-    return (userId && doc.owner === userId);
-  },
-  update: function (userId, doc, fields, modifier) {
-    // can only change your own documents
-    return doc.owner === userId;
-  }
-});
+
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5'];
@@ -268,9 +260,10 @@ if (Meteor.isClient) {
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
-            if ( Questions.findOne(this.question_id).status == 'active'){
+			var status = Questions.findOne(this.question_id).status; 
+            if ( status == 'active'){
                 Meteor.call('freeze_question', this.question_id);
-            }else if( Questions.findOne(this.question_id).status == 'frozen') {
+            }else if( status == 'frozen') {
                 Meteor.call('activate_question',this.question_id)
             }else{
                 launchQuestion();
@@ -290,8 +283,17 @@ if (Meteor.isClient) {
 
         'click #teacher_home_go_to_new': function (event, template) {
             Router.go('/teacher/new');
+        },
+        'click #viewPrivate': function (event, template){
+        	Router.go('/teacher/private/' + this.question_id)
         }
     })
+
+	Template.teacher_question_private.events({
+		'click #backToProjector': function (event, template){
+			Router.go('/teacher/' + this.questionData.question_id)
+		}
+	})
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
@@ -300,11 +302,14 @@ if (Meteor.isClient) {
             Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
-            //Remove responses of this question
-            Meteor.call('remove_responses', this._id)
+        	var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
+        	if (confirm){
+        		//Remove responses of this question
+	            Meteor.call('remove_responses', this._id)
 
-            //Remove this question itself
-            Meteor.call('remove_question', this._id);
+	            //Remove this question itself
+	            Meteor.call('remove_question', this._id);
+        	}
 
         },
         'click #deleteAll':function (event, template){
@@ -381,7 +386,6 @@ if (Meteor.isClient) {
             var user_answer = choice.name;
             if (question.type == 'custom') { user_answer = choice.name };
             var question_id = question._id;
-            console.log('submit', question, user_answer)
             Meteor.call('submit_response', question, user_answer);
 
         }
@@ -395,10 +399,13 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-            var delUser = this.username;
-            if (delUser != Meteor.user().username){
+        	var delUser = this.username;
+        	var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
+        	if (confirm){
+            	if (delUser != Meteor.user().username){
                 Meteor.call('remove_teacher', delUser, Meteor.user());
-            }
+            	}
+        	}
         }
     })
 }
@@ -665,6 +672,38 @@ Router.map(function () {
         data: function() {
             var question = Questions.findOne(this.params._id);
             return passData(question);},
+        action: function(){
+            if (this.ready()){
+                this.render()
+            }
+        }
+    })
+
+    this.route('teacher_question_private', {
+        path: '/teacher/private/:_id',
+        waitOn: function() {
+            return [Meteor.subscribe("questions"), Meteor.subscribe("responses")] //, Meteor.subscribe("userData"), Meteor.subscribe("responses")]
+        }
+        ,
+        template: 'teacher_question_private',
+        data: function() {
+        	console.log(this.params._id)
+            var question = Questions.findOne(this.params._id);
+            var questionId = this.params._id;
+            var responses = []
+            for (var mm=0; mm<Responses.find().fetch().length; mm++){
+            	if (Responses.find().fetch()[mm].question == questionId){
+            		var userId = Responses.find().fetch()[mm].user;
+            		var answer = Responses.find().fetch()[mm].answer;
+            		var studentUser = Meteor.users.findOne({_id:userId}).username;
+            		responses.push({user:studentUser, response: answer})
+            	}
+            }
+            return {
+            	responses: responses,
+            	questionData: passData(question)
+            }
+        },
         action: function(){
             if (this.ready()){
                 this.render()
