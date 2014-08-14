@@ -209,7 +209,6 @@ if (Meteor.isClient) {
 					 choices.push(this.value)
 				 }
 			 });
-			console.log(choices);
             var date_and_time = setTime();
 			var date_created = date_and_time.date;
 			var time = date_and_time.time;
@@ -316,7 +315,6 @@ if (Meteor.isClient) {
 					 choices.push(this.value)
 				 }
 			 });
-			console.log('newUpdate', choices)
             Meteor.call('update_question', question, title.value, choices)
 
             if (question.status == 'active'){
@@ -341,7 +339,6 @@ if (Meteor.isClient) {
 					 choices.push(this.value)
 				 }
 			 });
-			console.log('newUpdate', choices)
             Meteor.call('update_question', question, title.value, choices)
             Meteor.call('activate_question', question);
             Router.go('/teacher/home')
