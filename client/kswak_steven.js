@@ -76,8 +76,6 @@ if (Meteor.isClient) {
         }
     });
 
-    Session.set('statusColor', '#ef6d86');
-
     Template.dev_home.helpers({
         questions: function() {
             return Questions.find();
@@ -454,24 +452,19 @@ var passData_student = function(question, user) {
 
 var passData = function(question, user) {
     if (question != undefined) {
-        var question_id = question._id;
+		var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'This question is live'
+            var status_comment = 'This question is live';
+			var statusColor = 'green';
             var status_control = 'To Freeze';
         } else if(question.status == 'frozen') {
             var status_control = 'To Activate';
-            var status_comment = 'This question is live and FROZEN'
+            var status_comment = 'This question is live and FROZEN';
+			var statusColor = '#ef6d86';
         } else{
             var status_control = 'to activate';
-            var status_comment = 'This question is inactive'
-        }
-
-        if (status_comment == 'This question is live') {
-            Session.set('statusColor', 'green');
-        } else if (status_comment == 'This question is live and FROZEN') {
-            Session.set('statusColor', '#ef6d86');
-        } else {
-            Session.set('statusColor', '#ef6d86');
+            var status_comment = 'This question is inactive';
+			var statusColor = '#ef6d86'
         }
 
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
@@ -488,6 +481,7 @@ var passData = function(question, user) {
         return {
             question_id: question_id,
             status_comment: status_comment,
+			statusColor: statusColor,
             status_control: status_control,
             options: options,
             title: question.title,
@@ -555,12 +549,9 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher/home',
         template: function() {
-//            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
-//                return 'new'
-//            }
-//            else{
-//                return 'teacher_question_view'
-//            }
+            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
+                return 'teacher_summary'
+            }
             return 'teacher_question_view'
         },
         waitOn: function() {
