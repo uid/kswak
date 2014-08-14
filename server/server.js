@@ -172,8 +172,7 @@ Meteor.methods({
 
     update_question: function(question, title, choices){
         if (isTeacher( Meteor.user()._id) ){
-            Questions.update(question, {$set:{choices:choices
-                                      }})
+            Questions.update(question, {$set:{choices:choices}})
         }
     },
 
