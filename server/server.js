@@ -8,22 +8,24 @@ Teachers.insert({username:"iveel"});
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
-//    var userID = this.userId;
-//    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-//        console.log('teacher access to Questions', userID);
-//        return Questions.find();
-//    }else{
-//        console.log('student access to Questions', userID);
-//        return Questions.find({}, {fields:{title:0}});
-//    }
-
-    return Questions.find();
-
+    var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+        console.log('teacher access to Questions', userID);
+        return Questions.find();
+    }else{
+        console.log('student access to Questions', userID);
+        return Questions.find({status:{$in:['active', 'frozen']}});
+    }
 });
 
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
-    return Responses.find();
+	var userID = this.userId;
+    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+        return Responses.find();
+    }else{
+        return Responses.find({user:userID});
+    }
 });
 
 AccountsTest = new Meteor.Collection("accountstest");
@@ -87,6 +89,13 @@ var isTeacher = function(userID) {
     }
 
 
+var isStudent = function(userID) {
+        var role = Meteor.users.findOne(userID).profile.role;
+        return role == 'student'
+    }
+
+
+
 Meteor.methods({
     kswak_login: function(encrypted_username, password) {
         var username = getUsernameFromBase64(encrypted_username);
@@ -96,17 +105,19 @@ Meteor.methods({
 
     submit_response : function (question, user_answer) {
         var user_id = Meteor.user()._id;
-        if (question.status == 'active'){
+        if (question.status == 'active' && isStudent(user_id)){
             var question_id = question._id;
             var response = Responses.findOne({user:user_id, question:question_id});
             if (response != undefined){
                 console.log('updating')
                 Responses.update(response._id, {$set: {answer: user_answer}})
             }else{
-                console.log('inserting');
-                Responses.insert({user:user_id, question:question_id, answer: user_answer}, function(err){console.log('failed to insert')})
+                console.log('inserting, respones:', Responses.find().fetch());
+                Responses.insert({user:user_id, question:question_id, answer: user_answer})
             }
-        }
+        }else{
+			console.log('you are not student')
+		}
     },
 
     remove_responses: function ( question_id){
