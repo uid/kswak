@@ -350,7 +350,7 @@ if (Meteor.isClient) {
              });
             Meteor.call('update_question', question, title.value, choices)
             Meteor.call('activate_question', question);
-            Router.go('/teacher/home')
+            Router.go('/teacher')
         }
     })
 
@@ -663,9 +663,10 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne(Session.get('editing'));
+			console.log('edit', question);
             var options =[];
             for (var i=0; i<question.choices.length; i++){
-                options.push({letter:letters[i],choice:choices[i], option:question.choices[i]});
+                options.push({letter:letters[i], option:question.choices[i]});
             }
             return {
                 options: options,
