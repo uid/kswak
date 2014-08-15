@@ -14,7 +14,7 @@ var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR P
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5', 'choice6', 'choice7', 'choice8'];
-Session.set('numChoices');
+Session.set('numChoices', 5);
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
