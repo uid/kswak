@@ -76,14 +76,14 @@
                 {{#each options}}
                 <tr>
                     <td align='right'>{{letter}}</td>
-                    <td align='left'><input class='choice' type='text' name='{{choice}}'></td>
+                    <td align='left'><input class='choice' type='text'></td>
                 </tr>
                 {{/each}}
-                <tr>
+            </table>
+			 <tr>
                     <td align='right'><button type='button' class='btn btn-primary' id='addAnswerChoice'>+</button></td>
                     <td align='left'><i id='addAnswerChoiceText'>add answer choice (max: 8)</i></td>
                 </tr>
-            </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
         </form>
@@ -147,6 +147,7 @@
         <br>
         <br>
         <button style="margin-left:10px" id='viewPrivate' class="btn btn-primary">Private View</button>
+        <button style="margin-left:10px" id='exportCSV' class="btn btn-primary">Export CSV</button>
 
     </div>
     </div>

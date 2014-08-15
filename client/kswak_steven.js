@@ -13,8 +13,7 @@ var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5', 'choice6', 'choice7', 'choice8'];
-Session.set('numChoices', 5);
+var numChoices = 5;
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
@@ -27,7 +26,7 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher');
-	Session.set('numChoices', 5);
+    numChoices = 5;
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
@@ -40,6 +39,7 @@ function isTeacher(user) {
     return false;
 }
 
+//TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
     var dateStr = _time.toDateString()
@@ -76,15 +76,12 @@ if (Meteor.isClient) {
         },
     });
 
-    UI.registerHelper('getNumChoices', function() {
-		return Session.get('numChoices');
-	});
-	
-	UI.registerHelper('getStatusColor', function() {
-		return Session.get('getStatusColor');
-	});
-	
-	Template.login.helpers({
+
+    UI.registerHelper('getStatusColor', function() {
+        return Session.get('getStatusColor');
+    });
+
+    Template.login.helpers({
         loggingInMessage: function() {
             var rand = Math.random();
             return awesomeList[Math.floor(rand * awesomeList.length)]
@@ -200,17 +197,18 @@ if (Meteor.isClient) {
                 launchQuestion(data);
             });
         },
-		
-		'click #addAnswerChoice': function(event, template) {
-			event.preventDefault
-			var old = Session.get('numChoices');
-			Session.set('numChoices', old + 1);
-			var newNum = Session.get('numChoices');
-			if (newNum >= 8) { 
-				$('#addAnswerChoice').hide(); 
-				$('#addAnswerChoiceText').hide();
-			}
-		},
+
+        'click #addAnswerChoice': function(event, template) {
+            event.preventDefault();
+            numChoices +=1;
+            if (numChoices >= 8) {
+                $('#addAnswerChoice').hide();
+                $('#addAnswerChoiceText').hide();
+            };
+            console.log($('#input_choices'));
+            $('#input_choices').append("<tr><td align='right'>"+letters[numChoices-1]+"</td><td align='left'><input class='choice' type='text'></td></tr>");
+
+        },
 
         'submit form': function (event, template) {
             event.preventDefault();
@@ -269,7 +267,11 @@ if (Meteor.isClient) {
         },
         'click #viewPrivate': function (event, template){
             Router.go('/teacher/private/' + this.question_id)
-        }
+        },
+        'click #exportCSV': function (event, template){
+            var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
+            csvExport(question_id);
+        },
     })
 
     Template.teacher_question_private.events({
@@ -640,14 +642,13 @@ Router.map(function () {
                 return 'restricted';
             }
         },
-		data: function() {
-			var options = [];
-			var last = Session.get('numChoices');
-			for (var i=0; i<last; i++) {
-				options.push({letter: letters[i], choice: choices[i]});
-			}
-			return { options: options }
-		}
+        data: function() {
+            var options = [];
+            for (var i=0; i<numChoices; i++) {
+                options.push({letter: letters[i]});
+            }
+            return { options: options }
+        }
     });
 
     this.route('teacher_edit',{
@@ -667,9 +668,10 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne(Session.get('editing'));
+			console.log('edit', question);
             var options =[];
             for (var i=0; i<question.choices.length; i++){
-                options.push({letter:letters[i],choice:choices[i], option:question.choices[i]});
+                options.push({letter:letters[i], option:question.choices[i]});
             }
             return {
                 options: options,
