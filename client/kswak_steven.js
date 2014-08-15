@@ -30,15 +30,25 @@ function launchQuestion(id){
     Router.go('/teacher/home');
 }
 
+//Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
+function isTeacher(user) {
+    if (user) {
+        if (user.profile['role'] == 'teacher') {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 //TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
-	var dateStr = _time.toDateString()
-	var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
-	console.log('date: ' + date);
-	var minutes = _time.getMinutes();
-	if (minutes < 10) { minutes = '0' + minutes; }
+    var dateStr = _time.toDateString()
+    var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
+    console.log('date: ' + date);
+    var minutes = _time.getMinutes();
+    if (minutes < 10) { minutes = '0' + minutes; }
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
     return {'date': date, 'time': time};
 }
@@ -91,7 +101,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
-			return Questions.find({}, {sort: {date_created: -1}})
+            return Questions.find({}, {sort: {date_created: -1}})
         }
     });
 
@@ -112,8 +122,8 @@ if (Meteor.isClient) {
     Template.new.events({
         'click #tf': function(event, template) {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'tf',
@@ -124,7 +134,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             console.log('time data: ' + question_data.time)
             Meteor.call('insert_question', question_data, function(error, data){
@@ -135,8 +145,8 @@ if (Meteor.isClient) {
 
         'click #mc2': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc2',
@@ -147,7 +157,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -157,8 +167,8 @@ if (Meteor.isClient) {
 
         'click #mc3': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc3',
@@ -169,7 +179,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -179,8 +189,8 @@ if (Meteor.isClient) {
 
         'click #mc4': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc4',
@@ -191,7 +201,7 @@ if (Meteor.isClient) {
                 choice5: '',
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -201,8 +211,8 @@ if (Meteor.isClient) {
 
         'click #mc5': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc5',
@@ -213,7 +223,7 @@ if (Meteor.isClient) {
                 choice5: 'E',
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -230,8 +240,8 @@ if (Meteor.isClient) {
             var choice5 = template.find("input[name=choice5]");
 
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: title.value,
                 type: 'custom',
@@ -242,7 +252,7 @@ if (Meteor.isClient) {
                 choice5: choice5.value,
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
 
 
@@ -263,7 +273,7 @@ if (Meteor.isClient) {
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
-			var status = Questions.findOne(this.question_id).status; 
+            var status = Questions.findOne(this.question_id).status;
             if ( status == 'active'){
                 Meteor.call('freeze_question', this.question_id);
             }else if( status == 'frozen') {
@@ -288,15 +298,15 @@ if (Meteor.isClient) {
             Router.go('/teacher/new');
         },
         'click #viewPrivate': function (event, template){
-        	Router.go('/teacher/private/' + this.question_id)
+            Router.go('/teacher/private/' + this.question_id)
         }
     })
 
-	Template.teacher_question_private.events({
-		'click #backToProjector': function (event, template){
-			Router.go('/teacher/' + this.questionData.question_id)
-		}
-	})
+    Template.teacher_question_private.events({
+        'click #backToProjector': function (event, template){
+            Router.go('/teacher/' + this.questionData.question_id)
+        }
+    })
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
@@ -305,14 +315,14 @@ if (Meteor.isClient) {
             Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
-        	var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
-        	if (confirm){
-        		//Remove responses of this question
-	            Meteor.call('remove_responses', this._id)
+            var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
+            if (confirm){
+                //Remove responses of this question
+                Meteor.call('remove_responses', this._id)
 
-	            //Remove this question itself
-	            Meteor.call('remove_question', this._id);
-        	}
+                //Remove this question itself
+                Meteor.call('remove_question', this._id);
+            }
 
         },
         'click #deleteAll':function (event, template){
@@ -401,13 +411,13 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	var delUser = this.username;
-        	var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
-        	if (confirm){
-            	if (delUser != Meteor.user().username){
+            var delUser = this.username;
+            var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
+            if (confirm){
+                if (delUser != Meteor.user().username){
                 Meteor.call('remove_teacher', delUser, Meteor.user());
-            	}
-        	}
+                }
+            }
         }
     })
 }
@@ -689,21 +699,21 @@ Router.map(function () {
         ,
         template: 'teacher_question_private',
         data: function() {
-        	console.log(this.params._id)
+            console.log(this.params._id)
             var question = Questions.findOne(this.params._id);
             var questionId = this.params._id;
             var responses = []
             for (var mm=0; mm<Responses.find().fetch().length; mm++){
-            	if (Responses.find().fetch()[mm].question == questionId){
-            		var userId = Responses.find().fetch()[mm].user;
-            		var answer = Responses.find().fetch()[mm].answer;
-            		var studentUser = Meteor.users.findOne({_id:userId}).username;
-            		responses.push({user:studentUser, response: answer})
-            	}
+                if (Responses.find().fetch()[mm].question == questionId){
+                    var userId = Responses.find().fetch()[mm].user;
+                    var answer = Responses.find().fetch()[mm].answer;
+                    var studentUser = Meteor.users.findOne({_id:userId}).username;
+                    responses.push({user:studentUser, response: answer})
+                }
             }
             return {
-            	responses: responses,
-            	questionData: passData(question)
+                responses: responses,
+                questionData: passData(question)
             }
         },
         action: function(){
@@ -716,7 +726,7 @@ Router.map(function () {
 
     //temporary trying to make a teacher page so they can see the students and what not
     this.route('teacher_control',{
-        path:'/control',
+        path:'teacher/control',
         waitOn: function(){
             return Meteor.subscribe("userData", "responses");
         },
