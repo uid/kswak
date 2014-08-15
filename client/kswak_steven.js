@@ -25,7 +25,7 @@ function launchQuestion(id){
     if (typeof id != undefined){
         Meteor.call('activate_question', id);
     }
-    Router.go('/teacher/home');
+    Router.go('/teacher');
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
@@ -573,7 +573,8 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            return passData(question); },
+            return passData(question);
+        },
 
     });
 
