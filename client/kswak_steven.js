@@ -5,14 +5,12 @@ responsesHandle = Meteor.subscribe("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 usersHandle = Meteor.subscribe("directory");
 
-//if true, homepage immediately directs user to script to log in.
+//if true, homepage immediately directs user to script to log in. THIS DOESN'T COMPLETELY WORK.
 var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
-
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
+
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
-
-
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5', 'choice6', 'choice7', 'choice8'];
@@ -34,13 +32,25 @@ function launchQuestion(id){
 	}, 30000);*/
 }
 
-//returns date as time passed since a set date (used for sorting) and time created as the string var time
+//Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
+function isTeacher(user) {
+    if (user) {
+        if (user.profile['role'] == 'teacher') {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+//TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
-	var dateStr = _time.toDateString()
-	var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
-	var minutes = _time.getMinutes();
-	if (minutes < 10) { minutes = '0' + minutes; }
+    var dateStr = _time.toDateString()
+    var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
+    console.log('date: ' + date);
+    var minutes = _time.getMinutes();
+    if (minutes < 10) { minutes = '0' + minutes; }
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
     return {'date': date, 'time': time};
 }
@@ -96,7 +106,7 @@ if (Meteor.isClient) {
 
     Template.teacher_summary.helpers({
         questions: function() {
-			return Questions.find({}, {sort: {date_created: -1}})
+            return Questions.find({}, {sort: {date_created: -1}})
         }
     });
 
@@ -120,15 +130,15 @@ if (Meteor.isClient) {
 		
         'click #tf': function(event, template) {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'tf',
                 choices: ['True','False'],
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             console.log('time data: ' + question_data.time)
             Meteor.call('insert_question', question_data, function(error, data){
@@ -139,15 +149,15 @@ if (Meteor.isClient) {
 
         'click #mc2': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc2',
                 choices: ['A','B'],
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -157,15 +167,15 @@ if (Meteor.isClient) {
 
         'click #mc3': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc3',
                 choices: ['A','B','C'],
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -175,15 +185,15 @@ if (Meteor.isClient) {
 
         'click #mc4': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc4',
-				choices: ['A','B','C','D'],
+                choices: ['A','B','C','D'],
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -193,15 +203,15 @@ if (Meteor.isClient) {
 
         'click #mc5': function() {
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: '',
                 type: 'mc5',
                 choices: ['A','B','C','D','E'],
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
@@ -222,24 +232,24 @@ if (Meteor.isClient) {
         //custom question creation
 		'submit form': function (event, template) {
             event.preventDefault();
-			var title = template.find("input[name=title]");
-			var choices = [];
-			$('.choice').each(function(child, i){
-				 if (this.value != '') {
-					 console.log('this.value: ' + this.value);
-					 choices.push(this.value)
-				 }
-			 });
+            var title = template.find("input[name=title]");
+            var choices = [];
+            $('.choice').each(function(child, i){
+                 if (this.value != ''){
+                     choices.push(this.value)
+                 }
+             });
+
             var date_and_time = setTime();
-			var date_created = date_and_time.date;
-			var time = date_and_time.time;
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
             var question_data = {
                 title: title.value,
                 type: 'custom',
                 choices: choices,
                 status: 'active',
                 time: time,
-				date_created: date_created
+                date_created: date_created
             }
 
             Meteor.call('insert_question', question_data, function(error, data){
@@ -250,7 +260,7 @@ if (Meteor.isClient) {
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
-			var status = Questions.findOne(this.question_id).status; 
+            var status = Questions.findOne(this.question_id).status;
             if ( status == 'active'){
                 Meteor.call('freeze_question', this.question_id);
             }else if( status == 'frozen') {
@@ -271,15 +281,15 @@ if (Meteor.isClient) {
             Router.go('/teacher/new');
         },
         'click #viewPrivate': function (event, template){
-        	Router.go('/teacher/private/' + this.question_id)
+            Router.go('/teacher/private/' + this.question_id)
         }
     })
 
-	Template.teacher_question_private.events({
-		'click #backToProjector': function (event, template){
-			Router.go('/teacher/' + this.questionData.question_id)
-		}
-	})
+    Template.teacher_question_private.events({
+        'click #backToProjector': function (event, template){
+            Router.go('/teacher/' + this.questionData.question_id)
+        }
+    })
 
     Template.teacher_summary.events({
         'change [name="launch"]': function (event, template){
@@ -288,10 +298,10 @@ if (Meteor.isClient) {
             Meteor.call('activate', this._id)
         },
         'click .delete': function (event, template){
-        	var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
-        	if (confirm){
-        		//Remove responses of this question
-	            Meteor.call('remove_responses', this._id)
+            var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
+            if (confirm){
+                //Remove responses of this question
+                Meteor.call('remove_responses', this._id)
 
 	            //Remove this question itself
 	            Meteor.call('remove_question', this._id);
@@ -322,13 +332,13 @@ if (Meteor.isClient) {
             Meteor.call('remove_responses', question);
 
             //create new question and launch it
-			var choices = []
+            var choices = []
             var title = template.find("input[name=title]");
-			$('.choice').each(function(child, i){
-				 if (this.value != ''){
-					 choices.push(this.value)
-				 }
-			 });
+            $('.choice').each(function(child, i){
+                 if (this.value != ''){
+                     choices.push(this.value)
+                 }
+             });
             Meteor.call('update_question', question, title.value, choices)
 
             if (question.status == 'active'){
@@ -345,13 +355,13 @@ if (Meteor.isClient) {
 
             launchQuestion(); //disable current launched question
             //create new question and launch it
-			var choices = []
+            var choices = []
             var title = template.find("input[name=title]");
-			$('.choice').each(function(child, i){
-				 if (this.value != ''){
-					 choices.push(this.value)
-				 }
-			 });
+            $('.choice').each(function(child, i){
+                 if (this.value != ''){
+                     choices.push(this.value)
+                 }
+             });
             Meteor.call('update_question', question, title.value, choices)
             Meteor.call('activate_question', question);
             Router.go('/teacher/home')
@@ -384,13 +394,13 @@ if (Meteor.isClient) {
             Meteor.call('add_teacher', tempNameList, Meteor.user());
         },
         'click .deleteTeacher': function(event, template){
-        	var delUser = this.username;
-        	var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
-        	if (confirm){
-            	if (delUser != Meteor.user().username){
+            var delUser = this.username;
+            var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
+            if (confirm){
+                if (delUser != Meteor.user().username){
                 Meteor.call('remove_teacher', delUser, Meteor.user());
-            	}
-        	}
+                }
+            }
         }
     })
 }
@@ -401,9 +411,9 @@ var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
     for ( var i =0; i< question.choices.length; i++){
-		var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
-		normalizedList.push(numResponses);
-		total +=numResponses;
+        var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
+        normalizedList.push(numResponses);
+        total +=numResponses;
     }
     if (total != 0){
         normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
@@ -418,11 +428,11 @@ var passData_student = function(question, user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open';
-			var statusColor = 'green';
+            var statusColor = 'green';
             var overlay = "overlay closed";
         } else {
             var status_comment = 'Submission is closed';
-			var statusColor = '#ef6d86';
+            var statusColor = '#ef6d86';
             var overlay = "overlay open";
         }
 
@@ -440,18 +450,18 @@ var passData_student = function(question, user) {
                     color = 'steelblue';
                 }
             }
-			options.push(
-			{
-				choice: question.choices[i],
-				letter: letters[i],
-				color: color
-			})
+            options.push(
+            {
+                choice: question.choices[i],
+                letter: letters[i],
+                color: color
+            })
 
         }
         return {
             question_id: question_id,
             status_comment: status_comment,
-			statusColor: statusColor,
+            statusColor: statusColor,
             options: options,
             title: question.title,
             time: question.time,
@@ -464,36 +474,36 @@ var passData_student = function(question, user) {
 
 var passData = function(question, user) {
     if (question != undefined) {
-		var question_id = question._id;
+        var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live';
-			var statusColor = 'green';
+            var statusColor = 'green';
             var status_control = 'To Freeze';
         } else if(question.status == 'frozen') {
             var status_control = 'To Activate';
             var status_comment = 'This question is live and FROZEN';
-			var statusColor = '#ef6d86';
+            var statusColor = '#ef6d86';
         } else{
             var status_control = 'to activate';
             var status_comment = 'This question is inactive';
-			var statusColor = '#ef6d86'
+            var statusColor = '#ef6d86'
         }
 
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
         for (i in question.choices) {
-			options.push(
-			{
-				choice: question.choices[i],
-				voters: Responses.find({question: question_id, answer: letters[i]}).count(),
-				percent: stats[i],
-			})
+            options.push(
+            {
+                choice: question.choices[i],
+                voters: Responses.find({question: question_id, answer: letters[i]}).count(),
+                percent: stats[i],
+            })
 
         }
         return {
             question_id: question_id,
             status_comment: status_comment,
-			statusColor: statusColor,
+            statusColor: statusColor,
             status_control: status_control,
             options: options,
             title: question.title,
@@ -654,21 +664,21 @@ Router.map(function () {
         ,
         template: 'teacher_question_private',
         data: function() {
-        	console.log(this.params._id)
+            console.log(this.params._id)
             var question = Questions.findOne(this.params._id);
             var questionId = this.params._id;
             var responses = []
             for (var mm=0; mm<Responses.find().fetch().length; mm++){
-            	if (Responses.find().fetch()[mm].question == questionId){
-            		var userId = Responses.find().fetch()[mm].user;
-            		var answer = Responses.find().fetch()[mm].answer;
-            		var studentUser = Meteor.users.findOne({_id:userId}).username;
-            		responses.push({user:studentUser, response: answer})
-            	}
+                if (Responses.find().fetch()[mm].question == questionId){
+                    var userId = Responses.find().fetch()[mm].user;
+                    var answer = Responses.find().fetch()[mm].answer;
+                    var studentUser = Meteor.users.findOne({_id:userId}).username;
+                    responses.push({user:studentUser, response: answer})
+                }
             }
             return {
-            	responses: responses,
-            	questionData: passData(question)
+                responses: responses,
+                questionData: passData(question)
             }
         },
         action: function(){
@@ -681,7 +691,7 @@ Router.map(function () {
 
     //temporary trying to make a teacher page so they can see the students and what not
     this.route('teacher_control',{
-        path:'/control',
+        path:'teacher/control',
         waitOn: function(){
             return Meteor.subscribe("userData", "responses");
         },

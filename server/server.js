@@ -9,26 +9,40 @@ Teachers.insert({username:"iveel"});
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
     var userID = this.userId;
-    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-        return Questions.find();
-    }else{
+    if (Meteor.users.findOne(userID) != null) {
+        if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+            return Questions.find();
+        }
+        else {
+            return Questions.find({status:{$in:['active', 'frozen']}});
+        }
+    }
+    else{
         return Questions.find({status:{$in:['active', 'frozen']}});
     }
 });
 
 Meteor.publish("directory", function () {
-	var userID = this.userId;
-    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-		return Meteor.users.find();
-	}
+    var userID = this.userId;
+    if (Meteor.users.findOne(userID) != null) {
+        if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+            return Meteor.users.find();
+        }
+    }
 });
 
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
-	var userID = this.userId;
-    if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-        return Responses.find();
-    }else{
+    var userID = this.userId;
+    if (Meteor.users.findOne(userID) != null) {
+        if (Meteor.users.findOne(userID).profile.role == 'teacher'){
+            return Responses.find();
+        }
+        else {
+            return Responses.find({user:userID});
+        }
+    }
+    else {
         return Responses.find({user:userID});
     }
 });
@@ -38,8 +52,8 @@ Meteor.publish("accountstest", function () {
     return AccountsTest.find();
 });
 
-var MASTER = 'asd651c8138';
-var ENCRYPTION_KEY = "26bc!@!$@$^W64vc";
+var MASTER = Meteor.settings.MASTER;
+var ENCRYPTION_KEY = Meteor.settings.ENCRYPTION_KEY;
 
 function getUsernameFromBase64(urlBase64String) {
     var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
@@ -119,8 +133,8 @@ Meteor.methods({
                 Responses.insert({user:user_id, question:question_id, answer: user_answer})
             }
         }else{
-			console.log('you are not student')
-		}
+            console.log('you are not student')
+        }
     },
 
     remove_responses: function ( question_id){
@@ -146,10 +160,10 @@ Meteor.methods({
 
     inactivate_question: function (){
         if (isTeacher( Meteor.user()._id) ){
-			var active = Questions.findOne({status:{$in:['active', 'frozen']}})
-			if (active != undefined){
-				Questions.update(active._id,  {$set:{status:'inactive'}})
-			}
+            var active = Questions.findOne({status:{$in:['active', 'frozen']}})
+            if (active != undefined){
+                Questions.update(active._id,  {$set:{status:'inactive'}})
+            }
         }
     },
 
