@@ -353,7 +353,7 @@ if (Meteor.isClient) {
              });
             Meteor.call('update_question', question, title.value, choices)
             Meteor.call('activate_question', question);
-            Router.go('/teacher/home')
+            Router.go('/teacher')
         }
     })
 
