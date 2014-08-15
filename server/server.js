@@ -10,10 +10,8 @@ Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
     var userID = this.userId;
     if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-        console.log('teacher access to Questions', userID);
         return Questions.find();
     }else{
-        console.log('student access to Questions', userID);
         return Questions.find({status:{$in:['active', 'frozen']}});
     }
 });
@@ -116,10 +114,8 @@ Meteor.methods({
             var question_id = question._id;
             var response = Responses.findOne({user:user_id, question:question_id});
             if (response != undefined){
-                console.log('updating')
                 Responses.update(response._id, {$set: {answer: user_answer}})
             }else{
-                console.log('inserting, respones:', Responses.find().fetch());
                 Responses.insert({user:user_id, question:question_id, answer: user_answer})
             }
         }else{
@@ -137,7 +133,6 @@ Meteor.methods({
 
     insert_question: function( question_data){
         if (isTeacher( Meteor.user()._id) ){
-			console.log('insert')
             return Questions.insert(question_data)
         }
     },
@@ -170,16 +165,9 @@ Meteor.methods({
         }
     },
 
-    update_question: function(question, title, c1,c2,c3,c4,c5){
+    update_question: function(question, title, choices){
         if (isTeacher( Meteor.user()._id) ){
-            Questions.update(question, {$set:{title:title,
-                                      choice1:c1,
-                                      choice2:c2,
-                                      choice3:c3,
-											  
-                                      choice4:c4,
-                                      choice5:c5
-                                      }})
+            Questions.update(question, {$set:{title:title, choices:choices}})
         }
     },
 

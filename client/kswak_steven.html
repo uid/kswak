@@ -87,23 +87,23 @@
             <table id='input_choices'>
                 <tr>
                     <td align='right'>A </td>
-                    <td align='left'><input type="text" name="choice1" class='answerField'></td>
+                    <td align='left'><input type="text" class='choice'></td>
                 </tr>
                 <tr>
                     <td align='right'>B </td>
-                    <td align='left'><input type="text" name="choice2"></td>
+                    <td align='left'><input type="text" class='choice'></td>
                 </tr>
                 <tr>
                     <td align='right'>C </td>
-                    <td align='left'><input type="text" name="choice3"></td>
+                    <td align='left'><input type="text" class='choice'></td>
                 </tr>
                 <tr>
                     <td align='right'>D </td>
-                    <td align='left'><input type="text" name="choice4"></td>
+                    <td align='left'><input type="text" class='choice'></td>
                 </tr>
                 <tr>
                     <td align='right'>E </td>
-                    <td align='left'><input type="text" name="choice5"></td>
+                    <td align='left'><input type="text" class='choice'></td>
                 </tr>
             </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
@@ -126,7 +126,7 @@
     <div id="container_question_view">
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
-    <span style='width:300px; display: inline-block'><i style='color:{{getStatusColor}}'>{{status_comment}}</i></span>
+    <span style='width:300px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}}</i></span>
     <form id="student_question">
         <table id="studentTable">
         {{#each options}}
@@ -145,7 +145,7 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-        <span style='width:400px; display: inline-block'><i style='color:{{getStatusColor}}'>{{status_comment}} </i>(Time posted: {{time}})</span>
+        <span style='width:400px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}} </i>(Time posted: {{time}})</span>
         <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
         <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
     <div class='form_container'>
@@ -316,11 +316,15 @@
             <table id='input_choices'>
                 {{#each options}}
                 <tr>
-                    <td align='right'>{{letter}} </td>
-                    <td align='left'><input type="text" name={{choice}} value={{option}}></td>
-                    <!--<td align='left'><input type="radio" value={{letter}} name="correct"></td>-->
+                    <td align='left'><input type="text" value={{option}} class='choice'></td>
                 </tr>
                 {{/each}}
+				<tr>
+                    <td align='left'><input type="text" value="" class='choice'></td>
+                </tr>
+				<tr>
+                    <td align='left'><input type="text" value="" class='choice'></td>
+                </tr>
             </table>
              <div id="publishFeedback"></div>
         </form>
