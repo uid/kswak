@@ -1,10 +1,7 @@
 Teachers = new Meteor.Collection("teachers");
-Teachers.insert({username:"rcm"});
-Teachers.insert({username:"maxg"});
-Teachers.insert({username:"robsoto"});
-Teachers.insert({username:"sarivera"});
-Teachers.insert({username:"peitao"});
-Teachers.insert({username:"iveel"});
+for (var i in Meteor.settings.teacherList) {
+    Teachers.insert({username:Meteor.settings.teacherList[i]});
+}
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {
