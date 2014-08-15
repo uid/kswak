@@ -17,15 +17,15 @@ Meteor.publish("questions", function () {
 });
 
 Meteor.publish("directory", function () {
-	var userID = this.userId;
+    var userID = this.userId;
     if (Meteor.users.findOne(userID).profile.role == 'teacher'){
-		return Meteor.users.find();
-	}
+        return Meteor.users.find();
+    }
 });
 
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
-	var userID = this.userId;
+    var userID = this.userId;
     if (Meteor.users.findOne(userID).profile.role == 'teacher'){
         return Responses.find();
     }else{
@@ -119,8 +119,8 @@ Meteor.methods({
                 Responses.insert({user:user_id, question:question_id, answer: user_answer})
             }
         }else{
-			console.log('you are not student')
-		}
+            console.log('you are not student')
+        }
     },
 
     remove_responses: function ( question_id){
@@ -146,10 +146,10 @@ Meteor.methods({
 
     inactivate_question: function (){
         if (isTeacher( Meteor.user()._id) ){
-			var active = Questions.findOne({status:{$in:['active', 'frozen']}})
-			if (active != undefined){
-				Questions.update(active._id,  {$set:{status:'inactive'}})
-			}
+            var active = Questions.findOne({status:{$in:['active', 'frozen']}})
+            if (active != undefined){
+                Questions.update(active._id,  {$set:{status:'inactive'}})
+            }
         }
     },
 
