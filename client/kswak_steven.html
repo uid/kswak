@@ -71,28 +71,18 @@
     <div class='form_container'>
         <form id='question_form'>
             Question: <input type="text" name="title"> <br>
-            Choices: <br>
+            Choices: <i id='choicesHelpText'>fields left blank will not appear to students</i><br>
             <table id='input_choices'>
-                <tr>
-                    <td align='right'>A </td>
-                    <td align='left'><input type="text" class='choice'></td>
-                </tr>
-                <tr>
-                    <td align='right'>B </td>
-                    <td align='left'><input type="text" class='choice'></td>
-                </tr>
-                <tr>
-                    <td align='right'>C </td>
-                    <td align='left'><input type="text" class='choice'></td>
-                </tr>
-                <tr>
-                    <td align='right'>D </td>
-                    <td align='left'><input type="text" class='choice'></td>
-                </tr>
-                <tr>
-                    <td align='right'>E </td>
-                    <td align='left'><input type="text" class='choice'></td>
-                </tr>
+				{{#each options}}
+				<tr>
+					<td align='right'>{{letter}}</td>
+					<td align='left'><input class='choice' type='text' name='{{choice}}'></td>
+				</tr>
+				{{/each}}
+				<tr>
+					<td align='right'><button type='button' class='btn btn-primary' id='addAnswerChoice'>+</button></td>
+					<td align='left'><i id='addAnswerChoiceText'>add answer choice (max: 8)</i></td>
+				</tr>
             </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
@@ -110,8 +100,9 @@
 
 <template name='question_view'>
     <div class={{overlay_option}}></div>
-    <title>KSWAK | {{title}}</title>
+    <title>KSWAK </title>
     <div id="container_question_view">
+        {{largeWidth}}
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
     <span style='width:300px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}}</i></span>
@@ -120,7 +111,7 @@
         {{#each options}}
         <tr>
             <td>{{letter}}.</td>
-            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}"></td>
+            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width={{largeWidth}}"></td>
         </tr>
         {{/each}}
         </table>

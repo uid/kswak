@@ -13,12 +13,13 @@ var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5'];
-var letters = ['A', 'B', 'C', 'D', 'E'];
+var choices = ['choice1','choice2','choice3','choice4','choice5', 'choice6', 'choice7', 'choice8'];
+Session.set('numChoices', 5); //default value, changed when teacher clicks to add or remove choices
+var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
-//set all questions inactive
-//If an id is passed, launch its question
+//sets all questions inactive
+//If an id is passed, launches its question
 function launchQuestion(id){
     Meteor.call('inactivate_question');
 
@@ -26,6 +27,9 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher/home');
+    /*setTimeout(function() {
+        Meteor.call('freeze_question', id);
+    }, 30000);*/
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
@@ -84,6 +88,22 @@ if (Meteor.isClient) {
         }
     });
 
+    Session.set('statusColor', '#ef6d86');
+
+    UI.registerHelper('getStatusColor', function() {
+        return Session.get('statusColor');
+    });
+
+    UI.registerHelper('getNumChoices', function() {
+            return Session.get('numChoices');
+    });
+
+    Template.dev_home.helpers({
+        questions: function() {
+            return Questions.find();
+        }
+    });
+
     Template.teacher_summary.helpers({
         questions: function() {
             return Questions.find({}, {sort: {date_created: -1}})
@@ -104,7 +124,10 @@ if (Meteor.isClient) {
         }
     });
 
+
     Template.new.events({
+        /* Click handlers for all quick launch buttons are below */
+
         'click #tf': function(event, template) {
             var date_and_time = setTime();
             var date_created = date_and_time.date;
@@ -195,6 +218,18 @@ if (Meteor.isClient) {
             });
         },
 
+        'click #addAnswerChoice': function(event, template) {
+            event.preventDefault
+            var old = Session.get('numChoices');
+            Session.set('numChoices', old + 1);
+            var newNum = Session.get('numChoices');
+            if (newNum >= 8) {
+                $('#addAnswerChoice').hide();
+                $('#addAnswerChoiceText').hide();
+            }
+        },
+
+        //custom question creation
         'submit form': function (event, template) {
             event.preventDefault();
             var title = template.find("input[name=title]");
@@ -204,6 +239,7 @@ if (Meteor.isClient) {
                      choices.push(this.value)
                  }
              });
+
             var date_and_time = setTime();
             var date_created = date_and_time.date;
             var time = date_and_time.time;
@@ -219,10 +255,8 @@ if (Meteor.isClient) {
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
-
         }
   });
-
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
@@ -240,10 +274,6 @@ if (Meteor.isClient) {
         //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
-            /*var question = Session.get('editing');
-            if (question.status == 'active') {
-                question.status = 'frozen';
-            }*/
             Router.go('/teacher/edit')
         },
 
@@ -276,7 +306,6 @@ if (Meteor.isClient) {
                 //Remove this question itself
                 Meteor.call('remove_question', this._id);
             }
-
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
@@ -324,8 +353,7 @@ if (Meteor.isClient) {
             //Remove responses which are already submitted for the question
             Meteor.call('remove_responses', question)
 
-            //disable current launched question
-            launchQuestion();
+            launchQuestion(); //disable current launched question
             //create new question and launch it
             var choices = []
             var title = template.find("input[name=title]");
@@ -340,11 +368,17 @@ if (Meteor.isClient) {
         }
     })
 
-   /* Template.question_view.rendered = function() {
-        alert.play();
-    } */
+
+    // Template.question_view.rendered = function() {
+           //          var width = Math.max.apply( null, $( 'input[type=submit]' ).map( function () {
+            //     return $( this ).outerWidth( true );
+            // }));
+            // return width;
+    // }
+
 
     Template.question_view.events({
+        //student response submission
         'submit #student_question': function (event, template) {
             event.preventDefault();
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
@@ -352,7 +386,6 @@ if (Meteor.isClient) {
             var user_answer = choice.name;
             var question_id = question._id;
             Meteor.call('submit_response', question, user_answer);
-
         }
     })
 
@@ -375,17 +408,8 @@ if (Meteor.isClient) {
     })
 }
 
-
-
-
-if (Meteor.isServer) {
-    Meteor.startup(function () {
-        // code to run on server at startup
-        //certificate auth should be here eventually
-    });
-}
-
-
+//calculates response percentages for each answer choice
+//returns array of percentages, one for each answer choice
 var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
@@ -422,9 +446,8 @@ var passData_student = function(question, user) {
             var feedback = "Please submit your response!";
         }
         var options = [];
-        for (i in question.choices) {
+        for (var i in question.choices) {
             var color = '#e5e2e2'
-            //for use of identifying chosen answer
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
@@ -631,6 +654,15 @@ Router.map(function () {
                 return 'restricted';
             }
         },
+        template: 'new',
+        data: function() {
+            var options = [];
+            var last = Session.get('numChoices');
+            for (var i=0; i<last; i++) {
+                options.push({letter:letters[i], choice:choices[i]});
+            }
+            return { options: options };
+        }
     });
 
     this.route('teacher_edit',{
@@ -782,7 +814,6 @@ Router.map(function () {
                 people: people,
                 responses: responses
             }
-
         }
     });
 });

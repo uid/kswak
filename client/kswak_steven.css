@@ -48,8 +48,21 @@ body {
     line-height: 30px;
 }
 
+#choicesHelpText {
+	font-style: italic;
+	font-size: 8pt;
+	color: gray;
+}
+
+#addAnswerChoiceText {
+	font-style: italic;
+	font-size: 10pt;
+	color: gray;
+}
+
 #tf {
     height: 50px;
+	width: 122px;
 }
 
 .quickLaunch {
@@ -118,13 +131,14 @@ input[name="choice"]{
 input[type=submit]{
     display:inline-block;
     padding: 4px 12px;
-    /*margin:5%;*/
+    margin:5%;
     margin: 10px;
     border-color: #ddd;
     min-width: 200px;
     min-height:50px;
     text-align:center;
     border-style:none;
+    white-space:normal
 }
 
 
