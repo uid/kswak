@@ -122,8 +122,9 @@
 
 <template name='question_view'>
     <div class={{overlay_option}}></div>
-    <title>KSWAK | {{title}}</title>
+    <title>KSWAK </title>
     <div id="container_question_view">
+        {{largeWidth}}
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
     <span style='width:300px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}}</i></span>
@@ -132,7 +133,7 @@
         {{#each options}}
         <tr>
             <td>{{letter}}.</td>
-            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width:{{largestWidth}}"></td>
+            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width={{largeWidth}}"></td>
         </tr>
         {{/each}}
         </table>

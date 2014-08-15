@@ -98,15 +98,6 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.question_view.helpers({
-    	largeWidth: function(){
-    		var width = Math.max.apply( null, $( 'input[type=submit]' ).map( function () {
-    			return $( this ).outerWidth( true );
-			}).get() );
-			return width;
-    	}
-    });
-
     Template.nav.events({
         'click .cert_link': function() {
             var query = send_to_scripts();
@@ -357,9 +348,13 @@ if (Meteor.isClient) {
         }
     })
 
-   /* Template.question_view.rendered = function() {
-        alert.play();
-    } */
+    Template.question_view.rendered = function() {
+           //  		var width = Math.max.apply( null, $( 'input[type=submit]' ).map( function () {
+			//     return $( this ).outerWidth( true );
+			// }));
+			// return width;
+			console.log(this.$('input[type=submit]'))
+    } 
 
     Template.question_view.events({
         'submit #student_question': function (event, template) {
