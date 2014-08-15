@@ -42,13 +42,10 @@ function isTeacher(user) {
     return false;
 }
 
-
-//TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
     var dateStr = _time.toDateString()
     var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
-    console.log('date: ' + date);
     var minutes = _time.getMinutes();
     if (minutes < 10) { minutes = '0' + minutes; }
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
@@ -140,7 +137,6 @@ if (Meteor.isClient) {
                 time: time,
                 date_created: date_created
             }
-            console.log('time data: ' + question_data.time)
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
@@ -407,6 +403,7 @@ if (Meteor.isClient) {
 
 //calculates response percentages for each answer choice
 //returns array of percentages, one for each answer choice
+//last index of returned array contains total number of voters
 var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
@@ -489,7 +486,7 @@ var passData = function(question, user) {
             var statusColor = '#ef6d86'
         }
 
-        var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
+        var stats = calcPercentages(question);
         var options = [];
         for (i in question.choices) {
             options.push(
@@ -520,7 +517,6 @@ Router.map(function () {
         template: function() {
             if (automatic_signin && !Meteor.user()) {
                 var query = send_to_scripts();
-                console.log(query);
                 window.location = scriptURL + query;
             }
             else if (Meteor.user()) {
@@ -664,7 +660,6 @@ Router.map(function () {
         ,
         template: 'teacher_question_private',
         data: function() {
-            console.log(this.params._id)
             var question = Questions.findOne(this.params._id);
             var questionId = this.params._id;
             var responses = []
