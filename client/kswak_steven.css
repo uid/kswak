@@ -118,13 +118,14 @@ input[name="choice"]{
 input[type=submit]{
     display:inline-block;
     padding: 4px 12px;
-    /*margin:5%;*/
+    margin:5%;
     margin: 10px;
     border-color: #ddd;
     min-width: 200px;
     min-height:50px;
     text-align:center;
     border-style:none;
+    white-space:normal
 }
 
 

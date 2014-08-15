@@ -88,6 +88,15 @@ if (Meteor.isClient) {
         }
     });
 
+    Template.question_view.helpers({
+    	largeWidth: function(){
+    		var width = Math.max.apply( null, $( 'input[type=submit]' ).map( function () {
+    			return $( this ).outerWidth( true );
+			}).get() );
+			return width;
+    	}
+    });
+
     Template.nav.events({
         'click .cert_link': function() {
             var query = send_to_scripts();

@@ -132,7 +132,7 @@
         {{#each options}}
         <tr>
             <td>{{letter}}.</td>
-            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}"></td>
+            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width:{{largestWidth}}"></td>
         </tr>
         {{/each}}
         </table>
