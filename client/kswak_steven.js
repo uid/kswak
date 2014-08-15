@@ -580,7 +580,8 @@ Router.map(function () {
         },
         data: function() {
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            return passData(question); },
+            return passData(question);
+        },
 
     });
 
