@@ -84,12 +84,6 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.dev_home.helpers({
-        questions: function() {
-            return Questions.find();
-        }
-    });
-
     Template.teacher_summary.helpers({
         questions: function() {
             return Questions.find({}, {sort: {date_created: -1}})
@@ -499,6 +493,10 @@ var passData = function(question, user) {
     }
 }
 
+Router.configure({
+    notFoundTemplate: "restricted"
+});
+
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
@@ -521,10 +519,6 @@ Router.map(function () {
                 Router.go('question_view'); //this redirects to a sign in page
             }
         }
-    });
-
-    this.route('dev_home', {
-        path: '/dev_home',
     });
 
     this.route('login', {
@@ -555,12 +549,24 @@ Router.map(function () {
     });
 
     this.route('teacher_home', {
-        path: 'teacher/home',
+        path: 'teacher',
         template: function() {
-            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
-                return 'teacher_summary'
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined) {
+                        return 'teacher_summary'
+                    }
+                    else {
+                        return 'teacher_question_view'
+                    }
+                }
+                else {
+                    return 'restricted';
+                }
             }
-            return 'teacher_question_view'
+            else {
+                return 'restricted';
+            }
         },
         waitOn: function() {
             return Meteor.subscribe("questions")
@@ -573,6 +579,19 @@ Router.map(function () {
 
     this.route('teacher_summary', {
         path: 'teacher/summary',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_summary'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         waitOn: function(){
             return Meteor.subscribe("questions")
         }
@@ -599,11 +618,36 @@ Router.map(function () {
 
     this.route('teacher_new', {
         path: '/teacher/new',
-        template: 'new',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'new'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
     });
 
     this.route('teacher_edit',{
         path:'/teacher/edit',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_edit'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function() {
             var question = Questions.findOne(Session.get('editing'));
             var options =[];
@@ -621,9 +665,20 @@ Router.map(function () {
         path: '/teacher/:_id',
         waitOn: function() {
             return Meteor.subscribe("questions")
-        }
-        ,
-        template: 'teacher_question_view',
+        },
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_question_view';
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function() {
             var question = Questions.findOne(this.params._id);
             return passData(question);},
@@ -640,7 +695,19 @@ Router.map(function () {
             return [Meteor.subscribe("questions"), Meteor.subscribe("responses")] //, Meteor.subscribe("userData"), Meteor.subscribe("responses")]
         }
         ,
-        template: 'teacher_question_private',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_question_private';
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function() {
             console.log(this.params._id)
             var question = Questions.findOne(this.params._id);
@@ -673,7 +740,19 @@ Router.map(function () {
         waitOn: function(){
             return Meteor.subscribe("userData", "responses");
         },
-        template: 'teacher_control',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_control'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function(){
             var people = [];
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
