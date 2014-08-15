@@ -15,7 +15,8 @@ var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR P
 
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5'];
+var choices = ['choice1','choice2','choice3','choice4','choice5', 'choice6', 'choice7', 'choice8'];
+Session.set('numChoices', 5); //default value, changed when teacher clicks to add or remove choices
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
@@ -82,6 +83,10 @@ if (Meteor.isClient) {
     UI.registerHelper('getStatusColor', function() {
         return Session.get('statusColor');
     });
+	
+	UI.registerHelper('getNumChoices', function() {
+			return Session.get('numChoices');
+	});
 
     Template.dev_home.helpers({
         questions: function() {
@@ -117,9 +122,6 @@ if (Meteor.isClient) {
             var date_and_time = setTime();
 			var date_created = date_and_time.date;
 			var time = date_and_time.time;
-			var choices = choice_data.slice(0); //clone choice_data
-			choices[0] = 'True';
-			choices[1] = 'False';
             var question_data = {
                 title: '',
                 type: 'tf',
@@ -205,6 +207,17 @@ if (Meteor.isClient) {
                 launchQuestion(data);
             });
         },
+		
+		'click #addAnswerChoice': function(event, template) {
+			event.preventDefault
+			var old = Session.get('numChoices');
+			Session.set('numChoices', old + 1);
+			var newNum = Session.get('numChoices');
+			if (newNum >= 8) { 
+				$('#addAnswerChoice').hide(); 
+				$('#addAnswerChoiceText').hide();
+			}
+		},
 
         //custom question creation
 		'submit form': function (event, template) {
@@ -212,7 +225,8 @@ if (Meteor.isClient) {
 			var title = template.find("input[name=title]");
 			var choices = [];
 			$('.choice').each(function(child, i){
-				 if (this.value != ''){
+				 if (this.value != '') {
+					 console.log('this.value: ' + this.value);
 					 choices.push(this.value)
 				 }
 			 });
@@ -231,11 +245,7 @@ if (Meteor.isClient) {
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
-        },
-		
-		'click addAnswerChoice': function() {
-			//choices.push(
-		}
+        }
   });
 
     Template.teacher_question_view.events({
@@ -423,7 +433,7 @@ var passData_student = function(question, user) {
             var feedback = "Please submit your response!";
         }
         var options = [];
-        for (i in question.choices) {
+        for (var i in question.choices) {
             var color = '#e5e2e2'
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
@@ -596,7 +606,8 @@ Router.map(function () {
         template: 'new',
 		data: function() { 
 			var options = [];
-			for (i in choices) {
+			var last = Session.get('numChoices');
+			for (var i=0; i<last; i++) {
 				options.push({letter:letters[i], choice:choices[i]});	
 			}
 			return { options: options };

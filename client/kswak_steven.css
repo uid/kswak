@@ -48,6 +48,18 @@ body {
     line-height: 30px;
 }
 
+#choicesHelpText {
+	font-style: italic;
+	font-size: 8pt;
+	color: gray;
+}
+
+#addAnswerChoiceText {
+	font-style: italic;
+	font-size: 10pt;
+	color: gray;
+}
+
 #tf {
     height: 50px;
 	width: 122px;
