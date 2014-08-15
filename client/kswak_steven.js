@@ -7,12 +7,10 @@ usersHandle = Meteor.subscribe("directory");
 
 //if true, homepage immediately directs user to script to log in.
 var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
-
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
+
 var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
-
-
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5'];
@@ -175,7 +173,7 @@ if (Meteor.isClient) {
             var question_data = {
                 title: '',
                 type: 'mc4',
-				choices: ['A','B','C','D'],
+                choices: ['A','B','C','D'],
                 status: 'active',
                 time: time,
                 date_created: date_created
@@ -205,13 +203,13 @@ if (Meteor.isClient) {
 
         'submit form': function (event, template) {
             event.preventDefault();
-			var title = template.find("input[name=title]");
-			var choices = [];
-			$('.choice').each(function(child, i){
-				 if (this.value != ''){
-					 choices.push(this.value)
-				 }
-			 });
+            var title = template.find("input[name=title]");
+            var choices = [];
+            $('.choice').each(function(child, i){
+                 if (this.value != ''){
+                     choices.push(this.value)
+                 }
+             });
             var date_and_time = setTime();
             var date_created = date_and_time.date;
             var time = date_and_time.time;
@@ -311,13 +309,13 @@ if (Meteor.isClient) {
             Meteor.call('remove_responses', question);
 
             //create new question and launch it
-			var choices = []
+            var choices = []
             var title = template.find("input[name=title]");
-			$('.choice').each(function(child, i){
-				 if (this.value != ''){
-					 choices.push(this.value)
-				 }
-			 });
+            $('.choice').each(function(child, i){
+                 if (this.value != ''){
+                     choices.push(this.value)
+                 }
+             });
             Meteor.call('update_question', question, title.value, choices)
 
             if (question.status == 'active'){
@@ -335,13 +333,13 @@ if (Meteor.isClient) {
             //disable current launched question
             launchQuestion();
             //create new question and launch it
-			var choices = []
+            var choices = []
             var title = template.find("input[name=title]");
-			$('.choice').each(function(child, i){
-				 if (this.value != ''){
-					 choices.push(this.value)
-				 }
-			 });
+            $('.choice').each(function(child, i){
+                 if (this.value != ''){
+                     choices.push(this.value)
+                 }
+             });
             Meteor.call('update_question', question, title.value, choices)
             Meteor.call('activate_question', question);
             Router.go('/teacher/home')
@@ -402,9 +400,9 @@ var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
     for ( var i =0; i< question.choices.length; i++){
-		var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
-		normalizedList.push(numResponses);
-		total +=numResponses;
+        var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
+        normalizedList.push(numResponses);
+        total +=numResponses;
     }
     if (total != 0){
         normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
@@ -419,11 +417,11 @@ var passData_student = function(question, user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open';
-			var statusColor = 'green';
+            var statusColor = 'green';
             var overlay = "overlay closed";
         } else {
             var status_comment = 'Submission is closed';
-			var statusColor = '#ef6d86';
+            var statusColor = '#ef6d86';
             var overlay = "overlay open";
         }
 
@@ -442,18 +440,18 @@ var passData_student = function(question, user) {
                     color = 'steelblue';
                 }
             }
-			options.push(
-			{
-				choice: question.choices[i],
-				letter: letters[i],
-				color: color
-			})
+            options.push(
+            {
+                choice: question.choices[i],
+                letter: letters[i],
+                color: color
+            })
 
         }
         return {
             question_id: question_id,
             status_comment: status_comment,
-			statusColor: statusColor,
+            statusColor: statusColor,
             options: options,
             title: question.title,
             time: question.time,
@@ -466,36 +464,36 @@ var passData_student = function(question, user) {
 
 var passData = function(question, user) {
     if (question != undefined) {
-		var question_id = question._id;
+        var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live';
-			var statusColor = 'green';
+            var statusColor = 'green';
             var status_control = 'To Freeze';
         } else if(question.status == 'frozen') {
             var status_control = 'To Activate';
             var status_comment = 'This question is live and FROZEN';
-			var statusColor = '#ef6d86';
+            var statusColor = '#ef6d86';
         } else{
             var status_control = 'to activate';
             var status_comment = 'This question is inactive';
-			var statusColor = '#ef6d86'
+            var statusColor = '#ef6d86'
         }
 
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
         for (i in question.choices) {
-			options.push(
-			{
-				choice: question.choices[i],
-				voters: Responses.find({question: question_id, answer: letters[i]}).count(),
-				percent: stats[i],
-			})
+            options.push(
+            {
+                choice: question.choices[i],
+                voters: Responses.find({question: question_id, answer: letters[i]}).count(),
+                percent: stats[i],
+            })
 
         }
         return {
             question_id: question_id,
             status_comment: status_comment,
-			statusColor: statusColor,
+            statusColor: statusColor,
             status_control: status_control,
             options: options,
             title: question.title,
