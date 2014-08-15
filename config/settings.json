@@ -1,1 +1,7 @@
-{ "public": {"test": "buy"}, "MASTER": "asd651c8138" };
+{
+    "public": {
+        "test": "buy"
+    },
+    "MASTER": "asd651c8138",
+    "ENCRYPTION_KEY": "26bc!@!$@$^W64vc"
+}
