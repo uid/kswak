@@ -654,7 +654,6 @@ Router.map(function () {
                 return 'restricted';
             }
         },
-        template: 'new',
         data: function() {
             var options = [];
             var last = Session.get('numChoices');
