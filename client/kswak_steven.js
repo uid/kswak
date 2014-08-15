@@ -14,12 +14,12 @@ var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR P
 
 //GLOBAL VARIABLES
 var choices = ['choice1','choice2','choice3','choice4','choice5', 'choice6', 'choice7', 'choice8'];
-Session.set('numChoices', 5); //default value, changed when teacher clicks to add or remove choices
+Session.set('numChoices');
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
-//sets all questions inactive
-//If an id is passed, launches its question
+//set all questions inactive
+//If an id is passed, launch its question
 function launchQuestion(id){
     Meteor.call('inactivate_question');
 
@@ -27,9 +27,6 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher/home');
-	/*setTimeout(function() {
-		Meteor.call('freeze_question', id);
-	}, 30000);*/
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
@@ -78,26 +75,18 @@ if (Meteor.isClient) {
         },
     });
 
-    Template.login.helpers({
+    UI.registerHelper('getNumChoices', function() {
+		return Session.get('numChoices');
+	});
+	
+	UI.registerHelper('getStatusColor', function() {
+		return Session.get('getStatusColor');
+	});
+	
+	Template.login.helpers({
         loggingInMessage: function() {
             var rand = Math.random();
             return awesomeList[Math.floor(rand * awesomeList.length)]
-        }
-    });
-
-    Session.set('statusColor', '#ef6d86');
-
-    UI.registerHelper('getStatusColor', function() {
-        return Session.get('statusColor');
-    });
-	
-	UI.registerHelper('getNumChoices', function() {
-			return Session.get('numChoices');
-	});
-
-    Template.dev_home.helpers({
-        questions: function() {
-            return Questions.find();
         }
     });
 
@@ -121,10 +110,7 @@ if (Meteor.isClient) {
         }
     });
 
-    
-	Template.new.events({
-		/* Click handlers for all quick launch buttons are below */
-		
+    Template.new.events({
         'click #tf': function(event, template) {
             var date_and_time = setTime();
             var date_created = date_and_time.date;
@@ -225,8 +211,7 @@ if (Meteor.isClient) {
 			}
 		},
 
-        //custom question creation
-		'submit form': function (event, template) {
+        'submit form': function (event, template) {
             event.preventDefault();
             var title = template.find("input[name=title]");
             var choices = [];
@@ -235,7 +220,6 @@ if (Meteor.isClient) {
                      choices.push(this.value)
                  }
              });
-
             var date_and_time = setTime();
             var date_created = date_and_time.date;
             var time = date_and_time.time;
@@ -251,8 +235,10 @@ if (Meteor.isClient) {
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
+
         }
   });
+
 
     Template.teacher_question_view.events({
         'click #change_mode': function (event, template){
@@ -270,6 +256,10 @@ if (Meteor.isClient) {
         //Any question is editable no matter if it is active or not
         'click #edit': function (event, template){
             Session.set("editing", this.question_id);
+            /*var question = Session.get('editing');
+            if (question.status == 'active') {
+                question.status = 'frozen';
+            }*/
             Router.go('/teacher/edit')
         },
 
@@ -299,9 +289,10 @@ if (Meteor.isClient) {
                 //Remove responses of this question
                 Meteor.call('remove_responses', this._id)
 
-	            //Remove this question itself
-	            Meteor.call('remove_question', this._id);
-        	}
+                //Remove this question itself
+                Meteor.call('remove_question', this._id);
+            }
+
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
@@ -349,7 +340,8 @@ if (Meteor.isClient) {
             //Remove responses which are already submitted for the question
             Meteor.call('remove_responses', question)
 
-            launchQuestion(); //disable current launched question
+            //disable current launched question
+            launchQuestion();
             //create new question and launch it
             var choices = []
             var title = template.find("input[name=title]");
@@ -364,14 +356,11 @@ if (Meteor.isClient) {
         }
     })
 
-    /* alert sound that plays when student's question view page is rendered
-	probably more annoying than useful, and also still buggy: will play anytime the student refreshes the page, seems to not always play when the teacher launches a new question */
-	/* Template.question_view.rendered = function() {
+   /* Template.question_view.rendered = function() {
         alert.play();
     } */
 
     Template.question_view.events({
-		//student response submission
         'submit #student_question': function (event, template) {
             event.preventDefault();
             var question = Questions.findOne({status:{$in:['active', 'frozen']}});
@@ -379,6 +368,7 @@ if (Meteor.isClient) {
             var user_answer = choice.name;
             var question_id = question._id;
             Meteor.call('submit_response', question, user_answer);
+
         }
     })
 
@@ -394,7 +384,7 @@ if (Meteor.isClient) {
             var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
             if (confirm){
                 if (delUser != Meteor.user().username){
-                Meteor.call('remove_teacher', delUser, Meteor.user());
+                    Meteor.call('remove_teacher', delUser, Meteor.user());
                 }
             }
         }
@@ -440,8 +430,9 @@ var passData_student = function(question, user) {
             var feedback = "Please submit your response!";
         }
         var options = [];
-        for (var i in question.choices) {
+        for (i in question.choices) {
             var color = '#e5e2e2'
+            //for use of identifying chosen answer
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
@@ -510,6 +501,10 @@ var passData = function(question, user) {
     }
 }
 
+Router.configure({
+    notFoundTemplate: "restricted"
+});
+
 //Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
     this.route('home', {
@@ -531,10 +526,6 @@ Router.map(function () {
                 Router.go('question_view'); //this redirects to a sign in page
             }
         }
-    });
-
-    this.route('dev_home', {
-        path: '/dev_home',
     });
 
     this.route('login', {
@@ -565,12 +556,24 @@ Router.map(function () {
     });
 
     this.route('teacher_home', {
-        path: 'teacher/home',
+        path: 'teacher',
         template: function() {
-            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
-                return 'teacher_summary'
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined) {
+                        return 'teacher_summary'
+                    }
+                    else {
+                        return 'teacher_question_view'
+                    }
+                }
+                else {
+                    return 'restricted';
+                }
             }
-            return 'teacher_question_view'
+            else {
+                return 'restricted';
+            }
         },
         waitOn: function() {
             return Meteor.subscribe("questions")
@@ -583,6 +586,19 @@ Router.map(function () {
 
     this.route('teacher_summary', {
         path: 'teacher/summary',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_summary'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         waitOn: function(){
             return Meteor.subscribe("questions")
         }
@@ -609,19 +625,44 @@ Router.map(function () {
 
     this.route('teacher_new', {
         path: '/teacher/new',
-        template: 'new',
-		data: function() { 
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'new'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
+		data: function() {
 			var options = [];
 			var last = Session.get('numChoices');
 			for (var i=0; i<last; i++) {
-				options.push({letter:letters[i], choice:choices[i]});	
+				options.push({letter: letters[i], choice: choices[i]});
 			}
-			return { options: options };
+			return { options: options }
 		}
     });
 
     this.route('teacher_edit',{
         path:'/teacher/edit',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_edit'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function() {
             var question = Questions.findOne(Session.get('editing'));
             var options =[];
@@ -639,9 +680,20 @@ Router.map(function () {
         path: '/teacher/:_id',
         waitOn: function() {
             return Meteor.subscribe("questions")
-        }
-        ,
-        template: 'teacher_question_view',
+        },
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_question_view';
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function() {
             var question = Questions.findOne(this.params._id);
             return passData(question);},
@@ -658,7 +710,19 @@ Router.map(function () {
             return [Meteor.subscribe("questions"), Meteor.subscribe("responses")] //, Meteor.subscribe("userData"), Meteor.subscribe("responses")]
         }
         ,
-        template: 'teacher_question_private',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_question_private';
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function() {
             var question = Questions.findOne(this.params._id);
             var questionId = this.params._id;
@@ -690,7 +754,19 @@ Router.map(function () {
         waitOn: function(){
             return Meteor.subscribe("userData", "responses");
         },
-        template: 'teacher_control',
+        template: function() {
+            if (Meteor.user()) {
+                if (Meteor.user().profile.role == 'teacher') {
+                    return 'teacher_control'
+                }
+                else {
+                    return 'restricted';
+                }
+            }
+            else {
+                return 'restricted';
+            }
+        },
         data: function(){
             var people = [];
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
@@ -720,6 +796,7 @@ Router.map(function () {
                 people: people,
                 responses: responses
             }
+
         }
     });
 });

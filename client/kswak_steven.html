@@ -15,18 +15,6 @@
     {{> nav}}
 </body>
 
-
-<template name='dev_home'>
-    <title>KSWAK | HOME</title>
-    <div id="container_home">
-        <a href="{{ pathFor 'teacher_new' }}">new question</a><br/>
-        <a href="{{ pathFor 'teacher_home' }}">manage launched question</a><br/>
-        <a href="{{ pathFor 'teacher_summary' }}">question log</a><br/>
-        <a href="{{ pathFor 'teacher_control' }}">admin panel</a><br/>
-        <a href="{{ pathFor 'question_view' }}">student home | launched question</a><br/>
-    </div>
-</template>
-
 <template name='nav'>
     <div class="navbar navbar-inverse navbar-fixed-top">
        <div class="navbar-inner">
@@ -112,8 +100,9 @@
 
 <template name='question_view'>
     <div class={{overlay_option}}></div>
-    <title>KSWAK | {{title}}</title>
+    <title>KSWAK </title>
     <div id="container_question_view">
+        {{largeWidth}}
     <h1>{{title}}</h1>
     <p>Time posted: {{time}}</p>
     <span style='width:300px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}}</i></span>
@@ -122,7 +111,7 @@
         {{#each options}}
         <tr>
             <td>{{letter}}.</td>
-            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}"></td>
+            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width={{largeWidth}}"></td>
         </tr>
         {{/each}}
         </table>
@@ -209,12 +198,6 @@
     </div>
 </template>
 
-
-
-
-
-
-
 <template name='projector_view'>
     <div class="svg-wrapper">
         {{#constant}}
@@ -242,12 +225,12 @@
     {{/each}}
     </table><br/>
     <button id="inactivateAll" class="btn btn-primary">Inactivate All</button>
-	<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-	  Delete all
-	</button>
-	<button id="summary_go_to_new" class="btn btn-primary">New Question</button>
-</div>	
-	
+    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+      Delete all
+    </button>
+    <button id="summary_go_to_new" class="btn btn-primary">New Question</button>
+</div>
+
 <!-- Bootstrap delete all warning -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:-100px">
   <div class="modal-dialog">
@@ -285,7 +268,7 @@
     <div class='container'>
         <div class='ohno'>
             <h2>You kswak'd too hard.</h2>
-            <span>Insufficient permissions to access page.</span>
+            <span>Page not found! You shouldn't be here.</span>
         </div>
     </div>
 </template>
@@ -309,10 +292,10 @@
                     <td align='left'><input type="text" value={{option}} class='choice'></td>
                 </tr>
                 {{/each}}
-				<tr>
+                <tr>
                     <td align='left'><input type="text" value="" class='choice'></td>
                 </tr>
-				<tr>
+                <tr>
                     <td align='left'><input type="text" value="" class='choice'></td>
                 </tr>
             </table>
