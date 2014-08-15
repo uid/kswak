@@ -27,6 +27,7 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher');
+	Session.set('numChoices', 5);
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
