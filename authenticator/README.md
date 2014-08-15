@@ -6,5 +6,7 @@ Keep in mind that this specific auth.php file IS ONLY A TEMPLATE!!!! You need to
 
 The script on https://sarivera.scripts.mit.edu:444/auth.php currently works for kswak! But, if you choose to change the script, keep in mind that you must change the url in the settings.json file to reflect this.
 
-I've included the slowAES library here for your needs, but it's found here usually. 
-https://code.google.com/p/slowaes/
+Common issues:
+If the server says something like:
+Exception while invoking method 'kswak_login' undefined
+the problem is probably your MASTER and ENCRYPTION_KEY variables. They must match on the script and kswak! If they don't this (shitty) error message will appear.
