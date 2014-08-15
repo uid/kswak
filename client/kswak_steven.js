@@ -13,8 +13,8 @@ var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
 
 //GLOBAL VARIABLES
-var choices = ['choice1','choice2','choice3','choice4','choice5'];
-var letters = ['A', 'B', 'C', 'D', 'E'];
+var numChoices = 5;
+var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
 //set all questions inactive
@@ -26,6 +26,7 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher');
+    numChoices = 5;
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
@@ -43,7 +44,6 @@ function setTime() {
     var _time = (new Date);
     var dateStr = _time.toDateString()
     var date = Date.parse(dateStr) + (_time.getHours() * 3600) + (_time.getMinutes() * 60) + _time.getSeconds();
-    console.log('date: ' + date);
     var minutes = _time.getMinutes();
     if (minutes < 10) { minutes = '0' + minutes; }
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
@@ -74,6 +74,11 @@ if (Meteor.isClient) {
             (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) ? b = true : b = false;
             return b;
         },
+    });
+
+
+    UI.registerHelper('getStatusColor', function() {
+        return Session.get('getStatusColor');
     });
 
     Template.login.helpers({
@@ -116,7 +121,6 @@ if (Meteor.isClient) {
                 time: time,
                 date_created: date_created
             }
-            console.log('time data: ' + question_data.time)
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
@@ -192,6 +196,18 @@ if (Meteor.isClient) {
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
+        },
+
+        'click #addAnswerChoice': function(event, template) {
+            event.preventDefault();
+            numChoices +=1;
+            if (numChoices >= 8) {
+                $('#addAnswerChoice').hide();
+                $('#addAnswerChoiceText').hide();
+            };
+            console.log($('#input_choices'));
+            $('#input_choices').append("<tr><td align='right'>"+letters[numChoices-1]+"</td><td align='left'><input class='choice' type='text'></td></tr>");
+
         },
 
         'submit form': function (event, template) {
@@ -378,17 +394,9 @@ if (Meteor.isClient) {
     })
 }
 
-
-
-
-if (Meteor.isServer) {
-    Meteor.startup(function () {
-        // code to run on server at startup
-        //certificate auth should be here eventually
-    });
-}
-
-
+//calculates response percentages for each answer choice
+//returns array of percentages, one for each answer choice
+//last index of returned array contains total number of voters
 var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
@@ -472,7 +480,7 @@ var passData = function(question, user) {
             var statusColor = '#ef6d86'
         }
 
-        var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
+        var stats = calcPercentages(question);
         var options = [];
         for (i in question.choices) {
             options.push(
@@ -507,7 +515,6 @@ Router.map(function () {
         template: function() {
             if (automatic_signin && !Meteor.user()) {
                 var query = send_to_scripts();
-                console.log(query);
                 window.location = scriptURL + query;
             }
             else if (Meteor.user()) {
@@ -635,6 +642,13 @@ Router.map(function () {
                 return 'restricted';
             }
         },
+        data: function() {
+            var options = [];
+            for (var i=0; i<numChoices; i++) {
+                options.push({letter: letters[i]});
+            }
+            return { options: options }
+        }
     });
 
     this.route('teacher_edit',{
@@ -713,7 +727,6 @@ Router.map(function () {
             }
         },
         data: function() {
-            console.log(this.params._id)
             var question = Questions.findOne(this.params._id);
             var questionId = this.params._id;
             var responses = []

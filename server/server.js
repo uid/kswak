@@ -133,7 +133,7 @@ Meteor.methods({
                 Responses.insert({user:user_id, question:question_id, answer: user_answer})
             }
         }else{
-            console.log('you are not student')
+            console.log('not a student')
         }
     },
 
@@ -204,7 +204,6 @@ Meteor.methods({
     remove_teacher: function(teacher_username, editor) {
         if (editor.profile.role == 'teacher') {
             var id = Meteor.users.findOne({username: teacher_username})._id;
-            console.log(id);
             if (id != null) {
                 Meteor.users.update( id, { $set: { 'profile.role' : 'student'} } );
             }
