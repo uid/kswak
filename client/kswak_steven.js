@@ -38,7 +38,6 @@ function isTeacher(user) {
     return false;
 }
 
-
 //TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
@@ -252,7 +251,11 @@ if (Meteor.isClient) {
         },
         'click #viewPrivate': function (event, template){
             Router.go('/teacher/private/' + this.question_id)
-        }
+        },
+        'click #exportCSV': function (event, template){
+            var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
+            csvExport(question_id);
+        },
     })
 
     Template.teacher_question_private.events({
