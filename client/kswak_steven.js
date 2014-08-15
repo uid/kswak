@@ -736,7 +736,7 @@ Router.map(function () {
 
     //temporary trying to make a teacher page so they can see the students and what not
     this.route('teacher_control',{
-        path:'teacher/control',
+        path:'teacher/admin',
         waitOn: function(){
             return Meteor.subscribe("userData", "responses");
         },

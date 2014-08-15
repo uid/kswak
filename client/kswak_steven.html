@@ -73,16 +73,16 @@
             Question: <input type="text" name="title"> <br>
             Choices: <i id='choicesHelpText'>fields left blank will not appear to students</i><br>
             <table id='input_choices'>
-				{{#each options}}
-				<tr>
-					<td align='right'>{{letter}}</td>
-					<td align='left'><input class='choice' type='text' name='{{choice}}'></td>
-				</tr>
-				{{/each}}
-				<tr>
-					<td align='right'><button type='button' class='btn btn-primary' id='addAnswerChoice'>+</button></td>
-					<td align='left'><i id='addAnswerChoiceText'>add answer choice (max: 8)</i></td>
-				</tr>
+                {{#each options}}
+                <tr>
+                    <td align='right'>{{letter}}</td>
+                    <td align='left'><input class='choice' type='text' name='{{choice}}'></td>
+                </tr>
+                {{/each}}
+                <tr>
+                    <td align='right'><button type='button' class='btn btn-primary' id='addAnswerChoice'>+</button></td>
+                    <td align='left'><i id='addAnswerChoiceText'>add answer choice (max: 8)</i></td>
+                </tr>
             </table>
             <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
             <div id="publishFeedback"></div>
@@ -197,12 +197,6 @@
     </div>
     </div>
 </template>
-
-
-
-
-
-
 
 <template name='projector_view'>
     <div class="svg-wrapper">
