@@ -5,3 +5,6 @@ The code is a basic PHP script that reads the Kerberos of the user and encrypts 
 Keep in mind that this specific auth.php file IS ONLY A TEMPLATE!!!! You need to assign the ENCRYPTION_KEY and MASTER variables accordingly so that they match those found in the settings.json file in config/. As such, this script without modification will NOT work in conjunction with kswak if copied and pasted into a scripts locker.
 
 The script on https://sarivera.scripts.mit.edu:444/auth.php currently works for kswak! But, if you choose to change the script, keep in mind that you must change the url in the settings.json file to reflect this.
+
+I've included the slowAES library here for your needs, but it's found here usually. 
+https://code.google.com/p/slowaes/
