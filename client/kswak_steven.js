@@ -3,6 +3,7 @@ questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
 responsesHandle = Meteor.subscribe("responses");
 AccountsTest = new Meteor.Collection("accountstest");
+usersHandle = Meteor.subscribe("directory");
 
 //if true, homepage immediately directs user to script to log in.
 var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
@@ -122,11 +123,7 @@ if (Meteor.isClient) {
             var question_data = {
                 title: '',
                 type: 'tf',
-                choice1: 'True',
-                choice2: 'False',
-                choice3: '',
-                choice4: '',
-                choice5: '',
+                choices: ['True','False'],
                 status: 'active',
                 time: time,
 				date_created: date_created
@@ -145,11 +142,7 @@ if (Meteor.isClient) {
             var question_data = {
                 title: '',
                 type: 'mc2',
-                choice1: 'A',
-                choice2: 'B',
-                choice3: '',
-                choice4: '',
-                choice5: '',
+                choices: ['A','B'],
                 status: 'active',
                 time: time,
 				date_created: date_created
@@ -167,11 +160,7 @@ if (Meteor.isClient) {
             var question_data = {
                 title: '',
                 type: 'mc3',
-                choice1: 'A',
-                choice2: 'B',
-                choice3: 'C',
-                choice4: '',
-                choice5: '',
+                choices: ['A','B','C'],
                 status: 'active',
                 time: time,
 				date_created: date_created
@@ -189,11 +178,7 @@ if (Meteor.isClient) {
             var question_data = {
                 title: '',
                 type: 'mc4',
-                choice1: 'A',
-                choice2: 'B',
-                choice3: 'C',
-                choice4: 'D',
-                choice5: '',
+				choices: ['A','B','C','D'],
                 status: 'active',
                 time: time,
 				date_created: date_created
@@ -211,11 +196,7 @@ if (Meteor.isClient) {
             var question_data = {
                 title: '',
                 type: 'mc5',
-                choice1: 'A',
-                choice2: 'B',
-                choice3: 'C',
-                choice4: 'D',
-                choice5: 'E',
+                choices: ['A','B','C','D','E'],
                 status: 'active',
                 time: time,
 				date_created: date_created
@@ -228,44 +209,32 @@ if (Meteor.isClient) {
         //custom question creation
 		'submit form': function (event, template) {
             event.preventDefault();
-            var title = template.find("input[name=title]");
-            var choice1 = template.find("input[name=choice1]");
-            var choice2 = template.find("input[name=choice2]");
-            var choice3 = template.find("input[name=choice3]");
-            var choice4 = template.find("input[name=choice4]");
-            var choice5 = template.find("input[name=choice5]");
-
+			var title = template.find("input[name=title]");
+			var choices = [];
+			$('.choice').each(function(child, i){
+				 if (this.value != ''){
+					 choices.push(this.value)
+				 }
+			 });
             var date_and_time = setTime();
 			var date_created = date_and_time.date;
 			var time = date_and_time.time;
             var question_data = {
                 title: title.value,
                 type: 'custom',
-                choice1: choice1.value,
-                choice2: choice2.value,
-                choice3: choice3.value,
-                choice4: choice4.value,
-                choice5: choice5.value,
+                choices: choices,
                 status: 'active',
                 time: time,
 				date_created: date_created
             }
 
-
-            //reset fields
-            title.value = "";
-            choice1.value = "";
-            choice2.value = "";
-            choice3.value = "";
-            choice4.value = "";
-            choice5.value = "";
             Meteor.call('insert_question', question_data, function(error, data){
                 launchQuestion(data);
             });
         },
 		
 		'click addAnswerChoice': function() {
-				
+			//choices.push(
 		}
   });
 
@@ -317,7 +286,6 @@ if (Meteor.isClient) {
 	            //Remove this question itself
 	            Meteor.call('remove_question', this._id);
         	}
-
         },
         'click #deleteAll':function (event, template){
             Questions.find({status:'inactive'}).forEach(function(question){
@@ -344,14 +312,14 @@ if (Meteor.isClient) {
             Meteor.call('remove_responses', question);
 
             //create new question and launch it
+			var choices = []
             var title = template.find("input[name=title]");
-            var choice1 = template.find("input[name=choice1]");
-            var choice2 = template.find("input[name=choice2]");
-            var choice3 = template.find("input[name=choice3]");
-            var choice4 = template.find("input[name=choice4]");
-            var choice5 = template.find("input[name=choice5]");
-
-            Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value)
+			$('.choice').each(function(child, i){
+				 if (this.value != ''){
+					 choices.push(this.value)
+				 }
+			 });
+            Meteor.call('update_question', question, title.value, choices)
 
             if (question.status == 'active'){
                 Router.go('/teacher/home')
@@ -367,14 +335,14 @@ if (Meteor.isClient) {
 
             launchQuestion(); //disable current launched question
             //create new question and launch it
+			var choices = []
             var title = template.find("input[name=title]");
-            var choice1 = template.find("input[name=choice1]");
-            var choice2 = template.find("input[name=choice2]");
-            var choice3 = template.find("input[name=choice3]");
-            var choice4 = template.find("input[name=choice4]");
-            var choice5 = template.find("input[name=choice5]");
-
-            Meteor.call('update_question', question, title.value, choice1.value,choice2.value, choice3.value, choice4.value, choice5.value);
+			$('.choice').each(function(child, i){
+				 if (this.value != ''){
+					 choices.push(this.value)
+				 }
+			 });
+            Meteor.call('update_question', question, title.value, choices)
             Meteor.call('activate_question', question);
             Router.go('/teacher/home')
         }
@@ -422,14 +390,10 @@ if (Meteor.isClient) {
 var calcPercentages =function(question){
     normalizedList = [];
     var total = 0;
-    for ( var i =0; i< choices.length; i++){
-        if (question[choices[i]] != ''){
-            var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
-            normalizedList.push(numResponses);
-            total +=numResponses;
-        }else{
-            normalizedList.push(0);
-        }
+    for ( var i =0; i< question.choices.length; i++){
+		var numResponses = Responses.find({question:question._id, answer:letters[i]}).count();
+		normalizedList.push(numResponses);
+		total +=numResponses;
     }
     if (total != 0){
         normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
@@ -444,16 +408,12 @@ var passData_student = function(question, user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open';
+			var statusColor = 'green';
             var overlay = "overlay closed";
         } else {
             var status_comment = 'Submission is closed';
+			var statusColor = '#ef6d86';
             var overlay = "overlay open";
-        }
-
-        if (status_comment == 'Submission is open') {
-            Session.set('statusColor', 'green');
-        } else if (status_comment == 'Submission is closed') {
-            Session.set('statusColor', '#ef6d86');
         }
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
@@ -463,25 +423,25 @@ var passData_student = function(question, user) {
             var feedback = "Please submit your response!";
         }
         var options = [];
-        for (i in choices) {
+        for (i in question.choices) {
             var color = '#e5e2e2'
             if (student_response != undefined){
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
                 }
             }
-            if (question[choices[i]] != ''){
-                options.push(
-                {
-                    choice: question[choices[i]],
-                    letter: letters[i],
-                    color: color
-                })
-            }
+			options.push(
+			{
+				choice: question.choices[i],
+				letter: letters[i],
+				color: color
+			})
+
         }
         return {
             question_id: question_id,
             status_comment: status_comment,
+			statusColor: statusColor,
             options: options,
             title: question.title,
             time: question.time,
@@ -494,41 +454,36 @@ var passData_student = function(question, user) {
 
 var passData = function(question, user) {
     if (question != undefined) {
-        var question_id = question._id;
+		var question_id = question._id;
         if (question.status == 'active') {
-            var status_comment = 'This question is live'
+            var status_comment = 'This question is live';
+			var statusColor = 'green';
             var status_control = 'To Freeze';
         } else if(question.status == 'frozen') {
             var status_control = 'To Activate';
-            var status_comment = 'This question is live and FROZEN'
+            var status_comment = 'This question is live and FROZEN';
+			var statusColor = '#ef6d86';
         } else{
             var status_control = 'to activate';
-            var status_comment = 'This question is inactive'
-        }
-
-        if (status_comment == 'This question is live') {
-            Session.set('statusColor', 'green');
-        } else if (status_comment == 'This question is live and FROZEN') {
-            Session.set('statusColor', '#ef6d86');
-        } else {
-            Session.set('statusColor', '#ef6d86');
+            var status_comment = 'This question is inactive';
+			var statusColor = '#ef6d86'
         }
 
         var stats = calcPercentages(question) //returns array with total num votes at index 0 and answer choices in order from index 1 onwards
         var options = [];
-        for (i in choices) {
-            if (question[choices[i]] != ''){
-                options.push(
-                {
-                    choice: question[choices[i]],
-                    voters: Responses.find({question: question_id, answer: letters[i]}).count(),
-                    percent: stats[i],
-                })
-            }
+        for (i in question.choices) {
+			options.push(
+			{
+				choice: question.choices[i],
+				voters: Responses.find({question: question_id, answer: letters[i]}).count(),
+				percent: stats[i],
+			})
+
         }
         return {
             question_id: question_id,
             status_comment: status_comment,
+			statusColor: statusColor,
             status_control: status_control,
             options: options,
             title: question.title,
@@ -596,12 +551,9 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher/home',
         template: function() {
-//            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
-//                return 'new'
-//            }
-//            else{
-//                return 'teacher_question_view'
-//            }
+            if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined){
+                return 'teacher_summary'
+            }
             return 'teacher_question_view'
         },
         waitOn: function() {
@@ -656,8 +608,8 @@ Router.map(function () {
         data: function() {
             var question = Questions.findOne(Session.get('editing'));
             var options =[];
-            for (var i=0; i<choices.length; i++){
-                options.push({letter:letters[i],choice:choices[i], option:question[choices[i]]});
+            for (var i=0; i<question.choices.length; i++){
+                options.push({letter:letters[i],choice:choices[i], option:question.choices[i]});
             }
             return {
                 options: options,
