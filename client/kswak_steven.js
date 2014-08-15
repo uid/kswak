@@ -26,7 +26,7 @@ function launchQuestion(id){
         Meteor.call('activate_question', id);
     }
     Router.go('/teacher');
-	numChoices = 5;
+    numChoices = 5;
 }
 
 //Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
@@ -39,6 +39,7 @@ function isTeacher(user) {
     return false;
 }
 
+//TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
     var dateStr = _time.toDateString()
@@ -75,12 +76,12 @@ if (Meteor.isClient) {
         },
     });
 
-	
-	UI.registerHelper('getStatusColor', function() {
-		return Session.get('getStatusColor');
-	});
-	
-	Template.login.helpers({
+
+    UI.registerHelper('getStatusColor', function() {
+        return Session.get('getStatusColor');
+    });
+
+    Template.login.helpers({
         loggingInMessage: function() {
             var rand = Math.random();
             return awesomeList[Math.floor(rand * awesomeList.length)]
@@ -196,18 +197,18 @@ if (Meteor.isClient) {
                 launchQuestion(data);
             });
         },
-		
-		'click #addAnswerChoice': function(event, template) {
-			event.preventDefault();
-			numChoices +=1;
-			if (numChoices >= 8) { 
-				$('#addAnswerChoice').hide(); 
-				$('#addAnswerChoiceText').hide();
-			};
-			console.log($('#input_choices'));                
-			$('#input_choices').append("<tr><td align='right'>"+letters[numChoices-1]+"</td><td align='left'><input class='choice' type='text'></td></tr>");
-				
-		},
+
+        'click #addAnswerChoice': function(event, template) {
+            event.preventDefault();
+            numChoices +=1;
+            if (numChoices >= 8) {
+                $('#addAnswerChoice').hide();
+                $('#addAnswerChoiceText').hide();
+            };
+            console.log($('#input_choices'));
+            $('#input_choices').append("<tr><td align='right'>"+letters[numChoices-1]+"</td><td align='left'><input class='choice' type='text'></td></tr>");
+
+        },
 
         'submit form': function (event, template) {
             event.preventDefault();
@@ -266,7 +267,11 @@ if (Meteor.isClient) {
         },
         'click #viewPrivate': function (event, template){
             Router.go('/teacher/private/' + this.question_id)
-        }
+        },
+        'click #exportCSV': function (event, template){
+            var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
+            csvExport(question_id);
+        },
     })
 
     Template.teacher_question_private.events({
@@ -637,13 +642,13 @@ Router.map(function () {
                 return 'restricted';
             }
         },
-		data: function() {
-			var options = [];
-			for (var i=0; i<numChoices; i++) {
-				options.push({letter: letters[i]});
-			}
-			return { options: options }
-		}
+        data: function() {
+            var options = [];
+            for (var i=0; i<numChoices; i++) {
+                options.push({letter: letters[i]});
+            }
+            return { options: options }
+        }
     });
 
     this.route('teacher_edit',{
