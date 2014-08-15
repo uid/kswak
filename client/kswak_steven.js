@@ -5,7 +5,7 @@ responsesHandle = Meteor.subscribe("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 usersHandle = Meteor.subscribe("directory");
 
-//if true, homepage immediately directs user to script to log in.
+//if true, homepage immediately directs user to script to log in. THIS DOESN'T COMPLETELY WORK.
 var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
 
