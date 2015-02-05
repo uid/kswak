@@ -9,7 +9,7 @@ usersHandle = Meteor.subscribe("directory");
 var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
 //TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
 
-var scriptURL = 'https://sarivera.scripts.mit.edu:444/auth.php';
+var scriptURL = 'https://kxzhang.scripts.mit.edu:444/auth.php';
 var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
 
 //GLOBAL VARIABLES
@@ -55,6 +55,64 @@ function send_to_scripts() {
     var parts = current_url.split("/");
     var query = '?' + parts[2] + '/';
     return query;
+}
+
+function csvExport(questionId) {
+    var responses = [];
+    for (var mm=0; mm<Responses.find().fetch().length; mm++){
+        if (Responses.find().fetch()[mm].question == questionId){
+            var userId = Responses.find().fetch()[mm].user;
+            var answer = Responses.find().fetch()[mm].answer;
+            var studentUser = Meteor.users.findOne({_id:userId}).username;
+            responses.push({user:studentUser, response: answer})
+        }
+    }
+    var csv_response = JSON2CSV(responses);
+    return csv_response;
+}
+
+function JSON2CSV(objArray) {
+    var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+
+    var str = '';
+    var line = '';
+
+    if ($("#labels").is(':checked')) {
+        var head = array[0];
+        if ($("#quote").is(':checked')) {
+            for (var index in array[0]) {
+                var value = index + "";
+                line += '"' + value.replace(/"/g, '""') + '",';
+            }
+        } else {
+            for (var index in array[0]) {
+                line += index + ',';
+            }
+        }
+
+        line = line.slice(0, -1);
+        str += line + '\r\n';
+    }
+
+    for (var i = 0; i < array.length; i++) {
+        var line = '';
+
+        if ($("#quote").is(':checked')) {
+            for (var index in array[i]) {
+                var value = array[i][index] + "";
+                line += '"' + value.replace(/"/g, '""') + '",';
+            }
+        } else {
+            for (var index in array[i]) {
+                line += array[i][index] + ',';
+            }
+        }
+
+        line = line.slice(0, -1);
+        str += line + '\r\n';
+    }
+    return str;
+    
 }
 
 if (Meteor.isClient) {
@@ -270,7 +328,9 @@ if (Meteor.isClient) {
         },
         'click #exportCSV': function (event, template){
             var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
-            csvExport(question_id);
+            var csv = csvExport(question_id);
+            console.log(question_id);
+            window.open("data:text/csv;charset=utf-8," + escape(csv))
         },
     })
 
@@ -776,16 +836,21 @@ Router.map(function () {
             for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
                 if (Meteor.users.find().fetch()[ll].profile != undefined){
                     var tempRole = Meteor.users.find().fetch()[ll].profile.role;
-                    if (tempRole == "student"){
-                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
-                    }
-                    else{
+                    if (tempRole == "teacher"){
+                        //If the user's role is teacher, then add it to the list of people, making sure to set role as teacher to 'true.'
                         people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
                     }
+                    /* This line is commented out because when there are too many students in the database, it can cause KSWAK to crash.
+                    *else{
+                        //Else, the user is a student, so add it to the list of people, making sure to set its role as student to 'true'.
+                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
+                    }*/
                 }
+                /* This line is commented out because when there are too many students in the database, it can cause KSWAK to crash.
                 else{
+                    //Else, the role is undefined, so set it to 'student' by default, and add it to the list of people.
                     people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
-                }
+                }*/
             }
             var responses = []
             for (var mm=0; mm<Responses.find().fetch().length; mm++){
