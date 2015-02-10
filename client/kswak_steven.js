@@ -833,7 +833,11 @@ Router.map(function () {
         },
         data: function(){
             var people = [];
-            for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
+            var teachers = Meteor.users.find({"profile.role" : "teacher"}).fetch();
+            for (var ll = 0; ll < teachers.length; ll++){
+                people.push({username: teachers[ll].username, role:"teacher", isTeacher:true, isStudent:false})
+            }
+            /*for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
                 if (Meteor.users.find().fetch()[ll].profile != undefined){
                     var tempRole = Meteor.users.find().fetch()[ll].profile.role;
                     if (tempRole == "teacher"){
@@ -844,23 +848,23 @@ Router.map(function () {
                     *else{
                         //Else, the user is a student, so add it to the list of people, making sure to set its role as student to 'true'.
                         people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
-                    }*/
+                    }*
                 }
-                /* This line is commented out because when there are too many students in the database, it can cause KSWAK to crash.
+                *This line is commented out because when there are too many students in the database, it can cause KSWAK to crash.
                 else{
                     //Else, the role is undefined, so set it to 'student' by default, and add it to the list of people.
                     people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
-                }*/
-            }
-            var responses = []
-            for (var mm=0; mm<Responses.find().fetch().length; mm++){
+                }*
+            }*/
+            var responses = [];
+            /*for (var mm=0; mm<Responses.find().fetch().length; mm++){
                 var userId = Responses.find().fetch()[mm].user;
                 var questionId = Responses.find().fetch()[mm].question;
                 var answer = Responses.find().fetch()[mm].answer;
                 var studentUser = Meteor.users.findOne({_id:userId}).username;
                 var questionTime = Questions.findOne({_id:questionId}).time;
                 responses.push({question:questionTime, user:studentUser, response: answer})
-            }
+            }*/
             return{
                 people: people,
                 responses: responses
