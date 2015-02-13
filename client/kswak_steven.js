@@ -166,6 +166,48 @@ if (Meteor.isClient) {
         }
     });
 
+    /*
+    //Construct list of question event objects to match question buttons when they are clicked.
+
+    /* !Helper! Function for creating an array of multiple choice answers starting from 'A'.
+    *   Ex: mcID = 'mc2' -> ['A', 'B']
+    * parameter - mcID:     HTML id of the multiple choice button. Must be of format 'mc' followed by a number.
+    * returns:              Alphabetic array of multiple choices.
+    *
+    var multiChoices = function(mcID){
+        //Extract the index from the ID.
+        var numChoices = parseInt(mcID.substring(2));
+        //var numChoices = parseInt(mcID);
+        var output = [];
+        var asciiValueA = 65;
+        for (var i = 0; i< numChoices; i++){
+            output.push(String.fromCharCode(asciiValueA + i));
+        }
+        return output;
+    }
+    var prefix = "mc";
+    var max_options = 5;
+    var eventObj = {};
+    for (var i = 2; i <= max_options; i++){
+        eventObj["click #" + prefix + i] = function(event, template){
+            var date_and_time = setTime();
+            var date_created = date_and_time.date;
+            var time = date_and_time.time;
+            var question_data = {
+                title: '',
+                type: String(event.currentTarget.id),
+                choices: multiChoices(String(event.currentTarget.id)),
+                status: 'active',
+                time: time,
+                date_created: date_created
+            }
+            Meteor.call('insert_question', question_data, function(error, data){
+                launchQuestion(data);
+            });
+        }
+    }
+    Template.new.events(eventObj);
+    */
     Template.new.events({
         'click #tf': function(event, template) {
             var date_and_time = setTime();
