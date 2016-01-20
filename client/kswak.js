@@ -5,17 +5,9 @@ responsesHandle = Meteor.subscribe("responses");
 AccountsTest = new Meteor.Collection("accountstest");
 usersHandle = Meteor.subscribe("directory");
 
-//if true, homepage immediately directs user to script to log in. THIS DOESN'T COMPLETELY WORK.
-var automatic_signin = false; //forces certs. do not use for debug, it's annoying.
-//TODO: THIS VARIABLE NEEDS TO BE FLIPPED ON LOGOUT!!!
-
-var scriptURL = 'https://kxzhang.scripts.mit.edu:444/auth.php';
-var awesomeList = ['GETTING THE AWESOME READY', 'LOGGING ON', 'HOLD ON TO YOUR PANTS, HERE COMES KSWAK', 'SO MUCH KSWAK, SO LITTLE TIME', 'ARE YOU KSWAK FOR THIS?', 'KSWAK: A WINNER\'S BREAKFAST', 'ANALYZING CERTIFICATE', 'SYNTHESIZING K\'S', 'GATHERING INGREDIENTS FOR A KSWAK', 'KSWAKIN\' ALL DAY', 'KSWAK: GOOD FOR YOUR BONES', 'PUTTING THE K IN KLICKER', 'klicker spelled with a k'];
-
 //GLOBAL VARIABLES
 var numChoices = 5;
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-//var alert = new Audio('/sfx/alert_tone_01.mp3');
 
 // automatic login using certificate
 Meteor.startup(function () {
@@ -143,13 +135,6 @@ if (Meteor.isClient) {
 
     UI.registerHelper('getStatusColor', function() {
         return Session.get('getStatusColor');
-    });
-
-    Template.login.helpers({
-        loggingInMessage: function() {
-            var rand = Math.random();
-            return awesomeList[Math.floor(rand * awesomeList.length)]
-        }
     });
 
     Template.teacher_summary.helpers({
@@ -462,10 +447,6 @@ if (Meteor.isClient) {
         }
     })
 
-   /* Template.question_view.rendered = function() {
-        alert.play();
-    } */
-
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
@@ -632,33 +613,6 @@ Router.map(function () {
                 Router.go('question_view'); //this redirects to a sign in page
             }
         }
-    });
-
-    this.route('login', {
-        path: '/login/:encrypted_info',
-        waitOn: function() {
-            return Meteor.subscribe("accountstest")
-        },
-        data: function() {
-            var password = '';
-
-            function callback(dataz) {
-                var username = dataz[0];
-                var password = dataz[1];
-                Meteor.loginWithPassword(username, password);
-                user_signed_in = true;
-                setTimeout(function() { $('.loading').fadeOut(500, function() { Router.go('home'); })}, 500);
-            }
-
-            var sneakysneaky = this.params.encrypted_info;
-            var vals = sneakysneaky.split('&');
-            var encrypted_username = vals[0];
-            password = vals[1];
-            var usernameAndLogin = Meteor.call('kswak_login', encrypted_username, password,
-                                                                   function(err, data) {
-                                                                       callback(data);
-                                                                   });
-        },
     });
 
     this.route('teacher_home', {

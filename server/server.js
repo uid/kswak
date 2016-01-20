@@ -49,56 +49,6 @@ Meteor.publish("accountstest", function () {
     return AccountsTest.find();
 });
 
-var MASTER = Meteor.settings.MASTER;
-var ENCRYPTION_KEY = Meteor.settings.ENCRYPTION_KEY;
-
-function getUsernameFromBase64(urlBase64String) {
-    var realBase64String = Base64.decode64(urlBase64String.replace(/-/g, '+').replace(/\./g, '/').replace(/_/g, '='));
-    var username = decryptAES(realBase64String, ENCRYPTION_KEY); //read key from server, do decrypt from server.
-    return username;
-}
-
-function checkUser(username) {
-    var exists = false;
-    Meteor.users.findOne({username: username}) ? exists = true : exists = false;
-    return exists;
-}
-
-//Creates an account if the user doesn't already exist in the db.
-//Be sure to be mindful of the password checking in the nested if statement below. Master password must be shared between script and here, or else no one will be able to successfully log in.
-function createAccount(username, password) {
-    var account_data = {
-        username: username,
-        user_email: username + '@mit.edu',
-    };
-
-    var exists = checkUser(username);
-    var role;
-    (Teachers.findOne({username: username}) == null) ? role = 'student' : role = 'teacher';
-
-    if (!exists) { //TODO: what if url is wrong? check if password formation is okay
-        if (password == CryptoJS.MD5(username+MASTER).toString()) { //IMPORTANT
-            var account_id = Accounts.createUser({
-                username: username,
-                email: account_data['user_email'],
-                password: password,
-                profile: {role: role}});
-            user_signed_in = true;
-            var id = AccountsTest.insert(account_data, function(err) {});
-        }
-        else {
-            console.log('ERROR: GENERATED PASSWORD IN URL DOESN\'T MATCH GENERATED PASSWORD ON SERVER');
-            throw Error();
-        }
-    }
-    else {
-        if (role == 'teacher') {
-            var userID = Meteor.users.findOne({username: username});
-            Meteor.users.update( userID, { $set: { 'profile.role' : 'teacher'} } );
-        }
-    }
-}
-
 var isTeacher = function(userID) {
         var role = Meteor.users.findOne(userID).profile.role;
         return role == 'teacher'
@@ -113,12 +63,6 @@ var isStudent = function(userID) {
 
 
 Meteor.methods({
-    kswak_login: function(encrypted_username, password) {
-        var username = getUsernameFromBase64(encrypted_username);
-        createAccount(username, password);
-        return [username, password];
-    },
-
     submit_response : function (question, user_answer) {
         var user_id = Meteor.user()._id;
         if (question.status == 'active' && isStudent(user_id)){
