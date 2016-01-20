@@ -42,11 +42,9 @@
              </ul>
              <ul class="nav pull-right">
                  <li class="navbar-text">
-                     {{#if currentUser}}
-                        <a class='a_not_a_link'>{{currentUser.username}}</a>
-                     {{else}}
-                        <a class='cert_link'>Sign in</a>
-                     {{/if}}
+                    {{#if currentUser}}
+                      {{describe currentUser}}
+                    {{/if}}
                  </li>
              </ul>
            </div><!--/.nav-collapse -->
@@ -277,7 +275,7 @@
 <template name='please_login'>
     <div class='container'>
         <span>
-            Oh no! To continue, you must log in. Please click 'Sign in' in the navbar or <a class='cert_link'>here</a> to log in.
+            No valid certificate found -- can't log you in.
         </span>
     </div>
 </template>

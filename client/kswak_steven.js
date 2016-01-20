@@ -17,6 +17,12 @@ var numChoices = 5;
 var letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
 //var alert = new Audio('/sfx/alert_tone_01.mp3');
 
+// automatic login using certificate
+Meteor.startup(function () {
+  CertAuth.login();
+});  
+
+
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
@@ -152,19 +158,14 @@ if (Meteor.isClient) {
         }
     });
 
-    Template.nav.events({
-        'click .cert_link': function() {
-            var query = send_to_scripts();
-            window.location = scriptURL + query;
-        }
+    Template.nav.helpers({
+      describe: function(user) {
+        return user.profile.name 
+            || (user.emails.length > 0 ? user.emails[0].address : null)
+            || "user #" + user._id;
+      },
     });
-
-    Template.please_login.events({
-        'click .cert_link': function() {
-            var query = send_to_scripts();
-            window.location = scriptURL + query;
-        }
-    });
+    
 
     /*
     //Construct list of question event objects to match question buttons when they are clicked.
