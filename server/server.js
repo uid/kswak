@@ -1,7 +1,18 @@
-Teachers = new Meteor.Collection("teachers");
-for (var i in Meteor.settings.teacherList) {
-    Teachers.insert({username:Meteor.settings.teacherList[i]});
-}
+
+Accounts.onCreateUser(function(options, user) {
+    // try to fill in missing username from email address
+    if (!user.username) {
+        try {
+            var email = user.emails[0].address;
+            user.username = email.match(/^([^@]+)@/)[1];
+        } catch (e) {
+            throw new Error("can't create new user: no username, no email address")
+        }
+    }
+    user.profile = options.profile;
+    return user;
+});
+
 
 Questions = new Meteor.Collection("questions");
 Meteor.publish("questions", function () {

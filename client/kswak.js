@@ -436,23 +436,6 @@ if (Meteor.isClient) {
         }
     })
 
-    Template.teacher_control.events({
-        'click #add_teacher_submit': function(event, template){
-            var nameString = template.find('input[name=addingTeacher]').value;
-            var tempNameList = nameString.split(","); //return an array
-            template.find('input[name=addingTeacher]').value = "";
-            Meteor.call('add_teacher', tempNameList, Meteor.user());
-        },
-        'click .deleteTeacher': function(event, template){
-            var delUser = this.username;
-            var confirm = window.confirm("You are about to delete " + delUser + " from the teacher's list. Do you want to continue?");
-            if (confirm){
-                if (delUser != Meteor.user().username){
-                    Meteor.call('remove_teacher', delUser, Meteor.user());
-                }
-            }
-        }
-    })
 }
 
 //calculates response percentages for each answer choice
@@ -747,59 +730,5 @@ Router.map(function () {
     })
 
 
-    //temporary trying to make a teacher page so they can see the students and what not
-    this.route('teacher_control',{
-        path: 'admin',
-        waitOn: function(){
-            return Meteor.subscribe("directory", "responses");
-        },
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                return 'teacher_control'
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        data: function(){
-            var people = [];
-            var teachers = Meteor.users.find({"profile.isTeacher" : true}).fetch();
-            for (var ll = 0; ll < teachers.length; ll++){
-                people.push({username: teachers[ll].username, role:"teacher", isTeacher:true, isStudent:false})
-            }
-            /*for (var ll=0; ll<Meteor.users.find().fetch().length; ll++){
-                if (Meteor.users.find().fetch()[ll].profile != undefined){
-                    var tempRole = Meteor.users.find().fetch()[ll].profile.role;
-                    if (tempRole == "teacher"){
-                        //If the user's role is teacher, then add it to the list of people, making sure to set role as teacher to 'true.'
-                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:true, isStudent:false})
-                    }
-                    /* This line is commented out because when there are too many students in the database, it can cause KSWAK to crash.
-                    *else{
-                        //Else, the user is a student, so add it to the list of people, making sure to set its role as student to 'true'.
-                        people.push({username: Meteor.users.find().fetch()[ll].username, role:tempRole, isTeacher:false, isStudent:true})
-                    }*
-                }
-                *This line is commented out because when there are too many students in the database, it can cause KSWAK to crash.
-                else{
-                    //Else, the role is undefined, so set it to 'student' by default, and add it to the list of people.
-                    people.push({username: Meteor.users.find().fetch()[ll].username, role:"student", isTeacher:false, isStudent:true})
-                }*
-            }*/
-            var responses = [];
-            /*for (var mm=0; mm<Responses.find().fetch().length; mm++){
-                var userId = Responses.find().fetch()[mm].user;
-                var questionId = Responses.find().fetch()[mm].question;
-                var answer = Responses.find().fetch()[mm].answer;
-                var studentUser = Meteor.users.findOne({_id:userId}).username;
-                var questionTime = Questions.findOne({_id:questionId}).time;
-                responses.push({question:questionTime, user:studentUser, response: answer})
-            }*/
-            return{
-                people: people,
-                responses: responses
-            }
-
-        }
-    });
+    
 });

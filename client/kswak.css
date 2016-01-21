@@ -98,11 +98,6 @@ input[name="choice"]{
   fill: blue;
 }
 
-#addingTeacher{
-    margin-bottom: 0px;
-    margin-right: 5px;
-}
-
 .alertBox{
     position: absolute;
     width: 300px;
@@ -140,12 +135,6 @@ input[type=submit]{
 
 
 
-
-.teacherOptions{
-    background-color:#e7e7e7 ;
-    min-width: 100px;
-    text-align: center;
-}
 .tableSummary{
     background-color:lightBlue ;
     min-width: 100px;
@@ -214,16 +203,6 @@ td span {
 
 #people_all td{
     padding:10px;
-}
-
-#add_teacher{
-    margin-bottom:20px;
-
-}
-
-input[name=addingTeacher]{
-    height:30px;
-    margin:0px;
 }
 
 td.peoples, td.responses{

@@ -33,7 +33,6 @@
                         <li><a href="{{ pathFor 'teacher_home' }}">manage launched question</a></li>
                     {{/if}}
                     <li><a href="{{ pathFor 'teacher_summary' }}">question log</a></li>
-                    <li><a href="{{ pathFor 'teacher_control' }}">admin panel</a></li>
                     <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
                  {{else}}
                     <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
@@ -291,33 +290,6 @@
         <button id="cancel" class="btn btn-primary">Cancel</button>
         <button id="save" class="btn btn-primary">Save changes</button>
         <button id="save_launch" class="btn btn-primary">Save and launch</button>
-    </div>
-</template>
-
-<template name='teacher_control'>
-    <div id='container_teacher_control'>
-        <table>
-            <tr>
-                <td><input type="text" name="addingTeacher"></td>
-                <td><button id="add_teacher_submit" class="btn ">Add Teacher</button></td>
-            </tr>
-        </table>
-        <div id="peopleFeedback"></div>
-        <table class="people_table" id="people_teacher">
-                <tr>
-                    <td class="peoples">TEACHERS</td>
-                    <td class="peoples">USERNAME</td>
-                </tr>
-            {{#each people}}
-                {{#if isTeacher}}
-                <tr name={{username}}>
-                    <td>teacher </td>
-                    <td>{{username}}</td>
-                    <td> <button class="close deleteTeacher" id="teacher_{{username}}" for={{username}}>&times;</button> </td>
-                </tr>
-                {{/if}}
-            {{/each}}
-        </table>
     </div>
 </template>
 
