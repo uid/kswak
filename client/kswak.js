@@ -101,9 +101,6 @@ function JSON2CSV(objArray) {
 
 if (Meteor.isClient) {
     Template.nav.helpers({
-        isTeacher: function() {
-            return isTeacher(Meteor.user());
-        },
         launched_question: function() {
             var b;
             activeQuestion() ? b = true : b = false;
@@ -130,30 +127,6 @@ if (Meteor.isClient) {
       },
     });
     
-    Template.teacher_question_view.events({
-        'click #change_mode': function (event, template){
-            var status = Questions.findOne(this.question_id).status;
-            if ( status == 'active'){
-                Meteor.call('freeze_question', this.question_id);
-            }else if( status == 'frozen') {
-                Meteor.call('activate_question',this.question_id)
-            }else{
-                launchQuestion();
-                Meteor.call('activate_question',this.question_id);
-            }
-        },
-
-        'click #viewPrivate': function (event, template){
-            Router.go('/teacher/private/' + this.question_id)
-        },
-        'click #exportCSV': function (event, template){
-            var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
-            var csv = csvExport(question_id);
-            console.log(question_id);
-            window.open("data:text/csv;charset=utf-8," + escape(csv))
-        },
-    })
-
     Template.question_view.events({
         'submit #student_question': function (event, template) {
             event.preventDefault();
@@ -236,6 +209,20 @@ if (Meteor.isClient) {
             });
         },
 
+        'click #change_mode': function (event, template){
+            var status = Questions.findOne(this.question_id).status;
+            if ( status == 'active'){
+                Meteor.call('freeze_question', this.question_id);
+            }else if( status == 'frozen') {
+                Meteor.call('activate_question',this.question_id)
+            }else{
+                launchQuestion();
+                Meteor.call('activate_question',this.question_id);
+            }
+        },
+
+
+
     })
 
 }
@@ -259,7 +246,7 @@ var calcPercentages =function(question){
 }
 
 
-var passData_student = function(question, user) {
+var passData = function(question, user) {
     if (question && user) {
         var question_id = question._id;
         if (question.status == 'active') {
@@ -275,9 +262,13 @@ var passData_student = function(question, user) {
         var student_response =  Responses.findOne({question:question_id, user:user._id});
         if (student_response) {
             var feedback = 'Your submission is: ' + student_response.answer;
-        } else {
+        } else if (!isTeacher(user)) {
             var feedback = "Please submit your response!";
         }
+
+
+        var stats = isTeacher(user) ? calcPercentages(question) : undefined;
+
         var options = [];
         for (i in question.choices) {
             var color = '#e5e2e2'
@@ -287,65 +278,30 @@ var passData_student = function(question, user) {
                     color = 'steelblue';
                 }
             }
-            options.push(
-            {
+            var option = {
                 choice: question.choices[i],
                 letter: letters[i],
                 color: color
-            })
+            };
 
+            if (isTeacher(user)) {
+                option.voters = Responses.find({question: question_id, answer: letters[i]}).count();
+                option.percent = stats[i];                
+            }
+
+            options.push(option);
         }
         return {
+            isTeacher: isTeacher(user),
             question_id: question_id,
-            status_comment: status_comment,
-            statusColor: statusColor,
+            isOpen: question.status == 'active',
             options: options,
             title: question.title,
             time: question.time,
             student_response: student_response,
             feedback:feedback,
-            overlay_option: overlay
-        }
-    }
-}
-
-var passData = function(question, user) {
-    if (question && user) {
-        var question_id = question._id;
-        if (question.status == 'active') {
-            var status_comment = 'This question is live';
-            var statusColor = 'green';
-            var status_control = 'To Freeze';
-        } else if(question.status == 'frozen') {
-            var status_control = 'To Activate';
-            var status_comment = 'This question is live and FROZEN';
-            var statusColor = '#ef6d86';
-        } else{
-            var status_control = 'to activate';
-            var status_comment = 'This question is inactive';
-            var statusColor = '#ef6d86'
-        }
-
-        var stats = calcPercentages(question);
-        var options = [];
-        for (i in question.choices) {
-            options.push(
-            {
-                choice: question.choices[i],
-                voters: Responses.find({question: question_id, answer: letters[i]}).count(),
-                percent: stats[i],
-            })
-
-        }
-        return {
-            question_id: question_id,
-            status_comment: status_comment,
-            statusColor: statusColor,
-            status_control: status_control,
-            options: options,
-            title: question.title,
-            time: question.time,
-            total: stats[stats.length-1],
+            overlay_option: overlay,
+            total: stats ? stats[stats.length-1] : 0,
         }
     }
 }
@@ -370,32 +326,8 @@ Router.map(function () {
             }
         },
         data: function() {
-            return passData_student(activeQuestion(), Meteor.user());}
+            return passData(activeQuestion(), Meteor.user());}
         }
     );
 
-    this.route('teacher_question_view', {
-        path: '/teacher',
-        waitOn: function() {
-            return Meteor.subscribe("questions")
-        },
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                return 'teacher_question_view';
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        data: function() {
-            return passData(activeQuestion(), Meteor.user());
-        },
-        action: function(){
-            if (this.ready()){
-                this.render()
-            }
-        }
-    });
-
-    
 });

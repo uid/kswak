@@ -26,12 +26,6 @@
            </button>
            <a class="brand" href="/">kswak</a>
            <div class="nav-collapse collapse">
-             <ul class="nav">
-                 {{#if isTeacher}}
-                    <li><a href="{{ pathFor 'teacher_question_view' }}">results</a></li>
-                 {{/if}}
-
-             </ul>
              <ul class="nav pull-right">
                  <li class="navbar-text">
                     {{#if currentUser}}
@@ -42,13 +36,6 @@
            </div><!--/.nav-collapse -->
          </div>
        </div>
-    </div>
-</template>
-
-<template name='no_launched_question'>
-    <div class='container'>
-        <h1>No question yet</h1>
-        <span>Sit tight and wait for the instructor to launch a question.</span>
     </div>
 </template>
 
@@ -66,51 +53,29 @@
             <button class='quickLaunch btn btn-primary' id='mc5'>ABCDE</button>
         </div>    
     {{/if}}
-    <span style='width:300px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}}</i></span>
+    <span style='width:300px; display: inline-block'><i>
+        Submission is {{#if isOpen}}open{{else}}closed{{/if}}
+    </i></span>
     <form id="student_question">
         <table id="studentTable">
         {{#each options}}
         <tr>
-            <td>{{letter}}.</td>
             <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width={{largeWidth}}"></td>
+            {{#if isTeacher}}
+            <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}%)</td>
+            <td style="width:400px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
+            {{/if}}
         </tr>
         {{/each}}
+        {{#if isTeacher}}
+        <tr>
+            <td class='tableSummary'>Total:</td>
+            <td class='tableSummary'>{{total}}</td>
+        </tr>
+        {{/if}}
         </table>
         <div id="submitFeedback">{{feedback}}</div>
     </form>
-    </div>
-</template>
-
-
-
-<template name='teacher_question_view'>
-    <div id="container_teacher_question_view">
-        <span style='width:400px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}} </i></span>
-        <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
-        <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
-    <div class='form_container'>
-        <div class="tableSummary" style="padding:10; margin:10px">{{title}}</div>
-        Choices: <br>
-        <table id='input_choices'>
-            {{#each options}}
-                <tr>
-                    <td align='left' class="teacherOptions">{{choice}}</td>
-                    <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}%)</td>
-                    <td style="width:400px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
-                </tr>
-            {{/each}}
-                <tr>
-                    <td class='tableSummary'>Total:</td>
-
-                    <td class='tableSummary'>{{total}}</td>
-                </tr>
-        </table>
-        <br>
-        <br>
-        <button style="margin-left:10px" id='viewPrivate' class="btn btn-primary">Private View</button>
-        <button style="margin-left:10px" id='exportCSV' class="btn btn-primary">Export CSV</button>
-
-    </div>
     </div>
 </template>
 
@@ -125,6 +90,12 @@
         <span>
             Not logged in yet...
         </span>
+    </div>
+</template>
+
+<template name='no_launched_question'>
+    <div class='container'>
+        <span>No question yet.</span>
     </div>
 </template>
 
