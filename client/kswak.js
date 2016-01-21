@@ -634,7 +634,7 @@ Router.map(function () {
                 }
             }
             else {
-                return 'please_login';
+                return 'not_logged_in';
             }
         },
         data: function() {
