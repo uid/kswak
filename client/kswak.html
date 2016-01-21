@@ -28,14 +28,7 @@
            <div class="nav-collapse collapse">
              <ul class="nav">
                  {{#if isTeacher}}
-                    <li><a href="{{ pathFor 'teacher_new' }}">new question</a></li>
-                    {{#if launched_question}}
-                        <li><a href="{{ pathFor 'teacher_home' }}">manage launched question</a></li>
-                    {{/if}}
-                    <li><a href="{{ pathFor 'teacher_summary' }}">question log</a></li>
-                    <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
-                 {{else}}
-                    <li><a href="{{ pathFor 'question_view' }}">student <!-- home | launched question --></a></li>
+                    <li><a href="{{ pathFor 'teacher_question_view' }}">results</a></li>
                  {{/if}}
 
              </ul>
@@ -52,42 +45,6 @@
     </div>
 </template>
 
-<template name="new">
-    <title>KSWAK Teacher | Add New Question</title>
-    <div id="container_new">
-    <h1>Create a question</h1>
-
-    <h4>Quick Launch:</h4>
-        <button class='quickLaunch btn btn-primary' id='tf'>True/False</button>
-        <button class='quickLaunch btn btn-primary' id='mc2'>Multiple Choice<br>(2 choices)</button>
-        <button class='quickLaunch btn btn-primary' id='mc3'>Multiple Choice<br>(3 choices)</button>
-        <button class='quickLaunch btn btn-primary' id='mc4'>Multiple Choice<br>(4 choices)</button>
-        <button class='quickLaunch btn btn-primary' id='mc5'>Multiple Choice<br>(5 choices)</button>
-    <br><br>
-   <!-- <h4>Custom:</h4>
-    <div class='form_container'>
-        <form id='question_form'>
-            Question: <input type="text" name="title"> <br>
-            Choices: <i id='choicesHelpText'>fields left blank will not appear to students</i><br>
-            <table id='input_choices'>
-                {{#each options}}
-                <tr>
-                    <td align='right'>{{letter}}</td>
-                    <td align='left'><input class='choice' type='text'></td>
-                </tr>
-                {{/each}}
-            </table>
-			 <tr>
-                    <td align='right'><button type='button' class='btn btn-primary' id='addAnswerChoice'>+</button></td>
-                    <td align='left'><i id='addAnswerChoiceText'>add answer choice (max: 8)</i></td>
-                </tr>
-            <input type="submit" value="Publish" id='publish_button' style='margin-left:60px' class="btn btn-primary"/>
-            <div id="publishFeedback"></div>
-        </form>
-    </div> -->
-    </div>
-</template>
-
 <template name='no_launched_question'>
     <div class='container'>
         <h1>No question yet</h1>
@@ -101,7 +58,14 @@
     <div id="container_question_view">
         {{largeWidth}}
     <h1>{{title}}</h1>
-    <p>Time posted: {{time}}</p>
+    {{#if isTeacher}}
+        <div>
+            <button class='quickLaunch btn btn-primary' id='mc2'>AB</button>
+            <button class='quickLaunch btn btn-primary' id='mc3'>ABC</button>
+            <button class='quickLaunch btn btn-primary' id='mc4'>ABCD</button>
+            <button class='quickLaunch btn btn-primary' id='mc5'>ABCDE</button>
+        </div>    
+    {{/if}}
     <span style='width:300px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}}</i></span>
     <form id="student_question">
         <table id="studentTable">
@@ -121,7 +85,7 @@
 
 <template name='teacher_question_view'>
     <div id="container_teacher_question_view">
-        <span style='width:400px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}} </i>(Time posted: {{time}})</span>
+        <span style='width:400px; display: inline-block'><i style='color:{{statusColor}}'>{{status_comment}} </i></span>
         <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
         <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button>
     <div class='form_container'>
@@ -150,118 +114,9 @@
     </div>
 </template>
 
-
-
-<template name="teacher_question_private">
-    <div id="container_teacher_question_private">
-
-        <span style='width:360px; display: inline-block'><i style='color:{{getStatusColor}}'>{{questionData.status_comment}} </i>(Time posted: {{questionData.time}})</span>
-        <!-- <button style="margin-left:10px" id='edit' class="btn btn-primary">Edit</button><button id='change_mode' style="margin-left:10px" class="btn btn-primary">{{status_control}}</button>
-        <button style="margin-left:5px" id="teacher_home_go_to_new" class="btn btn-primary">New Question</button> -->
-    <div class='form_container'>
-        <div class="tableSummary" style="padding:10; margin:10px">{{questionData.title}}</div>
-        Choices: <br>
-        <table id='input_choices'>
-            {{#each questionData.options}}
-                <tr>
-                    <td align='left' class="teacherOptions">{{choice}}</td>
-                    <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}% of responders)</td>
-                    <td style="width:200px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
-                </tr>
-            {{/each}}
-                <tr>
-                    <td class='tableSummary'>Total number of responders:</td>
-
-                    <td class='tableSummary'>{{questionData.total}}</td>
-                </tr>
-        </table>
-        <br>
-        <br>
-        <button style="margin-left:10px" id='backToProjector' class="btn btn-primary">⇦ Back</button>
-        <br>
-        <br>
-        <table class="responses_table" id="all_responses">
-            <tr>
-                    <td class="responses">USER</td>
-                    <td class="responses">RESPONSE</td>
-                </tr>
-            {{#each responses}}
-                <tr>
-                    <td>{{user}}</td>
-                    <td>{{response}}</td>
-                </tr>
-            {{/each}}
-        </table>
-    </div>
-    </div>
-</template>
-
-<template name='projector_view'>
-    <div class="svg-wrapper">
-        {{#constant}}
-
-        {{/constant}}
-
-    </div>
-</template>
-
-<template name='teacher_summary'>
-    <div id="container_home">
-    <h1>Question Log</h1><br/>
-       <table class="gridTable" border="1" rules="rows">
-    <tr>
-        <th>Questions</th>
-        <th></th>
-        <th></th>
-    </tr>
-    {{#each questions}}
-    <tr class="gridRow {{status}}">
-    <td class="question" style="width:500px" border="1"><a href="{{ pathFor 'teacher_question_view' _id =this._id}}">{{title}} -- Time posted: ({{time}})</a></td>
-    <td>{{status}}&nbsp;</td>
-    <td><button style='margin:4px' class="delete btn btn-danger">X</button></td>
-    </tr>
-    {{/each}}
-    </table><br/>
-    <button id="inactivateAll" class="btn btn-primary">Inactivate All</button>
-    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-      Delete all
-    </button>
-    <button id="summary_go_to_new" class="btn btn-primary">New Question</button>
-</div>
-
-<!-- Bootstrap delete all warning -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:-100px">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel">Warning!</h4>
-      </div>
-      <div class="modal-body">
-        Are you sure you to want to DELETE ALL questions, except the launched one?
-      </div>
-      <div class="modal-footer">
-        <button type="button"  id="deleteAll" class="btn btn-primary" data-dismiss="modal">Yes</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
-
-      </div>
-    </div>
-  </div>
-</div>
-</template>
-
-<template name='about'>
-    <div class='container'>
-        <div class='content'>klicker spelled with a k</div>
-    </div>
-</template>
-
 <template name='restricted'>
     <div class='container'>
-        <div class='ohno'>
-            <h2>You kswak'd too hard.</h2>
-            <span>Page not found! You shouldn't be here.</span>
-        </div>
+        <span>Page not found.</span>
     </div>
 </template>
 
@@ -272,25 +127,4 @@
         </span>
     </div>
 </template>
-
-<template name='teacher_edit'>
-    <div class='form_container container_form'>
-        <form id='question_form'>
-            Question: <input type="text" name="title" value={{title}}> <br>
-            Choices: <br>
-            <table id='input_choices'>
-                {{#each options}}
-                <tr>
-                    <td align='left'><input type="text" value={{option}} class='choice'></td>
-                </tr>
-                {{/each}}
-            </table>
-             <div id="publishFeedback"></div>
-        </form>
-        <button id="cancel" class="btn btn-primary">Cancel</button>
-        <button id="save" class="btn btn-primary">Save changes</button>
-        <button id="save_launch" class="btn btn-primary">Save and launch</button>
-    </div>
-</template>
-
 

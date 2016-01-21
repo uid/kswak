@@ -26,14 +26,6 @@ Meteor.publish("questions", function () {
     }
 });
 
-Meteor.publish("directory", function () {
-    var userID = this.userId;
-    var user = Meteor.users.findOne(userID);
-    if (user && isTeacher(user)) {
-        return Meteor.users.find();
-    }
-});
-
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
     var userID = this.userId;
@@ -45,12 +37,6 @@ Meteor.publish("responses", function () {
         return Responses.find({user:userID});
     }
 });
-
-AccountsTest = new Meteor.Collection("accountstest");
-Meteor.publish("accountstest", function () {
-    return AccountsTest.find();
-});
-
 
 
 

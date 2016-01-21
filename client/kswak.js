@@ -1,9 +1,11 @@
 Questions = new Meteor.Collection("questions");
-questionsHandle = Meteor.subscribe("questions");
 Responses = new Meteor.Collection("responses");
-responsesHandle = Meteor.subscribe("responses");
-AccountsTest = new Meteor.Collection("accountstest");
-usersHandle = Meteor.subscribe("directory");
+
+// everybody might as well subscribe to the questions
+Meteor.subscribe("questions");
+
+// FIX: only the teacher should subscribe to the responses
+Meteor.subscribe("responses");
 
 //GLOBAL VARIABLES
 var numChoices = 5;
@@ -14,17 +16,18 @@ Meteor.startup(function () {
   CertAuth.login();
 });  
 
+function activeQuestion() {
+    return Questions.findOne({status:{$in:['active', 'frozen']}});
+}
 
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
     Meteor.call('inactivate_question');
 
-    if (typeof id != undefined){
+    if (id !== undefined) {
         Meteor.call('activate_question', id);
     }
-    Router.go('/teacher');
-    numChoices = 5;
 }
 
 //TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
@@ -103,20 +106,19 @@ if (Meteor.isClient) {
         },
         launched_question: function() {
             var b;
-            (Questions.findOne({status:{$in:['active', 'frozen']}}) != undefined) ? b = true : b = false;
+            activeQuestion() ? b = true : b = false;
             return b;
         },
     });
 
+    Template.question_view.helpers({
+        isTeacher: function() {
+            return isTeacher(Meteor.user());
+        },
+    });
 
     UI.registerHelper('getStatusColor', function() {
         return Session.get('getStatusColor');
-    });
-
-    Template.teacher_summary.helpers({
-        questions: function() {
-            return Questions.find({}, {sort: {date_created: -1}})
-        }
     });
 
     Template.nav.helpers({
@@ -128,65 +130,38 @@ if (Meteor.isClient) {
       },
     });
     
-
-    /*
-    //Construct list of question event objects to match question buttons when they are clicked.
-
-    /* !Helper! Function for creating an array of multiple choice answers starting from 'A'.
-    *   Ex: mcID = 'mc2' -> ['A', 'B']
-    * parameter - mcID:     HTML id of the multiple choice button. Must be of format 'mc' followed by a number.
-    * returns:              Alphabetic array of multiple choices.
-    *
-    var multiChoices = function(mcID){
-        //Extract the index from the ID.
-        var numChoices = parseInt(mcID.substring(2));
-        //var numChoices = parseInt(mcID);
-        var output = [];
-        var asciiValueA = 65;
-        for (var i = 0; i< numChoices; i++){
-            output.push(String.fromCharCode(asciiValueA + i));
-        }
-        return output;
-    }
-    var prefix = "mc";
-    var max_options = 5;
-    var eventObj = {};
-    for (var i = 2; i <= max_options; i++){
-        eventObj["click #" + prefix + i] = function(event, template){
-            var date_and_time = setTime();
-            var date_created = date_and_time.date;
-            var time = date_and_time.time;
-            var question_data = {
-                title: '',
-                type: String(event.currentTarget.id),
-                choices: multiChoices(String(event.currentTarget.id)),
-                status: 'active',
-                time: time,
-                date_created: date_created
+    Template.teacher_question_view.events({
+        'click #change_mode': function (event, template){
+            var status = Questions.findOne(this.question_id).status;
+            if ( status == 'active'){
+                Meteor.call('freeze_question', this.question_id);
+            }else if( status == 'frozen') {
+                Meteor.call('activate_question',this.question_id)
+            }else{
+                launchQuestion();
+                Meteor.call('activate_question',this.question_id);
             }
-            Meteor.call('insert_question', question_data, function(error, data){
-                launchQuestion(data);
-            });
-        }
-    }
-    Template.new.events(eventObj);
-    */
-    Template.new.events({
-        'click #tf': function(event, template) {
-            var date_and_time = setTime();
-            var date_created = date_and_time.date;
-            var time = date_and_time.time;
-            var question_data = {
-                title: '',
-                type: 'tf',
-                choices: ['True','False'],
-                status: 'active',
-                time: time,
-                date_created: date_created
-            }
-            Meteor.call('insert_question', question_data, function(error, data){
-                launchQuestion(data);
-            });
+        },
+
+        'click #viewPrivate': function (event, template){
+            Router.go('/teacher/private/' + this.question_id)
+        },
+        'click #exportCSV': function (event, template){
+            var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
+            var csv = csvExport(question_id);
+            console.log(question_id);
+            window.open("data:text/csv;charset=utf-8," + escape(csv))
+        },
+    })
+
+    Template.question_view.events({
+        'submit #student_question': function (event, template) {
+            event.preventDefault();
+            var question = activeQuestion();
+            var choice = template.find(".clicked");
+            var user_answer = choice.name;
+            var question_id = question._id;
+            Meteor.call('submit_response', question, user_answer);
 
         },
 
@@ -261,179 +236,6 @@ if (Meteor.isClient) {
             });
         },
 
-        'click #addAnswerChoice': function(event, template) {
-            event.preventDefault();
-            numChoices +=1;
-            if (numChoices >= 8) {
-                $('#addAnswerChoice').hide();
-                $('#addAnswerChoiceText').hide();
-            };
-            console.log($('#input_choices'));
-            $('#input_choices').append("<tr><td align='right'>"+letters[numChoices-1]+"</td><td align='left'><input class='choice' type='text'></td></tr>");
-
-        },
-
-        'submit form': function (event, template) {
-            event.preventDefault();
-            var title = template.find("input[name=title]");
-            var choices = [];
-            $('.choice').each(function(child, i){
-                 if (this.value != ''){
-                     choices.push(this.value)
-                 }
-             });
-            var date_and_time = setTime();
-            var date_created = date_and_time.date;
-            var time = date_and_time.time;
-            var question_data = {
-                title: title.value,
-                type: 'custom',
-                choices: choices,
-                status: 'active',
-                time: time,
-                date_created: date_created
-            }
-
-            Meteor.call('insert_question', question_data, function(error, data){
-                launchQuestion(data);
-            });
-
-        }
-  });
-
-
-    Template.teacher_question_view.events({
-        'click #change_mode': function (event, template){
-            var status = Questions.findOne(this.question_id).status;
-            if ( status == 'active'){
-                Meteor.call('freeze_question', this.question_id);
-            }else if( status == 'frozen') {
-                Meteor.call('activate_question',this.question_id)
-            }else{
-                launchQuestion();
-                Meteor.call('activate_question',this.question_id);
-            }
-        },
-
-        //Any question is editable no matter if it is active or not
-        'click #edit': function (event, template){
-            Session.set("editing", this.question_id);
-            /*var question = Session.get('editing');
-            if (question.status == 'active') {
-                question.status = 'frozen';
-            }*/
-            Router.go('/teacher/edit')
-        },
-
-        'click #teacher_home_go_to_new': function (event, template) {
-            Router.go('/teacher/new');
-        },
-        'click #viewPrivate': function (event, template){
-            Router.go('/teacher/private/' + this.question_id)
-        },
-        'click #exportCSV': function (event, template){
-            var question_id = document.URL.split('/')[4]; //because path is https://.../teacher/question_id
-            var csv = csvExport(question_id);
-            console.log(question_id);
-            window.open("data:text/csv;charset=utf-8," + escape(csv))
-        },
-    })
-
-    Template.teacher_question_private.events({
-        'click #backToProjector': function (event, template){
-            Router.go('/teacher/' + this.questionData.question_id)
-        }
-    })
-
-    Template.teacher_summary.events({
-        'change [name="launch"]': function (event, template){
-            Meteor.call('inactivate');
-            var selectionBox = event.target.parentElement.id;
-            Meteor.call('activate', this._id)
-        },
-        'click .delete': function (event, template){
-            var confirm = window.confirm("You are about to delete the question created at " + this.time + ". Do you want to continue?")
-            if (confirm){
-                //Remove responses of this question
-                Meteor.call('remove_responses', this._id)
-
-                //Remove this question itself
-                Meteor.call('remove_question', this._id);
-            }
-
-        },
-        'click #deleteAll':function (event, template){
-            Questions.find({status:'inactive'}).forEach(function(question){
-                Meteor.call('remove_question', question._id);
-                Meteor.call('remove_responses', question._id);
-            });
-        },
-        'click #inactivateAll': function(event, template){
-            launchQuestion()
-        },
-        'click #summary_go_to_new': function(event, template) {
-            Router.go('/teacher/new');
-        }
-    })
-
-    Template.teacher_edit.events({
-        'click #cancel': function(event, template){
-            Router.go('/teacher/home')
-
-        },
-        'click #save': function(event, template){
-            var question = Session.get('editing');
-            //Remove responses which are already submitted for the question
-            Meteor.call('remove_responses', question);
-
-            //create new question and launch it
-            var choices = []
-            var title = template.find("input[name=title]");
-            $('.choice').each(function(child, i){
-                 if (this.value != ''){
-                     choices.push(this.value)
-                 }
-             });
-            Meteor.call('update_question', question, title.value, choices)
-
-            if (question.status == 'active'){
-                Router.go('/teacher/home')
-            }else{
-                Router.go('/teacher/summary')
-            }
-        },
-
-        'click #save_launch': function(event, template){
-            var question = Session.get('editing');
-            //Remove responses which are already submitted for the question
-            Meteor.call('remove_responses', question)
-
-            //disable current launched question
-            launchQuestion();
-            //create new question and launch it
-            var choices = []
-            var title = template.find("input[name=title]");
-            $('.choice').each(function(child, i){
-                 if (this.value != ''){
-                     choices.push(this.value)
-                 }
-             });
-            Meteor.call('update_question', question, title.value, choices)
-            Meteor.call('activate_question', question);
-            Router.go('/teacher')
-        }
-    })
-
-    Template.question_view.events({
-        'submit #student_question': function (event, template) {
-            event.preventDefault();
-            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            var choice = template.find(".clicked");
-            var user_answer = choice.name;
-            var question_id = question._id;
-            Meteor.call('submit_response', question, user_answer);
-
-        }
     })
 
 }
@@ -458,7 +260,7 @@ var calcPercentages =function(question){
 
 
 var passData_student = function(question, user) {
-    if (question != undefined) {
+    if (question && user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'Submission is open';
@@ -471,7 +273,7 @@ var passData_student = function(question, user) {
         }
 
         var student_response =  Responses.findOne({question:question_id, user:user._id});
-        if (student_response != undefined){
+        if (student_response) {
             var feedback = 'Your submission is: ' + student_response.answer;
         } else {
             var feedback = "Please submit your response!";
@@ -480,7 +282,7 @@ var passData_student = function(question, user) {
         for (i in question.choices) {
             var color = '#e5e2e2'
             //for use of identifying chosen answer
-            if (student_response != undefined){
+            if (student_response) {
                 if (student_response.answer == [letters[i]]){
                     color = 'steelblue';
                 }
@@ -508,7 +310,7 @@ var passData_student = function(question, user) {
 }
 
 var passData = function(question, user) {
-    if (question != undefined) {
+    if (question && user) {
         var question_id = question._id;
         if (question.status == 'active') {
             var status_comment = 'This question is live';
@@ -552,65 +354,12 @@ Router.configure({
     notFoundTemplate: "restricted"
 });
 
-//Templates needed: teacher, home, question, teacher_question_view
 Router.map(function () {
-    this.route('home', {
+    this.route('question_view', {
         path: '/',
         template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                Router.go('teacher_home');
-            }
-            else {
-                Router.go('question_view'); //this redirects to a sign in page
-            }
-        }
-    });
-
-    this.route('teacher_home', {
-        path: 'teacher',
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined) {
-                    return 'teacher_summary'
-                }
-                else {
-                    return 'teacher_question_view'
-                }
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        waitOn: function() {
-            return Meteor.subscribe("questions")
-        },
-        data: function() {
-            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            return passData(question);
-        },
-
-    });
-
-    this.route('teacher_summary', {
-        path: 'teacher/summary',
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                return 'teacher_summary'
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        waitOn: function(){
-            return Meteor.subscribe("questions")
-        }
-    });
-
-    this.route('question_view', {
-        path: '/student',  //overrides the default '/home'
-        template: function() {
             if (Meteor.user()) {
-                if (Questions.findOne({status:{$in:['active', 'frozen']}})) {
+                if (activeQuestion()) {
                     return 'question_view';
                 } else {
                     return 'no_launched_question';
@@ -621,55 +370,12 @@ Router.map(function () {
             }
         },
         data: function() {
-            var question = Questions.findOne({status:{$in:['active', 'frozen']}});
-            return passData_student(question, Meteor.user());}
-    });
-
-    this.route('teacher_new', {
-        path: '/teacher/new',
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                return 'new'
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        data: function() {
-            var options = [];
-            for (var i=0; i<numChoices; i++) {
-                options.push({letter: letters[i]});
-            }
-            return { options: options }
+            return passData_student(activeQuestion(), Meteor.user());}
         }
-    });
-
-    this.route('teacher_edit',{
-        path:'/teacher/edit',
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                return 'teacher_edit'
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        data: function() {
-            var question = Questions.findOne(Session.get('editing'));
-			console.log('edit', question);
-            var options =[];
-            for (var i=0; i<question.choices.length; i++){
-                options.push({letter:letters[i], option:question.choices[i]});
-            }
-            return {
-                options: options,
-                title: question.title
-            }
-        }
-    })
+    );
 
     this.route('teacher_question_view', {
-        path: '/teacher/:_id',
+        path: '/teacher',
         waitOn: function() {
             return Meteor.subscribe("questions")
         },
@@ -682,53 +388,14 @@ Router.map(function () {
             }
         },
         data: function() {
-            var question = Questions.findOne(this.params._id);
-            return passData(question);},
-        action: function(){
-            if (this.ready()){
-                this.render()
-            }
-        }
-    })
-
-    this.route('teacher_question_private', {
-        path: '/teacher/private/:_id',
-        waitOn: function() {
-            return [Meteor.subscribe("questions"), Meteor.subscribe("responses")] //, Meteor.subscribe("userData"), Meteor.subscribe("responses")]
-        }
-        ,
-        template: function() {
-            if (Meteor.user() && isTeacher(Meteor.user())) {
-                return 'teacher_question_private';
-            }
-            else {
-                return 'restricted';
-            }
-        },
-        data: function() {
-            var question = Questions.findOne(this.params._id);
-            var questionId = this.params._id;
-            var responses = []
-            for (var mm=0; mm<Responses.find().fetch().length; mm++){
-                if (Responses.find().fetch()[mm].question == questionId){
-                    var userId = Responses.find().fetch()[mm].user;
-                    var answer = Responses.find().fetch()[mm].answer;
-                    var studentUser = Meteor.users.findOne({_id:userId}).username;
-                    responses.push({user:studentUser, response: answer})
-                }
-            }
-            return {
-                responses: responses,
-                questionData: passData(question)
-            }
+            return passData(activeQuestion(), Meteor.user());
         },
         action: function(){
             if (this.ready()){
                 this.render()
             }
         }
-    })
-
+    });
 
     
 });
