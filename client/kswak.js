@@ -27,16 +27,6 @@ function launchQuestion(id){
     numChoices = 5;
 }
 
-//Check if a user is a teacher. Meant to take in Meteor.user(), so keep in mind it takes in an accounts object.
-function isTeacher(user) {
-    if (user) {
-        if (user.profile['role'] == 'teacher') {
-            return true;
-        }
-    }
-    return false;
-}
-
 //TO DO: FIGURE OUT HOW TO USE DATE.PARSE AND SORT BASED ON THAT
 function setTime() {
     var _time = (new Date);
@@ -46,13 +36,6 @@ function setTime() {
     if (minutes < 10) { minutes = '0' + minutes; }
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
     return {'date': date, 'time': time};
-}
-
-function send_to_scripts() {
-    var current_url = document.URL;
-    var parts = current_url.split("/");
-    var query = '?' + parts[2] + '/';
-    return query;
 }
 
 function csvExport(questionId) {
@@ -116,14 +99,7 @@ function JSON2CSV(objArray) {
 if (Meteor.isClient) {
     Template.nav.helpers({
         isTeacher: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile['role'] == 'teacher') {
-                    return true;
-                }
-            }
-            else {
-                return false;
-            }
+            return isTeacher(Meteor.user());
         },
         launched_question: function() {
             var b;
@@ -145,7 +121,8 @@ if (Meteor.isClient) {
 
     Template.nav.helpers({
       describe: function(user) {
-        return user.profile.name 
+        return (user.profile && user.profile.name)
+            || user.username
             || (user.emails.length > 0 ? user.emails[0].address : null)
             || "user #" + user._id;
       },
@@ -597,17 +574,8 @@ Router.map(function () {
     this.route('home', {
         path: '/',
         template: function() {
-            if (automatic_signin && !Meteor.user()) {
-                var query = send_to_scripts();
-                window.location = scriptURL + query;
-            }
-            else if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'student') {
-                    Router.go('question_view');
-                }
-                else if (Meteor.user().profile.role == 'teacher') {
-                    Router.go('teacher_home');
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                Router.go('teacher_home');
             }
             else {
                 Router.go('question_view'); //this redirects to a sign in page
@@ -618,17 +586,12 @@ Router.map(function () {
     this.route('teacher_home', {
         path: 'teacher',
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined) {
-                        return 'teacher_summary'
-                    }
-                    else {
-                        return 'teacher_question_view'
-                    }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                if (Questions.findOne({status:{$in:['active', 'frozen']}}) == undefined) {
+                    return 'teacher_summary'
                 }
                 else {
-                    return 'restricted';
+                    return 'teacher_question_view'
                 }
             }
             else {
@@ -648,13 +611,8 @@ Router.map(function () {
     this.route('teacher_summary', {
         path: 'teacher/summary',
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    return 'teacher_summary'
-                }
-                else {
-                    return 'restricted';
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                return 'teacher_summary'
             }
             else {
                 return 'restricted';
@@ -687,13 +645,8 @@ Router.map(function () {
     this.route('teacher_new', {
         path: '/teacher/new',
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    return 'new'
-                }
-                else {
-                    return 'restricted';
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                return 'new'
             }
             else {
                 return 'restricted';
@@ -711,13 +664,8 @@ Router.map(function () {
     this.route('teacher_edit',{
         path:'/teacher/edit',
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    return 'teacher_edit'
-                }
-                else {
-                    return 'restricted';
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                return 'teacher_edit'
             }
             else {
                 return 'restricted';
@@ -743,13 +691,8 @@ Router.map(function () {
             return Meteor.subscribe("questions")
         },
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    return 'teacher_question_view';
-                }
-                else {
-                    return 'restricted';
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                return 'teacher_question_view';
             }
             else {
                 return 'restricted';
@@ -772,13 +715,8 @@ Router.map(function () {
         }
         ,
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    return 'teacher_question_private';
-                }
-                else {
-                    return 'restricted';
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                return 'teacher_question_private';
             }
             else {
                 return 'restricted';
@@ -816,13 +754,8 @@ Router.map(function () {
             return Meteor.subscribe("directory", "responses");
         },
         template: function() {
-            if (Meteor.user()) {
-                if (Meteor.user().profile.role == 'teacher') {
-                    return 'teacher_control'
-                }
-                else {
-                    return 'restricted';
-                }
+            if (Meteor.user() && isTeacher(Meteor.user())) {
+                return 'teacher_control'
             }
             else {
                 return 'restricted';
@@ -830,7 +763,7 @@ Router.map(function () {
         },
         data: function(){
             var people = [];
-            var teachers = Meteor.users.find({"profile.role" : "teacher"}).fetch();
+            var teachers = Meteor.users.find({"profile.isTeacher" : true}).fetch();
             for (var ll = 0; ll < teachers.length; ll++){
                 people.push({username: teachers[ll].username, role:"teacher", isTeacher:true, isStudent:false})
             }

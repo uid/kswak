@@ -91,7 +91,7 @@
 
 <template name='no_launched_question'>
     <div class='container'>
-        <h1>No question launched!</h1>
+        <h1>No question yet</h1>
         <span>Sit tight and wait for the instructor to launch a question.</span>
     </div>
 </template>
@@ -311,31 +311,13 @@
             {{#each people}}
                 {{#if isTeacher}}
                 <tr name={{username}}>
-                    <td>{{role}} </td>
+                    <td>teacher </td>
                     <td>{{username}}</td>
                     <td> <button class="close deleteTeacher" id="teacher_{{username}}" for={{username}}>&times;</button> </td>
                 </tr>
                 {{/if}}
             {{/each}}
         </table>
-
-        <!-- Normally displays a list of students in the admin panel, but currently commenting it out because
-            displaying too many students causes KSWAK to crash.
-        <table class="people_table" id="people_student">
-                <tr>
-                    <td class="peoples">STUDENTS</td>
-                    <td class="peoples">USERNAME</td>
-                </tr>
-            {{#each people}}
-                {{#if isStudent}}
-                <tr>
-                    <td>{{role}} </td>
-                    <td>{{username}}</td>
-                </tr>
-                {{/if}}
-            {{/each}}
-        </table> -->
-
     </div>
 </template>
 
