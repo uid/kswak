@@ -40,7 +40,7 @@
 </template>
 
 <template name='question_view'>
-    <div class={{overlay_option}}></div>
+    <div class="overlay {{#if isOpen}}open{{else}}closed{{/if}}"></div>
     <title>KSWAK </title>
     <div id="container_question_view">
         {{largeWidth}}
@@ -51,6 +51,10 @@
             <button class='quickLaunch btn btn-primary' id='mc3'>ABC</button>
             <button class='quickLaunch btn btn-primary' id='mc4'>ABCD</button>
             <button class='quickLaunch btn btn-primary' id='mc5'>ABCDE</button>
+            <button class='quickLaunch btn btn-primary' id='closeQuestion'>Close</button>
+            <button class='quickLaunch btn btn-primary' id='reopenQuestion'>Reopen</button>
+            <button class='quickLaunch btn btn-primary' id='showAnswers'>Show Answers</button>
+            <button class='quickLaunch btn btn-primary' id='hideAnswers'>Hide Answers</button>
         </div>    
     {{/if}}
     <span style='width:300px; display: inline-block'><i>

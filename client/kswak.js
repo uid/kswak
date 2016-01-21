@@ -40,14 +40,6 @@ function setTime() {
     return {'date': date, 'time': time};
 }
 
-Template.nav.helpers({
-    launched_question: function() {
-        var b;
-        activeQuestion() ? b = true : b = false;
-        return b;
-    },
-});
-
 Template.question_view.helpers({
     isTeacher: function() {
         return isTeacher(Meteor.user());
@@ -149,19 +141,19 @@ Template.question_view.events({
         });
     },
 
-    'click #change_mode': function (event, template){
-        var status = Questions.findOne(this.question_id).status;
-        if ( status == 'active'){
-            Meteor.call('freeze_question', this.question_id);
-        }else if( status == 'frozen') {
-            Meteor.call('activate_question',this.question_id)
-        }else{
-            launchQuestion();
-            Meteor.call('activate_question',this.question_id);
-        }
+    'click #closeQuestion': function (event, template){
+        Meteor.call('freeze_question', activeQuestion()._id);
     },
 
+    'click #reopenQuestion': function (event, template){
+        Meteor.call('activate_question', activeQuestion()._id);
+    },
 
+    'click #showAnswers': function (event, template){
+    },
+
+    'click #hideAnswers': function (event, template){
+    },
 
 })
 
@@ -197,7 +189,7 @@ function passData(question, user) {
             var overlay = "overlay open";
         }
 
-        var student_response =  Responses.findOne({question:question_id, user:user._id});
+        var student_response = Responses.findOne({question:question_id, user:user._id});
         if (student_response) {
             var feedback = 'Your submission is: ' + student_response.answer;
         } else if (!isTeacher(user)) {
@@ -238,7 +230,6 @@ function passData(question, user) {
             time: question.time,
             student_response: student_response,
             feedback:feedback,
-            overlay_option: overlay,
             total: stats ? stats[stats.length-1] : 0,
         }
     }

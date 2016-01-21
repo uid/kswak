@@ -9,73 +9,16 @@ body {
   padding-top: 60px;
 }
 
-
-.a_not_a_link {
-    pointer-events: none;
-}
-
-.loading {
-    vertical-align: middle;
-    width: 100%;
-    align-content: center;
-    font-size: 30px;
-    text-align: center;
-
-}
-
-.navbar-text:link {
-    color: #0088cc;
-}
-
-.navbar-text:link {
-    color: #005580;
-}
-
 .navbar-text {
     line-height: 20px;
-}
-
-.cert_link {
-    cursor: pointer;
-    cursor: hand;
-}
-
-#new_question_form {
-    line-height: 30px;
-}
-
-#choicesHelpText {
-	font-style: italic;
-	font-size: 8pt;
-	color: gray;
-}
-
-#addAnswerChoiceText {
-	font-style: italic;
-	font-size: 10pt;
-	color: gray;
-}
-
-#tf {
-    height: 50px;
-	width: 122px;
 }
 
 .quickLaunch {
     margin: 2px;
 }
 
-.blank {
-    width: 50px;
-}
-
 div[id^='container']{
     padding:2%;
-}
-
-
-.gridTable: :nth-child(2){
-    border: 2px;
 }
 
 .frozen{
@@ -86,34 +29,6 @@ background-color: #aeebf0;
 }
 
 
-.gridRow {
-    height: 20px;
-}
-
-input[name="choice"]{
-    margin: 5px !important;
-}
-
-.chart rect {
-  fill: blue;
-}
-
-.alertBox{
-    position: absolute;
-    width: 300px;
-    height: 100px;
-    text-align: center;
-    z-index: 2;
-    margin-left: 100px;
-    margin-top: -100px;
-    background-color: #fabdbd;
-}
-
-
-/*#studentTable{
-    margin-right:auto;
-    margin-left:auto;
-}*/
 /*The submit button on the */
 input[type=submit]{
     display:inline-block;
@@ -136,54 +51,8 @@ input[type=submit]{
     min-width: 100px;
     text-align: center;
 }
-#input_choices{
-    border-collapse: separate;
-    border-spacing:6px 6px;
-}
 
 
-
-
-/*
-  Hide radio button (the round disc)
-  we will use just the label to create pushbutton effect
-*/
-input[type=radio][name=choice] {
-    display:none;
-    margin:10px;
-}
-
-/*
-  Change the look'n'feel of labels (which are adjacent to radiobuttons).
-  Add some margin, padding to label
-*/
-input[type=radio][name=choice]  + label {
-    display:inline-block;
-    padding: 4px 12px;
-    background-color: #e7e7e7 ;
-    border-color: #ddd;
-    min-width: 100px;
-    text-align:center;
-}
-/*
- Change background color for label next to checked radio button
- to make it look like highlighted button
-*/
-input[type=radio][name=choice]:checked + label {
-   background-image: none;
-    /*background-color:#d0d0d0;*/
-    background-color:#aaaaaa;
-}
-
-#bar div {
-    font-size: 0.5em;
-    font-family: sans-serif;
-    color: white;
-    background-color: steelblue;
-    text-align: right;
-    padding: 0.5em;
-    margin: 0.2em;
-}
 
 td span {
     font-size: 0.5em;
@@ -195,44 +64,19 @@ td span {
     margin: 0.2em;
 }
 
-/*/////////////////////////*/
-
-#people_all td{
-    padding:10px;
-}
-
-td.peoples, td.responses{
-    background-color:lightgray;
-    padding:6px;
-}
-
-.people_table, .responses_table{
-    margin:15px;
-}
-
-
-
-
-
-/*Tryan write an overlay for the question View*/
-.overlay.open {
-    position: fixed;
+.overlay {
+    pointer-events: none;
+    position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0);
     z-index: 10;
 }
 
-.overlay.closed{
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 0%;
-    width: 0%;
-    background-color: rgba(0,0,0,0);
-    z-index: 10;
+.overlay.closed {
+    background-color: rgba(0,0,0,0.4);
 }
 
 /*////////////////////////////////////*/
