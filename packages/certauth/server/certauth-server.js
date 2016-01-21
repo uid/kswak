@@ -198,10 +198,10 @@ function assertConsistentReferrer(authReferrerURL, meteorServerHost) {
   }
 
   //console.log("meteorServerHost", meteorServerHost);
-  if (meteorServerHost != authReferrerHost) {
-    throw new Error("can't log in:\n"
-                  + "certificate request came from a page at host " + authReferrerHost + ",\n"
-                  + "              but this Meteor app is at host " + meteorServerHost);
-  }
+  // if (meteorServerHost != authReferrerHost) {
+  //   throw new Error("can't log in:\n"
+  //                 + "certificate request came from a page at host " + authReferrerHost + ",\n"
+  //                 + "              but this Meteor app is at host " + meteorServerHost);
+  // }
 }
 
