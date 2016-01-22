@@ -1,14 +1,5 @@
 <head>
     <title>KSWAK</title>
-    <script>
-        var changeList;
-
-        function ChangeClass(obj){
-            if (changeList) changeList.className='studentChoice unclicked';
-            obj.className='studentChoice clicked';
-            changeList=obj;
-        }
-    </script>
 </head>
 
 <body>
@@ -22,9 +13,7 @@
            <a class="brand" href="/">kswak</a>
            <ul class="nav pull-right">
              <li class="navbar-text">
-                {{#if currentUser}}
-                  {{describe currentUser}}
-                {{/if}}
+              {{currentUser.username}}
              </li>
            </ul>
          </div>
@@ -32,51 +21,49 @@
     </div>
 </template>
 
-<template name='question_view'>
+<template name='main'>
     {{#unless isTeacher}}
     <div class="overlay {{#if isOpen}}open{{else}}closed{{/if}}"></div>
     {{/unless}}
-    <title>KSWAK </title>
-    <div id="container_question_view">
-        {{largeWidth}}
-    <h1>{{title}}</h1>
-    {{#if isTeacher}}
-        <div>
-            <button class='btn btn-primary' id='mc2'>AB</button>
-            <button class='btn btn-primary' id='mc3'>ABC</button>
-            <button class='btn btn-primary' id='mc4'>ABCD</button>
-            <button class='btn btn-primary' id='mc5'>ABCDE</button>
-            <button class='btn btn-primary' id='closeQuestion'>Close Question</button>
-            <button class='btn btn-primary' id='reopenQuestion'>Reopen Question</button>
-            <button class='btn btn-primary' id='showAnswers'>Show Answers</button>
-            <button class='btn btn-primary' id='hideAnswers'>Hide Answers</button>
-        </div>    
-    {{/if}}
-    <span style='width:300px; display: inline-block'><i>
-        Submission is {{#if isOpen}}open{{else}}closed{{/if}}
-    </i></span>
-    <form id="student_question">
+    <div id="container_main">
+        {{#if isTeacher}}
+            <div>
+                <button class='btn btn-primary newQuestion'>AB</button>
+                <button class='btn btn-primary newQuestion'>ABC</button>
+                <button class='btn btn-primary newQuestion'>ABCD</button>
+                <button class='btn btn-primary newQuestion'>ABCDE</button>
+                <button class='btn btn-primary' id='closeQuestion'>Close Question</button>
+                <button class='btn btn-primary' id='reopenQuestion'>Reopen Question</button>
+                <button class='btn btn-primary' id='showAnswers'>Show Answers</button>
+                <button class='btn btn-primary' id='hideAnswers'>Hide Answers</button>
+            </div>    
+        {{/if}}
+        <span style='width:300px; display: inline-block'><i>
+            Submission is {{#if isOpen}}open{{else}}closed{{/if}}
+        </i></span>
         <table id="studentTable">
         {{#each options}}
-        <tr>
-            <td><input type="submit" name={{letter}} value={{choice}} class="studentChoice unclicked" onclick="ChangeClass(this)" style="background-color:{{color}}; min-width={{largeWidth}}"></td>
-            {{#if ../showingAnswers}}
-            <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}%)</td>
-            <td style="width:400px; background-color:#e7e7e7" ><span style="display:inline-block; height:50px; width:{{percent}}%; padding:0"></span></td>
-            {{/if}}
-        </tr>
+            <tr>
+                <td><button class="studentChoice unclicked {{#if wasChosen}}chosen{{/if}}">
+                        {{choice}}
+                    </button>
+                </td>
+                {{#if showingAnswers}}
+                <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}%)</td>
+                <td class='bargraph' ><span style="width:{{percent}}%;"></span></td>
+                {{/if}}
+            </tr>
         {{/each}}
         {{#if isTeacher}}
-        <tr>
-            <td class='tableSummary'>Total:</td>
-            <td class='tableSummary'>{{total}}</td>
-        </tr>
+            <tr>
+                <td class='tableSummary'>Total:</td>
+                <td class='tableSummary'>{{total}}</td>
+            </tr>
         {{/if}}
         </table>
         {{#unless isTeacher}}
-        <div id="submitFeedback">{{feedback}}</div>
+            <div id="submitFeedback">{{feedback}}</div>
         {{/unless}}
-    </form>
     </div>
 </template>
 
@@ -91,12 +78,6 @@
         <span>
             Not logged in yet...
         </span>
-    </div>
-</template>
-
-<template name='no_launched_question'>
-    <div class='container'>
-        <span>No question yet.</span>
     </div>
 </template>
 

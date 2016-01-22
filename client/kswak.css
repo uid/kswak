@@ -17,16 +17,13 @@ div[id^='container']{
     padding:2%;
 }
 
-.frozen{
-background-color: #aeebf0;
-}
 .active{
     background-color: rgba(205, 248, 205, 0.97);
 }
 
 
 /*The submit button on the */
-input[type=submit]{
+.studentChoice {
     display:inline-block;
     padding: 4px 12px;
     margin:5%;
@@ -36,11 +33,12 @@ input[type=submit]{
     min-height:50px;
     text-align:center;
     border-style:none;
-    white-space:normal
+    white-space:normal;
+    background-color: #e5e2e2;
 }
-
-
-
+.studentChoice.chosen {
+    background-color: steelblue;
+}
 
 .tableSummary{
     background-color:lightBlue ;
@@ -48,7 +46,16 @@ input[type=submit]{
     text-align: center;
 }
 
+.bargraph {
+    width:400px; 
+    background-color:#e7e7e7;
+}
 
+.bargraph span {
+    display:inline-block; 
+    height:50px;
+    padding:0px;
+}
 
 td span {
     font-size: 0.5em;
