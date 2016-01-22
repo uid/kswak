@@ -13,10 +13,6 @@ body {
     line-height: 20px;
 }
 
-.quickLaunch {
-    margin: 2px;
-}
-
 div[id^='container']{
     padding:2%;
 }

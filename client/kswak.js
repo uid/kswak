@@ -15,14 +15,18 @@ Meteor.startup(function () {
   CertAuth.login();
 });  
 
+
 function activeQuestion() {
     return Questions.findOne({status:{$in:['active', 'frozen']}});
 }
+
+Session.set("showingAnswers", false);
 
 //set all questions inactive
 //If an id is passed, launch its question
 function launchQuestion(id){
     Meteor.call('inactivate_question');
+    Session.set("showingAnswers", false);
 
     if (id !== undefined) {
         Meteor.call('activate_question', id);
@@ -39,16 +43,6 @@ function setTime() {
     var time = '' + (_time.getMonth()+1) + '/' + _time.getDate() + ' ' + _time.getHours() + ':' + minutes;
     return {'date': date, 'time': time};
 }
-
-Template.question_view.helpers({
-    isTeacher: function() {
-        return isTeacher(Meteor.user());
-    },
-});
-
-UI.registerHelper('getStatusColor', function() {
-    return Session.get('getStatusColor');
-});
 
 Template.nav.helpers({
   describe: function(user) {
@@ -150,9 +144,11 @@ Template.question_view.events({
     },
 
     'click #showAnswers': function (event, template){
+        Session.set("showingAnswers", true);
     },
 
     'click #hideAnswers': function (event, template){
+        Session.set("showingAnswers", false);
     },
 
 })
@@ -179,23 +175,13 @@ function calcPercentages(question){
 function passData(question, user) {
     if (question && user) {
         var question_id = question._id;
-        if (question.status == 'active') {
-            var status_comment = 'Submission is open';
-            var statusColor = 'green';
-            var overlay = "overlay closed";
-        } else {
-            var status_comment = 'Submission is closed';
-            var statusColor = '#ef6d86';
-            var overlay = "overlay open";
-        }
 
         var student_response = Responses.findOne({question:question_id, user:user._id});
         if (student_response) {
             var feedback = 'Your submission is: ' + student_response.answer;
-        } else if (!isTeacher(user)) {
+        } else {
             var feedback = "Please submit your response!";
         }
-
 
         var stats = isTeacher(user) ? calcPercentages(question) : undefined;
 
@@ -225,6 +211,7 @@ function passData(question, user) {
             isTeacher: isTeacher(user),
             question_id: question_id,
             isOpen: question.status == 'active',
+            showingAnswers: Session.get("showingAnswers"),
             options: options,
             title: question.title,
             time: question.time,
