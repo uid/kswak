@@ -25,10 +25,32 @@ Template.main.helpers({
 });
 
 Template.main.events({
+    'keydown': function(event) {
+        console.log(event);
+        var handled = false;
+        var key = event.keyCode;
+        if (key >= 50 && key < 58) {
+            // number key: 2 through 9
+            var numberOfChoices = key - 48;
+            $(".newQuestion").eq(numberOfChoices-2).click();
+            handled = true;
+        } else if (key >= 65 && key < 74) {
+            var choice = key - 65;
+            $(".studentChoice").eq(choice).click();
+            handled = true;
+        }
+
+        if (handled) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+    },
+
     'click .newQuestion': function(event) {
         var choices = $(event.target).text().split("");
         Meteor.call('newQuestion', choices);
         Session.set("showingAnswers", false);
+        $(".closeReopenQuestion").focus();
     },
 
     'click .studentChoice': function (event) {
@@ -36,24 +58,22 @@ Template.main.events({
         Meteor.call('studentAnswer', activeQuestion()._id, answer);
     },
 
-    'click #closeQuestion': function (){
-        Meteor.call('closeOrOpenQuestion', activeQuestion()._id, false);
-    },
-
-    'click #reopenQuestion': function (){
-        Meteor.call('closeOrOpenQuestion', activeQuestion()._id, true);
+    'click .closeReopenQuestion': function (){
+        var question = activeQuestion();
+        Meteor.call('closeOrOpenQuestion', question._id, !question.isOpen);
         Session.set("showingAnswers", false);
+        $(".showHideAnswers").focus();
     },
 
-    'click #showAnswers': function (){
-        Session.set("showingAnswers", true);
+    'click .showHideAnswers': function (){
+        Session.set("showingAnswers", !Session.get("showingAnswers"));
     },
+});
 
-    'click #hideAnswers': function (){
-        Session.set("showingAnswers", false);
-    },
-
-})
+Template.main.onRendered(function() {
+    // give the first new-question button the keyboard focus, to support keyboard shortcuts
+    $(".newQuestion").eq(0).focus();
+});
 
 //calculates response percentages for each answer choice
 //returns array of percentages, one for each answer choice

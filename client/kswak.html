@@ -25,7 +25,7 @@
     {{#unless isTeacher}}
     <div class="overlay {{#if isOpen}}open{{else}}closed{{/if}}"></div>
     {{/unless}}
-    <div id="container_main">
+    <div id="container_main" tabindex="1">
         {{#if isTeacher}}
             <div>
                 <button class='btn btn-primary newQuestion'>AB</button>
@@ -33,10 +33,20 @@
                 <button class='btn btn-primary newQuestion'>ABCD</button>
                 <button class='btn btn-primary newQuestion'>ABCDE</button>
                 <button class='btn btn-primary newQuestion'>ABCDEF</button>
-                <button class='btn btn-primary' id='closeQuestion'>Close Question</button>
-                <button class='btn btn-primary' id='reopenQuestion'>Reopen Question</button>
-                <button class='btn btn-primary' id='showAnswers'>Show Answers</button>
-                <button class='btn btn-primary' id='hideAnswers'>Hide Answers</button>
+                <button class='btn btn-primary closeReopenQuestion'>
+                    {{#if isOpen}}
+                        Close Question
+                    {{else}}
+                        Reopen Question
+                    {{/if}}
+                </button>
+                <button class='btn btn-primary showHideAnswers'>
+                    {{#unless showingAnswers}}
+                        Show Answers
+                    {{else}}
+                        Hide Answers
+                    {{/unless}}
+                </button>
             </div>    
         {{/if}}
         <span style='width:300px; display: inline-block'><i>
