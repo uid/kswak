@@ -55,12 +55,13 @@ Template.main.events({
     'keydown': function(event) {
         var handled = false;
         var key = event.keyCode;
-        if (key >= 50 && key < 58) {
+        var noModifiers = !event.altKey && !event.ctrlKey && !event.metaKey;
+        if ((key >= 50 && key < 58) && noModifiers)  {
             // number key: 2 through 9
             var numberOfChoices = key - 48;
             $(".newQuestion").eq(numberOfChoices-2).click();
             handled = true;
-        } else if (key >= 65 && key < 74) {
+        } else if ((key >= 65 && key < 74) && noModifiers) {
             var choice = key - 65;
             $(".studentChoice").eq(choice).click();
             handled = true;

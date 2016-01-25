@@ -22,9 +22,6 @@
 </template>
 
 <template name='main'>
-    {{#unless isTeacher}}
-    <div class="overlay {{#if isOpen}}open{{else}}closed{{/if}}"></div>
-    {{/unless}}
     <div id="container_main" tabindex="1">
         {{#if isTeacher}}
             <div>
@@ -52,15 +49,17 @@
         <span style='width:300px; display: inline-block'><i>
             Submission is {{#if isOpen}}open{{else}}closed{{/if}}
         </i></span>
-        <table id="studentTable">
+        <table id="studentTable" class="{{#if isOpen}}open{{else}}closed{{/if}}">
         {{#each options}}
             <tr>
-                <td><button class="studentChoice unclicked {{#if wasChosen}}chosen{{/if}}">
+                <td>
+                    <div class="overlay"></div>
+                    <button class="studentChoice unclicked {{#if wasChosen}}chosen{{/if}}">
                         {{choice}}
                     </button>
                 </td>
                 {{#if showingAnswers}}
-                <td class='statistics teacherOptions' align='right'>{{voters}}  ({{percent}}%)</td>
+                <td class='statistics teacherOptions' align='right'>{{voters}}</td>
                 <td class='bargraph' ><span style="width:{{percent}}%;"></span></td>
                 {{/if}}
             </tr>

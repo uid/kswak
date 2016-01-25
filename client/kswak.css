@@ -26,7 +26,6 @@ div[id^='container']{
     width: 10em;
 }
 
-/*The submit button on the */
 .studentChoice {
     display:inline-block;
     padding: 4px 12px;
@@ -71,7 +70,11 @@ td span {
     margin: 0.2em;
 }
 
-.overlay {
+#studentTable td {
+    position:relative;
+}
+
+#studentTable .overlay {
     pointer-events: none;
     position: absolute;
     top: 0;
@@ -82,8 +85,6 @@ td span {
     z-index: 10;
 }
 
-.overlay.closed {
-    background-color: rgba(0,0,0,0.4);
+#studentTable.closed .overlay  {
+    background-color: rgba(0,0,0,0.4);   
 }
-
-/*////////////////////////////////////*/
