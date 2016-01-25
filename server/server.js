@@ -1,23 +1,4 @@
 
-Accounts.onCreateUser(function(options, user) {
-    // try to fill in missing username from email address
-    if (!user.username) {
-        try {
-            var email = user.emails[0].address;
-            user.username = email.match(/^([^@]+)@/)[1];
-        } catch (e) {
-            throw new Error("can't create new user: no username, no email address")
-        }
-    }
-    user.profile = options.profile;
-    return user;
-});
-
-Accounts.onLogin(function() {
-    var user = Meteor.user();
-    logEvent("login", user.username);
-});
-
 /*
  Question = {
     choices: string (e.g. "ABCD")
@@ -26,17 +7,22 @@ Accounts.onLogin(function() {
   }
   This collection should have only document in it.
 */
-Questions = new Meteor.Collection("questions");
-Meteor.publish("questions", function () {
-    return Questions.find();
+Question = new Meteor.Collection("question");
+Meteor.publish("question", function () {
+    return Question.find();
 });
 
 /*
  Response = {
     username: string
-    answer: string (typically "A", "B", etc) 
-    timestamp: Date, when latest response was made
+    answer: optional string (typically "A", "B", etc) 
+    timestamp: optional Date, when latest response was made
  }
+
+ Contains a document for every student whose browser has rendered the active question.
+ answer and timestamp fields are missing until the user makes a response.
+
+ Only student usernames should be in this collection, not teachers.
 */
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
@@ -66,15 +52,35 @@ Events = new Meteor.Collection("events");
 // don't publish the event log -- it's just for backend
 
 
+// make sure every User has a username, by filling in from email address (which comes from MIT cert)
+Accounts.onCreateUser(function(options, user) {
+    if (!user.username) {
+        try {
+            var email = user.emails[0].address;
+            user.username = email.match(/^([^@]+)@/)[1];
+        } catch (e) {
+            throw new Error("can't create new user: no username, no email address")
+        }
+    }
+    user.profile = options.profile;
+    return user;
+});
+
+Accounts.onLogin(function() {
+    var user = Meteor.user();
+    logEvent("login", user.username);
+});
+
+
 Meteor.methods({
     newQuestion: function(choices) {
         var user = Meteor.user();        
         if (isTeacher(user)) {
-            // delete all questions and answers
-            Questions.remove({});
+            // delete all question and answers
+            Question.remove({});
             Responses.remove({});
 
-            var questionID = Questions.insert({
+            var questionID = Question.insert({
                 choices: choices,
                 isOpen: true,
                 timestamp: new Date()
@@ -85,10 +91,22 @@ Meteor.methods({
         }
     },
 
+    studentViewing : function (questionID) {
+        var user = Meteor.user();
+        var username = user.username;
+        var question = Question.findOne(questionID);
+
+        if (!question) {
+            console.log("question " + questionID + " no longer exists");
+        } else if (!isTeacher(user)) { // don't make Response docs for teachers 
+            Responses.upsert({username:username}, {$set: { username: username }});
+        }
+    },
+
     studentAnswer : function (questionID, answer) {
         var user = Meteor.user();
         var username = user.username;
-        var question = Questions.findOne(questionID);
+        var question = Question.findOne(questionID);
 
         if (!question) {
             console.log("question " + questionID + " no longer exists");
@@ -111,7 +129,7 @@ Meteor.methods({
     closeOrOpenQuestion: function(questionID, isOpen){
         var user = Meteor.user();
         if (isTeacher(user)) {
-            Questions.update(questionID, {$set:{isOpen:isOpen}});
+            Question.update(questionID, {$set:{isOpen:isOpen}});
             logEvent(isOpen ? "reopened question" : "closed question", user.username, {question:questionID});
         }
     },

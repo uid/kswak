@@ -1,7 +1,7 @@
-Questions = new Meteor.Collection("questions");
+Question = new Meteor.Collection("question");
 Responses = new Meteor.Collection("responses");
 
-Meteor.subscribe("questions");
+Meteor.subscribe("question");
 Meteor.subscribe("responses");
 
 // automatic login using certificate
@@ -30,11 +30,11 @@ Template.main.events({
 
     'click .studentChoice': function (event) {
         var answer = $(event.target).text().trim();
-        Meteor.call('studentAnswer', activeQuestion()._id, answer);
+        Meteor.call('studentAnswer', Question.findOne()._id, answer);
     },
 
     'click .closeReopenQuestion': function (){
-        var question = activeQuestion();
+        var question = Question.findOne();
         Meteor.call('closeOrOpenQuestion', question._id, !question.isOpen);
         Session.set("showingAnswers", false);
         $(".showHideAnswers").focus();
@@ -97,7 +97,7 @@ function calcPercentages(question){
 function passData(question, user) {
     var data = {};
 
-    var question = activeQuestion();
+    var question = Question.findOne();
     var user = Meteor.user();
     if (!question || !user) {
         data.isOpen = false;
@@ -106,26 +106,35 @@ function passData(question, user) {
 
     data.isOpen = question.isOpen;
 
+    data.feedback = "Please submit your response!";
     var myResponse = Responses.findOne({username:user.username});
-    if (myResponse) {
-        data.feedback = 'Your submission is: ' + myResponse.answer;
-    } else {
-        data.feedback = "Please submit your response!";
+    var myAnswer;
+    if (!myResponse) {
+        Meteor.call("studentViewing", question._id);
+    } else if ("answer" in myResponse) {
+        myAnswer = myResponse.answer;
+        data.feedback = 'Your submission is: ' + myAnswer;
+    }
+
+    function toPercent(n, d) {
+        return (n*100/d).toFixed(0);
     }
 
     var stats = isTeacher(user) ? calcPercentages(question) : undefined;
-    data.total = stats ? stats[stats.length-1] : 0;
+    data.numStudents = Responses.find({}).count();
+    data.numNoAnswer = Responses.find({answer:{$exists: false}}).count();
+    data.percentNoAnswer = toPercent(data.numNoAnswer, data.numStudents);
 
     data.options = [];
     for (var i in question.choices) {
         var option = {
             choice: question.choices[i],
-            wasChosen: myResponse && myResponse.answer == [question.choices[i]],
+            wasChosen: myAnswer == [question.choices[i]],
         };
 
         if (isTeacher(user)) {
-            option.voters = Responses.find({answer: question.choices[i]}).count();
-            option.percent = stats[i];                
+            option.num = Responses.find({answer: question.choices[i]}).count();
+            option.percent = toPercent(option.num, data.numStudents);                
         }
 
         data.options.push(option);

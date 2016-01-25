@@ -25,11 +25,13 @@
     <div id="container_main" tabindex="1">
         {{#if isTeacher}}
             <div>
-                <button class='btn btn-primary newQuestion'>AB</button>
-                <button class='btn btn-primary newQuestion'>ABC</button>
-                <button class='btn btn-primary newQuestion'>ABCD</button>
-                <button class='btn btn-primary newQuestion'>ABCDE</button>
-                <button class='btn btn-primary newQuestion'>ABCDEF</button>
+                <div class="btn-group">
+                    <button class='btn btn-primary newQuestion'>AB</button>
+                    <button class='btn btn-primary newQuestion'>ABC</button>
+                    <button class='btn btn-primary newQuestion'>ABCD</button>
+                    <button class='btn btn-primary newQuestion'>ABCDE</button>
+                    <button class='btn btn-primary newQuestion'>ABCDEF</button>
+                </div>
                 <button class='btn btn-primary closeReopenQuestion'>
                     {{#if isOpen}}
                         Close Question
@@ -59,15 +61,16 @@
                     </button>
                 </td>
                 {{#if showingAnswers}}
-                <td class='statistics teacherOptions' align='right'>{{voters}}</td>
+                <td class='statistics teacherOptions' align='right'>{{num}} / {{../numStudents}}</td>
                 <td class='bargraph' ><span style="width:{{percent}}%;"></span></td>
                 {{/if}}
             </tr>
         {{/each}}
         {{#if isTeacher}}
             <tr>
-                <td class='tableSummary'>Total:</td>
-                <td class='tableSummary'>{{total}}</td>
+                <td class='tableSummary'>Still thinking:</td>
+                <td class='tableSummary'>{{numNoAnswer}} / {{numStudents}}</td>
+                <td class='bargraph' ><span style="width:{{percentNoAnswer}}%;"></span></td>
             </tr>
         {{/if}}
         </table>

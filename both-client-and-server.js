@@ -18,8 +18,3 @@ isTeacher = function isTeacher(user) {
     }
     return false;
 }
-
-
-activeQuestion = function activeQuestion() {
-    return Questions.findOne({});
-}

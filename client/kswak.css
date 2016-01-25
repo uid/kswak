@@ -21,7 +21,7 @@ div[id^='container']{
     background-color: rgba(205, 248, 205, 0.97);
 }
 
-.closeReopenQuestion {
+.closeReopenQuestion, .showHideAnswers {
     margin-left: 20px;
     width: 10em;
 }
