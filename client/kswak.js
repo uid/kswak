@@ -10,11 +10,6 @@ Meteor.startup(function () {
 });  
 
 
-function activeQuestion() {
-    return Questions.findOne({isActive: true});
-}
-
-
 Template.main.helpers({
   isTeacher: function() {
     return isTeacher(Meteor.user());
@@ -27,7 +22,7 @@ Template.main.helpers({
 Template.main.events({
 
     'click .newQuestion': function(event) {
-        var choices = $(event.target).text().split("");
+        var choices = $(event.target).text();
         Meteor.call('newQuestion', choices);
         Session.set("showingAnswers", false);
         $(".closeReopenQuestion").focus();
@@ -87,7 +82,7 @@ function calcPercentages(question){
     normalizedList = [];
     var total = 0;
     for ( var i =0; i< question.choices.length; i++){
-        var numResponses = Responses.find({question:question._id, answer:question.choices[i]}).count();
+        var numResponses = Responses.find({answer:question.choices[i]}).count();
         normalizedList.push(numResponses);
         total +=numResponses;
     }
@@ -111,9 +106,9 @@ function passData(question, user) {
 
     data.isOpen = question.isOpen;
 
-    var student_response = Responses.findOne({question:question._id, username:user.username});
-    if (student_response) {
-        data.feedback = 'Your submission is: ' + student_response.answer;
+    var myResponse = Responses.findOne({username:user.username});
+    if (myResponse) {
+        data.feedback = 'Your submission is: ' + myResponse.answer;
     } else {
         data.feedback = "Please submit your response!";
     }
@@ -122,14 +117,14 @@ function passData(question, user) {
     data.total = stats ? stats[stats.length-1] : 0;
 
     data.options = [];
-    for (i in question.choices) {
+    for (var i in question.choices) {
         var option = {
             choice: question.choices[i],
-            wasChosen: student_response && student_response.answer == [question.choices[i]],
+            wasChosen: myResponse && myResponse.answer == [question.choices[i]],
         };
 
         if (isTeacher(user)) {
-            option.voters = Responses.find({question: question._id, answer: question.choices[i]}).count();
+            option.voters = Responses.find({answer: question.choices[i]}).count();
             option.percent = stats[i];                
         }
 

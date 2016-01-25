@@ -45,13 +45,24 @@ Getting student responses out in CSV
 
 1. Install mongodb, because you'll need the mongoexport tool.
 
-2. If you're running KSWAK locally (with localhost URLs), then run:
+2. Run mongoexport.  The first part of its command line depends on whether you're running KSWAK locally
+   (with localhost URLs):
 
-    mongoexport -h 127.0.0.1 --port 3001 -d meteor -c responses --type csv --fields "timestamp,username,answer"
+        mongoexport -h 127.0.0.1 --port 3001 -d meteor 
 
-3. If you've deployed KSWAK on meteor.com, then run:
+or remotely on meteor.com:
 
-    meteor mongo -U 005k.meteor.com | sed -E -e 's_mongodb://([^:]+):([^@]+)@([^:]+):([^/]+)/(.*)$_mongoexport -u \1 -p \2 -h \3 --port \4 -d \5 -c responses --type csv --fields "timestamp,username,answer"_'
+    meteor mongo -U 005k.meteor.com | sed -E -e 's_mongodb://([^:]+):([^@]+)@([^:]+):([^/]+)/(.*)$_mongoexport -u \1 -p \2 -h \3 --port \4 -d \5_'
 
-which will print the mongoexport command line that you need to run, including hostname, port, username, and password.  Copy that mongoexport command line and run it.  Don't bother saving this mongoexport command for later, because the username and password are temporary and will expire.
+which will print the mongoexport command line that you need to run, including hostname, port, username, and password.  Don't bother saving these values for later, because the username and password are temporary and will expire.
+
+3. The end of your mongoexport command line should be one of the following, depending on the data you want:
+
+   * Just the last student response to each question, in CSV format
+
+       -c responses --type csv --fields "timestamp,username,answer"  --sort={timestamp:1}
+
+   * All events, in CSV format
+
+       -c events --type csv --fields "timestamp,type,username,choices,answer" --sort={timestamp:1}
 

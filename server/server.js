@@ -13,12 +13,31 @@ Accounts.onCreateUser(function(options, user) {
     return user;
 });
 
-
-Questions = new Meteor.Collection("questions");
-Meteor.publish("questions", function () {
-    return Questions.find({isActive: true});
+Accounts.onLogin(function() {
+    var user = Meteor.user();
+    logEvent("login", user.username);
 });
 
+/*
+ Question = {
+    choices: string (e.g. "ABCD")
+    isOpen: boolean (true if students are allowed to answer right now)
+    timestamp: Date, when question was created
+  }
+  This collection should have only document in it.
+*/
+Questions = new Meteor.Collection("questions");
+Meteor.publish("questions", function () {
+    return Questions.find();
+});
+
+/*
+ Response = {
+    username: string
+    answer: string (typically "A", "B", etc) 
+    timestamp: Date, when latest response was made
+ }
+*/
 Responses = new Meteor.Collection("responses");
 Meteor.publish("responses", function () {
     var user = Meteor.users.findOne(this.userId);
@@ -27,50 +46,87 @@ Meteor.publish("responses", function () {
     else return Responses.find({username:user.username});
 });
 
+/*
+ Event = {
+    type: string, may be one of:
+        "login"
+        "new question"
+        "student answer"
+        "teacher answer"
+        "closed question"
+        "reopened question"
+    username: string
+    choices: optional string (typically "ABCD")
+    question: optional string, question ID
+    answer: optional string (typically "A", "B", etc.)
+    timestamp: Date
+ }
+*/
+Events = new Meteor.Collection("events");
+// don't publish the event log -- it's just for backend
 
 
 Meteor.methods({
     newQuestion: function(choices) {
-        if (isTeacher(Meteor.user()) ){
-            // close all active questions
-            Questions.update({isActive: true}, {$set:{isActive: false, isOpen: false}}, {multi:true});
+        var user = Meteor.user();        
+        if (isTeacher(user)) {
+            // delete all questions and answers
+            Questions.remove({});
+            Responses.remove({});
 
-            return Questions.insert({
+            var questionID = Questions.insert({
                 choices: choices,
-                isActive: true,
                 isOpen: true,
                 timestamp: new Date()
             });
+            logEvent("new question", user.username, {choices:choices, questionID: questionID});
+
+            return questionID;
         }
     },
 
-    studentAnswer : function (question_id, answer) {
-        var username = Meteor.user().username;
-        var question = Questions.findOne(question_id);
-        if (!question.isActive || !question.isOpen) console.log("question closed");
-        else if (isTeacher(Meteor.user())) console.log("teacher answered");
-        else {
-            var response = Responses.findOne({username:username, question:question_id});
-            if (response) {
-                Responses.update(response._id, {$set: {
-                    answer: answer,
-                    timestamp: new Date()
-                }});
-            } else {
-                Responses.insert({
-                    username:username, 
-                    question:question_id, 
-                    answer: answer,
-                    timestamp: new Date()
-                });
-            }
+    studentAnswer : function (questionID, answer) {
+        var user = Meteor.user();
+        var username = user.username;
+        var question = Questions.findOne(questionID);
+
+        if (!question) {
+            console.log("question " + questionID + " no longer exists");
+        } else if (answer.length != 1 || question.choices.indexOf(answer) == -1) {
+            console.log("invalid answer: " + answer);
+        } else if (isTeacher(user)) {
+            logEvent("teacher answer", user.username, {choices:question.choices, question:question._id, answer:answer});
+        } else if (!question.isOpen) {
+            console.log("question closed");
+        } else {
+            Responses.upsert({username:username}, {$set: {
+                username:username, 
+                answer: answer,
+                timestamp: new Date()
+            }});
+            logEvent("student answer", user.username, {choices:question.choices, question:question._id, answer:answer});
         }
     },
 
-    closeOrOpenQuestion: function(question_id, isOpen){
-        if (isTeacher(Meteor.user())) {
-            Questions.update(question_id, {$set:{isOpen:isOpen}})
+    closeOrOpenQuestion: function(questionID, isOpen){
+        var user = Meteor.user();
+        if (isTeacher(user)) {
+            Questions.update(questionID, {$set:{isOpen:isOpen}});
+            logEvent(isOpen ? "reopened question" : "closed question", user.username, {question:questionID});
         }
     },
 
 });
+
+
+// Log an event
+//     type: string, one of the Event types above.
+//     username: string, username causing event
+//     options: additional fields for event, see Event type above
+function logEvent(type, username, options) {
+    if (!options) options = {};
+    options.type = type;
+    options.username = username;
+    options.timestamp = new Date();
+    Events.insert(options);
+}
