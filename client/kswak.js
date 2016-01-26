@@ -71,80 +71,8 @@ Template.main.events({
 });
 
 Template.main.onRendered(function() {
-    // give the first new-question button the keyboard focus, to support keyboard shortcuts
-    $(".newQuestion").eq(0).focus();
-});
-
-//calculates response percentages for each answer choice
-//returns array of percentages, one for each answer choice
-//last index of returned array contains total number of voters
-function calcPercentages(question){
-    normalizedList = [];
-    var total = 0;
-    for ( var i =0; i< question.choices.length; i++){
-        var numResponses = Responses.find({answer:question.choices[i]}).count();
-        normalizedList.push(numResponses);
-        total +=numResponses;
-    }
-    if (total != 0){
-        normalizedList = normalizedList.map(function(x) { return (100*(x/total)).toFixed(0); })
-    }
-    normalizedList.push(total)
-    return normalizedList;
-}
-
-
-function passData(question, user) {
-    var data = {};
-
-    var question = Question.findOne();
-    var user = Meteor.user();
-    if (!question || !user) {
-        data.isOpen = false;
-        return data;
-    }
-
-    data.isOpen = question.isOpen;
-
-    data.feedback = "Please submit your response!";
-    var myResponse = Responses.findOne({username:user.username});
-    var myAnswer;
-    if (!myResponse) {
-        Meteor.call("studentViewing", question._id);
-    } else if ("answer" in myResponse) {
-        myAnswer = myResponse.answer;
-        data.feedback = 'Your submission is: ' + myAnswer;
-    }
-
-    function toPercent(n, d) {
-        return (n*100/d).toFixed(0);
-    }
-
-    var stats = isTeacher(user) ? calcPercentages(question) : undefined;
-    data.numStudents = Responses.find({}).count();
-    data.numNoAnswer = Responses.find({answer:{$exists: false}}).count();
-    data.percentNoAnswer = toPercent(data.numNoAnswer, data.numStudents);
-
-    data.options = [];
-    for (var i in question.choices) {
-        var option = {
-            choice: question.choices[i],
-            wasChosen: myAnswer == [question.choices[i]],
-        };
-
-        if (isTeacher(user)) {
-            option.num = Responses.find({answer: question.choices[i]}).count();
-            option.percent = toPercent(option.num, data.numStudents);                
-        }
-
-        data.options.push(option);
-    }
-
-    return data;
-}
-
-Router.configure({
-    notFoundTemplate: "restricted"
+    // give the main body the keyboard focus, to support shortcuts
+    $(".main").eq(0).focus();
 });
 
 Router.map(function () {
@@ -154,7 +82,50 @@ Router.map(function () {
             if (!Meteor.user()) return 'not_logged_in';
             else return 'main';
         },
-        data: passData
+        data: function() {
+            var result = {};
+
+            var user = Meteor.user();
+            if (!user) return {};
+
+            result.question = Question.findOne();
+            if (!result.question) return result;
+
+            result.myAnswer = undefined;
+            var myResponse = Responses.findOne({username:user.username});
+            if (!myResponse) {
+                Meteor.call("studentViewing", result.question._id);
+            } else if ("answer" in myResponse) {
+                result.myAnswer = myResponse.answer;
+            }
+
+            function toPercent(n, d) {
+                return (n*100/d).toFixed(0);
+            }
+
+            result.numStudents = Responses.find({}).count();
+            result.numNoAnswer = Responses.find({answer:{$exists: false}}).count();
+            result.percentNoAnswer = toPercent(result.numNoAnswer, result.numStudents);
+
+            result.options = [];
+            for (var i in result.question.choices) {
+                var choice = result.question.choices[i];
+
+                var option = {
+                    choice: result.question.choices[i],
+                    wasChosen: result.myAnswer == choice,
+                };
+
+                if (isTeacher(user)) {
+                    option.num = Responses.find({answer: choice}).count();
+                    option.percent = toPercent(option.num, result.numStudents);                
+                }
+
+                result.options.push(option);
+            }
+
+            return result;
+        },
     });
 
 });

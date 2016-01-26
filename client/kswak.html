@@ -3,26 +3,10 @@
 </head>
 
 <body>
-    {{> nav}}
 </body>
 
-<template name='nav'>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-       <div class="navbar-inner">
-         <div class="container">
-           <a class="brand" href="/">kswak</a>
-           <ul class="nav pull-right">
-             <li class="navbar-text">
-              {{currentUser.username}}
-             </li>
-           </ul>
-         </div>
-       </div>
-    </div>
-</template>
-
 <template name='main'>
-    <div id="container_main" tabindex="1">
+    <div class="main container-fluid" tabindex="1">
         {{#if isTeacher}}
             <div>
                 <div class="btn-group">
@@ -33,7 +17,7 @@
                     <button class='btn btn-primary newQuestion'>ABCDEF</button>
                 </div>
                 <button class='btn btn-primary closeReopenQuestion'>
-                    {{#if isOpen}}
+                    {{#if question.isOpen}}
                         Close Question
                     {{else}}
                         Reopen Question
@@ -45,52 +29,51 @@
                     {{else}}
                         Hide Answers
                     {{/unless}}
-                </button>
+                </button> 
             </div>    
         {{/if}}
-        <span style='width:300px; display: inline-block'><i>
-            Submission is {{#if isOpen}}open{{else}}closed{{/if}}
-        </i></span>
-        <table id="studentTable" class="{{#if isOpen}}open{{else}}closed{{/if}}">
+        <div class="comment">
+            Welcome, {{currentUser.username}}.
+            Submission is {{#if question.isOpen}}open{{else}}closed{{/if}}.
+            {{#unless isTeacher}}
+                {{#if myAnswer}}
+                Your answer is {{myAnswer}}.
+                {{else}}
+                    {{#if question.isOpen}}
+                    Please choose:
+                    {{/if}}
+                {{/if}}
+            {{/unless}}
+        </div>
+        <table id="studentTable" class="{{#if question.isOpen}}open{{else}}closed{{/if}}">
         {{#each options}}
             <tr>
                 <td>
                     <div class="overlay"></div>
-                    <button class="studentChoice unclicked {{#if wasChosen}}chosen{{/if}}">
+                    <button class="studentChoice {{#if wasChosen}}chosen{{/if}}">
                         {{choice}}
                     </button>
                 </td>
                 {{#if showingAnswers}}
-                <td class='statistics teacherOptions' align='right'>{{num}} / {{../numStudents}}</td>
+                <td class="counts">{{num}} / {{../numStudents}}</td>
                 <td class='bargraph' ><span style="width:{{percent}}%;"></span></td>
                 {{/if}}
             </tr>
         {{/each}}
         {{#if isTeacher}}
             <tr>
-                <td class='tableSummary'>Still thinking:</td>
-                <td class='tableSummary'>{{numNoAnswer}} / {{numStudents}}</td>
+                <td class="studentChoice noChoiceMade"><div>still thinking:</div></td>
+                <td class="counts">{{numNoAnswer}} / {{numStudents}}</td>
                 <td class='bargraph' ><span style="width:{{percentNoAnswer}}%;"></span></td>
             </tr>
         {{/if}}
         </table>
-        {{#unless isTeacher}}
-            <div id="submitFeedback">{{feedback}}</div>
-        {{/unless}}
-    </div>
-</template>
-
-<template name='restricted'>
-    <div class='container'>
-        <span>Page not found.</span>
     </div>
 </template>
 
 <template name='not_logged_in'>
     <div class='container'>
-        <span>
-            Not logged in yet...
-        </span>
+        Not logged in yet...
     </div>
 </template>
 
