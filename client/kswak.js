@@ -91,13 +91,13 @@ Router.map(function () {
             result.question = Question.findOne();
             if (!result.question) return result;
 
-            result.myAnswer = undefined;
             var myResponse = Responses.findOne({username:user.username});
-            if (!myResponse) {
+            if (!myResponse && !isTeacher(user)) {
+                // tell the server that I'm looking at the question,
+                // so that it will create a Response doc for my answer
                 Meteor.call("studentViewing", result.question._id);
-            } else if ("answer" in myResponse) {
-                result.myAnswer = myResponse.answer;
             }
+            result.myAnswer = (myResponse && myResponse["answer"]);
 
             function toPercent(n, d) {
                 return (n*100/d).toFixed(0);
