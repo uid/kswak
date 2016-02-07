@@ -69,8 +69,6 @@ Template.main.events({
             if (nextButtonIndex < 0) nextButtonIndex = buttons.length-1;
             else if (nextButtonIndex >= buttons.length) nextButtonIndex = 0;
             buttons.eq(nextButtonIndex).focus();
-        } else {
-            console.log(event);
         }
 
         if (handled) {
