@@ -33,17 +33,20 @@
             </div>    
         {{/if}}
         <div class="comment">
-            Welcome, {{currentUser.username}}.
-            Submission is {{#if question.isOpen}}open{{else}}closed{{/if}}.
-            {{#unless isTeacher}}
-                {{#if myAnswer}}
-                Your answer is {{myAnswer}}.
-                {{else}}
-                    {{#if question.isOpen}}
-                    Please choose:
+            {{#if currentUser}}
+                Welcome, {{currentUser.username}}.
+                {{#unless isTeacher}}
+                    {{#if myAnswer}}
+                    Your answer is {{myAnswer}}.
+                    {{else}}
+                        {{#if question.isOpen}}
+                        Please choose:
+                        {{/if}}
                     {{/if}}
-                {{/if}}
-            {{/unless}}
+                {{/unless}}
+            {{else}}
+                Not logged in yet...
+            {{/if}}
         </div>
         <table id="studentTable" class="{{#if question.isOpen}}open{{else}}closed{{/if}}">
         {{#each options}}
@@ -62,17 +65,10 @@
         {{/each}}
         {{#if isTeacher}}
             <tr>
-                <td class="studentChoice noChoiceMade"><div>answers/viewers:</div></td>
-                <td class="counts">{{numAnswers}} / {{numStudents}}</td>
+                <td class="studentChoice noChoiceMade"><div>answers / viewers:</div></td>
+                <td class="counts noChoiceMade">{{numAnswers}} / {{numStudents}}</td>
             </tr>
         {{/if}}
         </table>
     </div>
 </template>
-
-<template name='not_logged_in'>
-    <div class='container'>
-        Not logged in yet...
-    </div>
-</template>
-

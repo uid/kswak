@@ -22,9 +22,11 @@
     background-color: steelblue;
 }
 
-.studentChoice.noChoiceMade {
+.noChoiceMade {
     background-color: transparent;
+    padding-top: 30px;
 }
+
 
 .counts {
     min-width: 70px;

@@ -35,8 +35,11 @@ Template.main.events({
 
     'click .closeReopenQuestion': function (){
         var question = Question.findOne();
+        if (!question.isOpen) {
+            // reopening question should hide the answers first
+            Session.set("showingAnswers", false);
+        }
         Meteor.call('closeOrOpenQuestion', question._id, !question.isOpen);
-        Session.set("showingAnswers", false);
         $(".showHideAnswers").focus();
     },
 
@@ -87,10 +90,7 @@ Template.main.onRendered(function() {
 Router.map(function () {
     this.route('main', {
         path: '/',
-        template: function() {
-            if (!Meteor.user()) return 'not_logged_in';
-            else return 'main';
-        },
+        template: 'main',
         data: function() {
             var result = {};
 
