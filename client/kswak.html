@@ -48,12 +48,12 @@
                 Not logged in yet...
             {{/if}}
         </div>
-        <table id="studentTable" class="{{#if question.isOpen}}open{{else}}closed{{/if}}">
+        <table class="{{#if question.isOpen}}open{{else}}closed{{/if}}">
         {{#each options}}
             <tr>
                 <td>
                     <div class="overlay"></div>
-                    <button class="studentChoice {{#if wasChosen}}chosen{{/if}}">
+                    <button class="choice {{#if wasChosen}}chosen{{/if}}">
                         {{choice}}
                     </button>
                 </td>
@@ -65,7 +65,7 @@
         {{/each}}
         {{#if isTeacher}}
             <tr>
-                <td class="studentChoice noChoiceMade"><div>answers / viewers:</div></td>
+                <td class="choice noChoiceMade"><div>answers / viewers:</div></td>
                 <td class="counts noChoiceMade">{{numAnswers}} / {{numStudents}}</td>
             </tr>
         {{/if}}

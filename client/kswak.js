@@ -28,7 +28,7 @@ Template.main.events({
         $(".closeReopenQuestion").focus();
     },
 
-    'click .studentChoice': function (event) {
+    'click .choice': function (event) {
         var answer = $(event.target).text().trim();
         Meteor.call('studentAnswer', Question.findOne()._id, answer);
     },
@@ -62,7 +62,7 @@ Template.main.events({
         } else if ((key >= 65 && key < 74) && noModifiers) {
             // letter key: A through G
             var choice = key - 65;
-            $(".studentChoice").eq(choice).click();
+            $(".choice").eq(choice).click();
             handled = true;
         } else if ((key >= 37 && key <= 40) && noModifiers) {
             // arrow key: move the keyboard focus by simulating Tab or ShiftTab
