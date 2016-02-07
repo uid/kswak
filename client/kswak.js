@@ -57,9 +57,20 @@ Template.main.events({
             $(".newQuestion").eq(numberOfChoices-2).click();
             handled = true;
         } else if ((key >= 65 && key < 74) && noModifiers) {
+            // letter key: A through G
             var choice = key - 65;
             $(".studentChoice").eq(choice).click();
             handled = true;
+        } else if ((key >= 37 && key <= 40) && noModifiers) {
+            // arrow key: move the keyboard focus by simulating Tab or ShiftTab
+            var direction = (key == 39 || key == 40) ? 1 : -1;
+            var buttons = $(":button");
+            var nextButtonIndex = buttons.index(event.target) + direction;
+            if (nextButtonIndex < 0) nextButtonIndex = buttons.length-1;
+            else if (nextButtonIndex >= buttons.length) nextButtonIndex = 0;
+            buttons.eq(nextButtonIndex).focus();
+        } else {
+            console.log(event);
         }
 
         if (handled) {
