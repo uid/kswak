@@ -104,8 +104,7 @@ Router.map(function () {
             }
 
             result.numStudents = Responses.find({}).count();
-            result.numNoAnswer = Responses.find({answer:{$exists: false}}).count();
-            result.percentNoAnswer = toPercent(result.numNoAnswer, result.numStudents);
+            result.numAnswers = Responses.find({answer:{$exists: true}}).count();
 
             result.options = [];
             for (var i in result.question.choices) {

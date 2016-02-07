@@ -62,9 +62,8 @@
         {{/each}}
         {{#if isTeacher}}
             <tr>
-                <td class="studentChoice noChoiceMade"><div>still thinking:</div></td>
-                <td class="counts">{{numNoAnswer}} / {{numStudents}}</td>
-                <td class='bargraph' ><span style="width:{{percentNoAnswer}}%;"></span></td>
+                <td class="studentChoice noChoiceMade"><div>answers/viewers:</div></td>
+                <td class="counts">{{numAnswers}} / {{numStudents}}</td>
             </tr>
         {{/if}}
         </table>
