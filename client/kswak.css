@@ -14,12 +14,10 @@
     margin: 10px 20px;
     min-width: 150px;
     min-height: 50px;
-    background-color: #eee;
-    border-style:none;
 }
 
 .choice.chosen {
-    background-color: steelblue;
+    background-color: skyblue;
 }
 
 .noChoiceMade {
@@ -44,7 +42,7 @@
     height:50px;
     padding:0px;
     margin:0px;
-    background-color: steelblue;
+    background-color: skyblue;
 }
 
 td {
