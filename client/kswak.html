@@ -6,7 +6,7 @@
 </body>
 
 <template name='main'>
-    <div class="main container-fluid">
+    <div class="main container-fluid {{#if isTeacher}}teacher-view{{else}}student-view{{/if}}">
         {{#if isTeacher}}
             <div>
                 <div class="btn-group">

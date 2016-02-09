@@ -16,8 +16,13 @@
     min-height: 50px;
 }
 
-.choice.chosen {
+.student-view .choice.chosen {
     background-color: skyblue;
+}
+
+.teacher-view .choice.chosen {
+    color: #fff;
+    background-color: #5cb85c;
 }
 
 .noChoiceMade {

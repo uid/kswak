@@ -110,20 +110,33 @@ Meteor.methods({
 
         if (!question) {
             console.log("question " + questionID + " no longer exists");
-        } else if (answer.length != 1 || question.choices.indexOf(answer) == -1) {
-            console.log("invalid answer: " + answer);
-        } else if (isTeacher(user)) {
-            logEvent("teacher answer", user.username, {choices:question.choices, question:question._id, answer:answer});
-        } else if (!question.isOpen) {
-            console.log("question closed");
-        } else {
-            Responses.upsert({username:username}, {$set: {
-                username:username, 
-                answer: answer,
-                timestamp: new Date()
-            }});
-            logEvent("student answer", user.username, {choices:question.choices, question:question._id, answer:answer});
+            return; // don't accept answer
         }
+        
+        if (answer.length != 1 || question.choices.indexOf(answer) == -1) {
+            console.log("invalid answer: " + answer);
+            return; // don't accept answer
+        }
+        
+        if (isTeacher(user)) {
+            // teacher can answer question whether closed or not
+            logEvent("teacher answer", user.username, {choices:question.choices, question:question._id, answer:answer});
+        } else {
+            // is student
+            if (!question.isOpen) {
+                console.log("question closed");
+                return; // don't accept student answer to a closed question 
+            } else {
+              logEvent("student answer", user.username, {choices:question.choices, question:question._id, answer:answer});
+           }
+        }
+
+        // if we get here, it's okay to record the response
+        Responses.upsert({username:username}, {$set: {
+            username:username, 
+            answer: answer,
+            timestamp: new Date()
+        }});
     },
 
     closeOrOpenQuestion: function(questionID, isOpen){
