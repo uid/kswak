@@ -5,9 +5,9 @@ Meteor.subscribe("question");
 Meteor.subscribe("responses");
 
 // automatic login using certificate
-Meteor.startup(function () {
-  CertAuth.login();
-});  
+// Meteor.startup(function () {
+//   CertAuth.login();
+// });  
 
 
 Template.main.helpers({

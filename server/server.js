@@ -54,12 +54,24 @@ Events = new Meteor.Collection("events");
 
 // make sure every User has a username, by filling in from email address (which comes from MIT cert)
 Accounts.onCreateUser(function(options, user) {
-    if (!user.username) {
-        try {
-            var email = user.emails[0].address;
-            user.username = email.match(/^([^@]+)@/)[1];
-        } catch (e) {
-            throw new Error("can't create new user: no username, no email address")
+    console.log(user);
+
+    if (!user.username) {        
+        if ("services" in user && "google" in user.services) {
+            var email = user.services.google.email;
+            user.emails = [ { address: email, verified: true } ];
+            user.username = email;
+        } else if ("services" in user && "mit" in user.services) {
+            var email = user.services.mit.email;
+            user.emails = [ { address: email, verified: true } ];
+            user.username = user.services.mit.username;
+        } else {
+            try {
+                var email = user.emails[0].address;
+                user.username = email.match(/^([^@]+)@/)[1];
+            } catch (e) {
+                throw new Error("can't create new user: no username, no email address")
+            }
         }
     }
     user.profile = options.profile;

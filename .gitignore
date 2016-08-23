@@ -1,2 +1,7 @@
 settings.json
 .meteor/local/*
+packages/accounts-mit/
+packages/mit/
+dump/
+*.csv
+.DS_Store
