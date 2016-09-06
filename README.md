@@ -28,7 +28,7 @@ Configuring and running
 
     meteor run
 
-You can then direct students to the app running on your laptop, using your IP address and the port number that Meteor displays.  You may find [http://shoutkey.com] useful for creating a temporary short URL to share.
+You can then direct students to the app running on your laptop, using your IP address and the port number that Meteor displays.  You may find http://shoutkey.com useful for creating a temporary short URL to share.
 
 
 
