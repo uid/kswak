@@ -28,13 +28,14 @@ Configuring and running
 
     meteor run
 
-You can 
+You can then direct students to the app running on your laptop, using your IP address and the port number that Meteor displays.  You may find [http://shoutkey.com] useful for creating a temporary short URL to share.
+
 
 
 Deploying on a Ubuntu VM
 ----
 
-If you create a virtual machine (say on CSAIL's OpenStack or Amazon EC2) to deploy the KSWAK app, here's how to set up that VM:
+If you want to deploy KSWAK on a virtual machine (say on CSAIL's OpenStack or Amazon EC2), here's how to set up that VM:
 
     # git and mongodb
     sudo apt-get update
