@@ -6,7 +6,7 @@ Meteor.subscribe("responses");
 
 // automatic login using certificate
 Meteor.startup(function () {
-  CertAuth.login();
+  if (!Meteor.userId()) CertAuth.login();
 });  
 
 
